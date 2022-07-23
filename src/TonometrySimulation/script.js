@@ -7,17 +7,37 @@ var canvasHt = 360
 var centerLineY = canvasHt/2
 var radius = 100
 var lineWidth = 5;
+var separation = radius*2
 
 
 // https://www.w3schools.com/graphics/game_intro.asp
 function startGame() {
   // 120
   // myGamePiece = new component(30, 30, "rgba(0, 0, 255, 0.5)", 10, 120);
-  myGamePiece1 = new component(radius, radius, 0, canvasWd/2-radius, canvasHt/2, "arc", +1);
-  myGamePiece2 = new component(radius, radius, 0, canvasWd/2+radius, canvasHt/2, "arc", -1);
+  myGamePiece1 = new component(radius, radius, 0, canvasWd/2-separation/2, canvasHt/2, "arc", +1);
+  myGamePiece2 = new component(radius, radius, 0, canvasWd/2+separation/2, canvasHt/2, "arc", -1);
   myGamePieces = [myGamePiece1, myGamePiece2];
   myDial = new component("30px", "Consolas", "black", 10, 40, "text");
   myGameArea.start();
+}
+
+function assessKey(oldKey, key, keydirection) {
+  accelX = NaN;
+  accelY = NaN;
+  dialSpeed = 0.0
+  if (keydirection == "keyup") { stopMovement(); }
+  if (key) {
+    if (key == 37) { accelX    =-0.2; } // right
+    if (key == 39) { accelX    =+0.2; } // left
+    if (key == 38) { accelY    =-0.2; } // down
+    if (key == 40) { accelY    =+0.2; } // up
+    if (key == 32) { dialSpeed =+0.1; } // space
+    if (key == 16) { dialSpeed =-0.1; } // shift
+  }
+
+  console.log(key)
+  accelerate(accelX,accelY);
+  changeDial(dialSpeed)
 }
 
 var myGameArea = {
@@ -29,6 +49,18 @@ var myGameArea = {
     document.body.insertBefore(this.canvas, document.body.childNodes[0]);
     this.frameNo = 0;
     this.interval = setInterval(updateGameArea, 20);
+    this.key = false;
+    window.addEventListener('keydown', function (e) {
+      oldKey = myGameArea.key
+      myGameArea.key = e.keyCode;
+      // Holding down the key eventually counts as multiple key presses
+      if (myGameArea.key != oldKey ) assessKey(oldKey, myGameArea.key, "keydown")
+    })
+    window.addEventListener('keyup', function (e) {
+      oldKey = myGameArea.key
+      myGameArea.key = false;
+      if (myGameArea.key != oldKey ) assessKey(oldKey, myGameArea.key, "keyup")
+    })
     },
   clear : function() {
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -184,12 +216,19 @@ function everyinterval(n) {
 function accelerate(x,y) {
   for (i = 0; i < myGamePieces.length; i += 1) {
     myGamePiece = myGamePieces[i]
-    myGamePiece.lrSpeed = 0.0;
-    myGamePiece.lrAccel = x;
-    myGamePiece.udSpeed = 0.0;
-    myGamePiece.udAccel = y;
+    // By allowing false check, you can change on edirection without the other
+    if (!isNaN(x)) { myGamePiece.lrAccel = x; }
+    if (!isNaN(y)) { myGamePiece.udAccel = y; }
   }
 }
-function changedial(change) {
-  myDial.dialSpeed = change
+function stopMovement() {
+  for (i = 0; i < myGamePieces.length; i += 1) {
+    myGamePiece = myGamePieces[i]
+    myGamePiece.lrSpeed = 0.0;
+    myGamePiece.udSpeed = 0.0;
+  }
+  accelerate(0,0)
+}
+function changeDial(dialSpeed) {
+  if (!isNaN(dialSpeed)) { myDial.dialSpeed = dialSpeed; }
 }
