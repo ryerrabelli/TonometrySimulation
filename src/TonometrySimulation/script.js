@@ -4,6 +4,7 @@ var dialCoefficient = 10;
 
 var canvasWd = 480
 var canvasHt = 360
+var centerLineY = canvasHt/2
 var radius = 100
 
 
@@ -64,19 +65,30 @@ function component(width, height, color, x, y, type, direction) {
       } else if (this.type == "arc") {
         // the angle starts from rightmost point (0) to bottom (pi/2) to leftmost (pi) backup through the top
         // arc inputs: x center, y center, radius, start angle (radians), end angle (radians), counterclockwise (optional)
-        ctx.strokeStyle = "black";
-        ctx.lineWidth = 10;
-        ctx.beginPath();
-        ctx.arc(this.x + this.direction*myDial.dial*dialCoefficient, this.y,
-          this.height/2, 0, 1 * Math.PI, (direction>0 ? true : false));
-        ctx.stroke();
 
-        ctx.strokeStyle = color;
-        ctx.lineWidth = 5;
-        ctx.beginPath();
-        ctx.arc(this.x + this.direction*myDial.dial*dialCoefficient, this.y,
-          this.radius, 0, 1 * Math.PI, (direction>0 ? true : false) );
-        ctx.stroke();
+        radius * sin
+        if (direction <= 0 && this.x - this.radius > centerLineY) {
+
+        } else if (direction > 0 && this.x + this.radius < centerLineY) {
+
+        } else {
+          initialAngle = 0
+          finalAngle = 1 * Math.PI
+          ctx.strokeStyle = "black";
+          ctx.lineWidth = 10;
+          ctx.beginPath();
+          ctx.arc(this.x + this.direction*myDial.dial*dialCoefficient, this.y,
+            this.height/2, initialAngle, finalAngle, (direction>0 ? true : false));
+          ctx.stroke();
+
+          ctx.strokeStyle = color;
+          ctx.lineWidth = 5;
+          ctx.beginPath();
+          ctx.arc(this.x + this.direction*myDial.dial*dialCoefficient, this.y,
+            this.radius, initialAngle, finalAngle, (direction>0 ? true : false) );
+          ctx.stroke();
+        }
+
 
       } else {
         ctx.fillStyle = color;
