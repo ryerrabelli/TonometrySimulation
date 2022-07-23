@@ -8,12 +8,13 @@
       background-color: #f1f1f1;
   }
   </style>
-  <script type="text/javascript" src="script.js"></script>
+  <script type="text/javascript" src="GATsimulation.js"></script>
 </head>
 
 <body onload="startGame()">
+  <h1>GAT</h1>
   <br>
-  <div style="text-align: center">
+  <div id="GAT-game-controls" style="text-align: center">
     <button onmousedown="accelerate( NaN,-0.2)" onmouseup="stopMovement()"> U </button>
     <br />
     <button onmousedown="accelerate(-0.2, NaN)" onmouseup="stopMovement()"> L </button>
