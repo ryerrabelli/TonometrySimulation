@@ -13,8 +13,8 @@ var lineWidth = 5;
 function startGame() {
   // 120
   // myGamePiece = new component(30, 30, "rgba(0, 0, 255, 0.5)", 10, 120);
-  myGamePiece1 = new component(radius, radius, "rgba(128, 255, 0, 0.5)", canvasWd/2-radius, canvasHt/2, "arc", +1);
-  myGamePiece2 = new component(radius, radius, "rgba(0, 255, 128, 0.5)", canvasWd/2+radius, canvasHt/2, "arc", -1);
+  myGamePiece1 = new component(radius, radius, 0, canvasWd/2-radius, canvasHt/2, "arc", +1);
+  myGamePiece2 = new component(radius, radius, 0, canvasWd/2+radius, canvasHt/2, "arc", -1);
   myGamePieces = [myGamePiece1, myGamePiece2];
   myDial = new component("30px", "Consolas", "black", 10, 40, "text");
   myGameArea.start();
@@ -69,41 +69,47 @@ function component(width, height, color, x, y, type, direction) {
 
         initialAngle = 0;           // radians
         finalAngle = 1 * Math.PI;   // radians
+        // Don't really have to separate out these conditions
         if (direction <= 0 && this.y + this.radius < centerLineY) {
-          // Nothing to draw
+          // Nothing to draw as entire circle is not in its correct half of the canvas
         } else if (direction > 0 && this.y - this.radius > centerLineY) {
-          // Nothing to draw
+          // Nothing to draw as entire circle is not in its correct half of the canvas
         } else {
-
+          // Put the separate circles out here because otherwise the nature of arc sin will cause the circle to not be drawn at all (0->0 instead of 0->2pi)
           if (direction <= 0 && this.y - this.radius > centerLineY) {
-            // Draw full circle
-            initialAngle = 0;
-            finalAngle = 2 * Math.PI;
+            // Draw full circle as entire circle is on its correct half of the canvas
+            offsetAngle = - Math.PI/2  // radians
           } else if (direction > 0 && this.y + this.radius < centerLineY) {
-            // Draw full circle
-            initialAngle = 0;
-            finalAngle = 2 * Math.PI;
+            // Draw full circle as entire circle is on its correct half of the canvas
+            offsetAngle = - Math.PI/2  // radians
           } else {
-            // Draw part of a circle
-            offsetAngle = Math.asin( (centerLineY-this.y)/this.radius)
-            initialAngle = 0 + offsetAngle;          // radians
-            finalAngle = 1 * Math.PI - offsetAngle;  // radians
+            // Draw only the part of the circle on its correct half of the canvas
+            offsetAngle = Math.asin( (centerLineY-this.y)/this.radius)  // radians
           }
+          initialAngle = 0 + offsetAngle;          // radians
+          finalAngle = 1 * Math.PI - offsetAngle;  // radians
+
           // Draw outline
-          ctx.strokeStyle = "black";
-          ctx.lineWidth = lineWidth * 2;
+          ctx.strokeStyle = "rgba(0,255,0,0.5)";
+          ctx.fillStyle = "rgba(0,0,0,0)";
+          ctx.lineWidth = lineWidth * 0.5;
           ctx.beginPath();
           ctx.arc(this.x + this.direction*myDial.dial*dialCoefficient, this.y,
-            this.height/2, initialAngle, finalAngle, (direction>0 ? true : false));
+            this.height/2, initialAngle, finalAngle,
+            (direction>0 ? true : false));
           ctx.stroke();
+          ctx.fill();
 
           // Draw actual green circle
-          ctx.strokeStyle = color;
+          ctx.strokeStyle = "rgba(0,100,0,0.9)";
+          ctx.fillStyle = "rgba(200,255,200,0.4)";
           ctx.lineWidth = lineWidth;
           ctx.beginPath();
           ctx.arc(this.x + this.direction*myDial.dial*dialCoefficient, this.y,
-            this.radius, initialAngle, finalAngle, (direction>0 ? true : false) );
+            this.radius*0.9, initialAngle, finalAngle,
+            (direction>0 ? true : false) );
           ctx.stroke();
+          ctx.fill();
         }
 
 
