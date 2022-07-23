@@ -2,15 +2,19 @@ var myGamePieces;
 var myDial;
 var dialCoefficient = 10;
 
+var canvasWd = 480
+var canvasHt = 360
+var radius = 100
+
 
 // https://www.w3schools.com/graphics/game_intro.asp
 function startGame() {
   // 120
   // myGamePiece = new component(30, 30, "rgba(0, 0, 255, 0.5)", 10, 120);
-  myGamePiece1 = new component(true, 30, "rgba(128, 255, 0, 0.5)", 200, 180, "arc");
-  myGamePiece2 = new component(false, 30, "rgba(0, 255, 128, 0.5)", 280, 180, "arc");
+  myGamePiece1 = new component(radius, radius, "rgba(128, 255, 0, 0.5)", canvasWd/2-radius, canvasHt/2, "arc", +1);
+  myGamePiece2 = new component(radius, radius, "rgba(0, 255, 128, 0.5)", canvasWd/2+radius, canvasHt/2, "arc", -1);
   myGamePieces = [myGamePiece1, myGamePiece2];
-  myDial = new component("30px", "Consolas", "black", 280, 40, "text");
+  myDial = new component("30px", "Consolas", "black", 10, 40, "text");
   myGameArea.start();
 }
 
@@ -29,15 +33,22 @@ var myGameArea = {
   }
 }
 
-function component(width, height, color, x, y, type) {
+function component(width, height, color, x, y, type, direction) {
     this.type = type;
     this.width = width;
     this.height = height;
-    this.dial = 0;  // only relevant if this is a myDial component
-    this.x = x;
+
+    // below only relevant if this is a myDial component
+    this.dial = 0;
+    this.dialSpeed = 0;
+    this.radius = this.height/2;
+    // +1 -> above aka clockwise starting from rightmost point
+    // -1 -> aka counterclockwise starting from rightmost point
+    this.direction = direction;
+
+    this.x = x;  // does not take into account the dial
     this.y = y;
     // below only relevant if a myGamePiece
-    this.dialSpeed = 0;
     this.lrSpeed = 0;
     this.lrAccel = 0;
     this.udSpeed = 0;
@@ -49,42 +60,24 @@ function component(width, height, color, x, y, type) {
         ctx.font = this.width + " " + this.height;
         ctx.fillStyle = color;
         ctx.fillText(this.text, this.x, this.y);
-      } else if (this.type == "arc") {
 
-        direction = width  // since circle, width==height, thus can reuse width instead to be direction
+      } else if (this.type == "arc") {
         // the angle starts from rightmost point (0) to bottom (pi/2) to leftmost (pi) backup through the top
         // arc inputs: x center, y center, radius, start angle (radians), end angle (radians), counterclockwise (optional)
-        if (direction &&  direction > 0) {
-          // above aka clockwise starting from rightmost point
-          ctx.strokeStyle = "black";
-          ctx.lineWidth = 10;
-          ctx.beginPath();
-          ctx.arc(this.x + myDial.dial*dialCoefficient, this.y,
-            this.height/2, 0, 1 * Math.PI, true);
-          ctx.stroke();
+        ctx.strokeStyle = "black";
+        ctx.lineWidth = 10;
+        ctx.beginPath();
+        ctx.arc(this.x + this.direction*myDial.dial*dialCoefficient, this.y,
+          this.height/2, 0, 1 * Math.PI, (direction>0 ? true : false));
+        ctx.stroke();
 
-          ctx.strokeStyle = color;
-          ctx.lineWidth = 5;
-          ctx.beginPath();
-          ctx.arc(this.x + myDial.dial*dialCoefficient, this.y,
-            this.height/2, 0, 1 * Math.PI, true);
-          ctx.stroke();
-        } else {
-          // below aka counterclockwise starting from rightmost point
-          ctx.strokeStyle = "black";
-          ctx.lineWidth = 10;
-          ctx.beginPath();
-          ctx.arc(this.x - myDial.dial*dialCoefficient, this.y,
-            this.height/2, 0, 1 * Math.PI, false);
-          ctx.stroke();
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 5;
+        ctx.beginPath();
+        ctx.arc(this.x + this.direction*myDial.dial*dialCoefficient, this.y,
+          this.radius, 0, 1 * Math.PI, (direction>0 ? true : false) );
+        ctx.stroke();
 
-          ctx.strokeStyle = color;
-          ctx.lineWidth = 5;
-          ctx.beginPath();
-          ctx.arc(this.x - myDial.dial*dialCoefficient, this.y,
-            this.height/2, 0, 1 * Math.PI, false);
-          ctx.stroke();
-        }
       } else {
         ctx.fillStyle = color;
         ctx.fillRect(this.x, this.y, this.width, this.height);
@@ -137,7 +130,7 @@ function updateGameArea() {
         maxGap = 200;
         gap = Math.floor(Math.random()*(maxGap-minGap+1)+minGap);
     }
-    myDial.text="Dial: " + myDial.dial;
+    myDial.text="Dial: " + myDial.dial.toFixed(1) + "mmHg";
     myDial.newPos();
     myDial.update();
     for (i = 0; i < myGamePieces.length; i += 1) {
