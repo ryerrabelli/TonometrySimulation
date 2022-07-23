@@ -6,6 +6,7 @@ var canvasWd = 480
 var canvasHt = 360
 var centerLineY = canvasHt/2
 var radius = 100
+var lineWidth = 5;
 
 
 // https://www.w3schools.com/graphics/game_intro.asp
@@ -66,23 +67,39 @@ function component(width, height, color, x, y, type, direction) {
         // the angle starts from rightmost point (0) to bottom (pi/2) to leftmost (pi) backup through the top
         // arc inputs: x center, y center, radius, start angle (radians), end angle (radians), counterclockwise (optional)
 
-        radius * sin
-        if (direction <= 0 && this.x - this.radius > centerLineY) {
-
-        } else if (direction > 0 && this.x + this.radius < centerLineY) {
-
+        initialAngle = 0;           // radians
+        finalAngle = 1 * Math.PI;   // radians
+        if (direction <= 0 && this.y + this.radius < centerLineY) {
+          // Nothing to draw
+        } else if (direction > 0 && this.y - this.radius > centerLineY) {
+          // Nothing to draw
         } else {
-          initialAngle = 0
-          finalAngle = 1 * Math.PI
+
+          if (direction <= 0 && this.y - this.radius > centerLineY) {
+            // Draw full circle
+            initialAngle = 0;
+            finalAngle = 2 * Math.PI;
+          } else if (direction > 0 && this.y + this.radius < centerLineY) {
+            // Draw full circle
+            initialAngle = 0;
+            finalAngle = 2 * Math.PI;
+          } else {
+            // Draw part of a circle
+            offsetAngle = Math.asin( (centerLineY-this.y)/this.radius)
+            initialAngle = 0 + offsetAngle;          // radians
+            finalAngle = 1 * Math.PI - offsetAngle;  // radians
+          }
+          // Draw outline
           ctx.strokeStyle = "black";
-          ctx.lineWidth = 10;
+          ctx.lineWidth = lineWidth * 2;
           ctx.beginPath();
           ctx.arc(this.x + this.direction*myDial.dial*dialCoefficient, this.y,
             this.height/2, initialAngle, finalAngle, (direction>0 ? true : false));
           ctx.stroke();
 
+          // Draw actual green circle
           ctx.strokeStyle = color;
-          ctx.lineWidth = 5;
+          ctx.lineWidth = lineWidth;
           ctx.beginPath();
           ctx.arc(this.x + this.direction*myDial.dial*dialCoefficient, this.y,
             this.radius, initialAngle, finalAngle, (direction>0 ? true : false) );
