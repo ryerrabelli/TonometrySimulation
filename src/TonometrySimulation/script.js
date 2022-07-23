@@ -1,6 +1,6 @@
 var myGamePieces;
 var myDial;
-var dialCoefficient = 10;
+var dialCoefficient = 5;
 
 var canvasWd = 480
 var canvasHt = 360
@@ -197,7 +197,7 @@ function updateGameArea() {
         maxGap = 200;
         gap = Math.floor(Math.random()*(maxGap-minGap+1)+minGap);
     }
-    myDial.text="Dial: " + myDial.dial.toFixed(1) + "mmHg";
+    myDial.text="Dial: " + myDial.dial.toFixed(1) + " mmHg";
     myDial.newPos();
     myDial.update();
     for (i = 0; i < myGamePieces.length; i += 1) {
