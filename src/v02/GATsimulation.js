@@ -21,25 +21,28 @@ function startGame() {
   myGameArea.start();
 }
 
-function assessKey(oldKeyCodes, oldKeys, newKeyCodes, newKeys, keydirection) {
+function assessKey(oldKeyCodes, oldKeyVals, newKeyCodes, newKeyVals, keydirection) {
   accelX = NaN;
   accelY = NaN;
   dialSpeed = 0.0
   if (keydirection == "keyup") { stopMovement(); }
   // key codes https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/keyCode
   if (newKeyCodes) {
-    for (const newKeyCode of newKeyCodes) {
-      if (newKey === "ArrowRight" || newKeyCode == 37) { accelX    =-0.2; } // right
-      else if (newKey === "ArrowLeft || newKeyCode == 39) { accelX    =+0.2; } // left
-      else if (newKey === "ArrowDown" || newKeyCode == 38) { accelY    =-0.2; } // down
-      else if (newKey === "ArrowUp" || newKeyCode == 40) { accelY    =+0.2; } // up
-      else if (newKey === " " || newKeyCode == 32) { dialSpeed =+0.1; } // space
-      else if (newKey === "Shift" || newKeyCode == 16) { dialSpeed =-0.1; } // shift
+    console.assert(newKeyCodes.length === newKeyVals.length);
+    for (var i = 0; i < newKeyCodes.length; i++ ) {
+      const newKeyCode = newKeyCodes[i];
+      const newKeyVal = newKeyVals[i];
+      if (newKeyVal === "ArrowLeft" || newKeyCode == 37) { accelX    =-0.2; } // right
+      else if (newKeyVal === "ArrowRight" || newKeyCode == 39) { accelX    =+0.2; } // left
+      else if (newKeyVal === "ArrowDown" || newKeyCode == 38) { accelY    =-0.2; } // down
+      else if (newKeyVal === "ArrowUp" || newKeyCode == 40) { accelY    =+0.2; } // up
+      else if (newKeyVal === " " || newKeyCode == 32) { dialSpeed =+0.1; } // space
+      else if (newKeyVal === "Shift" || newKeyCode == 16) { dialSpeed =-0.1; } // shift
     }
 
   }
 
-  console.log(oldKeyCodes, oldKeys, " -> ", newKeyCodes, newKeys);
+  console.log(oldKeyCodes, oldKeyVals, " -> ", newKeyCodes, newKeyVals);
   accelerate(accelX,accelY);
   changeDial(dialSpeed);
 }
