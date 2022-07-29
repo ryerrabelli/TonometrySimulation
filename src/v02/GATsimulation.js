@@ -2,7 +2,7 @@ var mireCircles;
 var myDial;
 var dialCoefficient = 5;
 
-var canvasWd = 480
+var canvasWd = 360
 var canvasHt = 360
 var centerLineY = canvasHt/2
 var radius = 100
@@ -55,8 +55,8 @@ function assessKey(oldKeyCodes, oldKeyVals, newKeyCodes, newKeyVals, keydirectio
 var gatScreen = {
   canvas : document.createElement("canvas"),
   start : function() {
-    this.canvas.width = 3;
-    this.canvas.height = 360;
+    this.canvas.width = canvasWd;
+    this.canvas.height = canvasHt;
     this.context = this.canvas.getContext("2d");
     document.getElementById("GAT-area").insertBefore(this.canvas, document.getElementById("GAT-controls"));
     this.frameNo = 0;
