@@ -35,8 +35,8 @@ function assessKey(oldKeyCodes, oldKeyVals, newKeyCodes, newKeyVals, keydirectio
       const newKeyVal = newKeyVals[i];
       if (     newKeyVal === "ArrowLeft" || newKeyCode == 37) { accelX    =-0.2; } // right
       else if (newKeyVal === "ArrowRight"|| newKeyCode == 39) { accelX    =+0.2; } // left
-      else if (newKeyVal === "ArrowDown" || newKeyCode == 38) { accelY    =-0.2; } // down
-      else if (newKeyVal === "ArrowUp"   || newKeyCode == 40) { accelY    =+0.2; } // up
+      else if (newKeyVal === "ArrowDown" || newKeyCode == 40) { accelY    =+0.2; } // down
+      else if (newKeyVal === "ArrowUp"   || newKeyCode == 38) { accelY    =-0.2; } // up
       else if (newKeyVal === " "         || newKeyCode == 32) { dialSpeed =+0.1; } // space
       else if (newKeyVal === "Shift"     || newKeyCode == 16) { dialSpeed =-0.1; } // shift
       // I got tired of including both value options. They should be the same anyway
