@@ -1,14 +1,18 @@
-# This is a sample Python script.
+# Start simple python server
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+PORT = 8000
 
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+def start_simple_server():
+    # https://stackabuse.com/serving-files-with-pythons-simplehttpserver-module/
+    import http.server
+    import socketserver
+    handler = http.server.SimpleHTTPRequestHandler
+    with socketserver.TCPServer(("", PORT), handler) as httpd:
+        print("Server started at localhost:" + str(PORT))
+        httpd.serve_forever()
 
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    print_hi('PyCharm')
+    start_simple_server()

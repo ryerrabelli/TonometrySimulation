@@ -1,7 +1,8 @@
+var cx, cy;
+
 // Original source: https://www.w3schools.com/howto/howto_js_image_zoom.asp
 function setUpPhotoZooming(origPhotoID, zoomedPhotoID, zoomingLensID) {
   var origPhoto, zoomingLens, zoomedPhoto;
-  var cx, cy;
   origPhoto = document.getElementById(origPhotoID);
   zoomedPhoto = document.getElementById(zoomedPhotoID);
   zoomingLens = document.getElementById(zoomingLensID);
@@ -45,6 +46,8 @@ function setUpPhotoZooming(origPhotoID, zoomedPhotoID, zoomingLensID) {
     zoomingLens.style.top = y + "px";
     /*display what the zoomingLens "sees":*/
     zoomedPhoto.style.backgroundPosition = "-" + (x * cx) + "px -" + (y * cy) + "px";
+    // value can also be read as zoomingLens.computedStyleMap().get('top').value
+    console.log("left (x): " + x + ",   top (y): " + y);
   }
   function getCursorPos(e) {
     var a, x = 0, y = 0;
@@ -59,4 +62,29 @@ function setUpPhotoZooming(origPhotoID, zoomedPhotoID, zoomingLensID) {
     y = y - window.pageYOffset;
     return {x : x, y : y};
   }
+}
+
+function moveZoomingLensByKey(dx, dy) {
+  //console.assert(zoomingLens.computedStyleMap().get('left').unit === "px");
+  //console.assert(zoomingLens.computedStyleMap().get('top').unit === "px");
+  console.log(zoomingLens.computedStyleMap().get('left') );
+  var x = zoomingLens.computedStyleMap().get('left').value;
+  var y = zoomingLens.computedStyleMap().get('top').value;
+
+  var x = x + dx;
+  var x = x + dy;
+
+  /*prevent the zoomingLens from being positioned outside the image:*/
+  if (x > origPhoto.width - zoomingLens.offsetWidth) {x = origPhoto.width - zoomingLens.offsetWidth;}
+  if (x < 0) {x = 0;}
+  if (y > origPhoto.height - zoomingLens.offsetHeight) {y = origPhoto.height - zoomingLens.offsetHeight;}
+  if (y < 0) {y = 0;}
+
+  /*set the position of the zoomingLens:*/
+  zoomingLens.style.left = x + "px";
+  zoomingLens.style.top = y + "px";
+  /*display what the zoomingLens "sees":*/
+  zoomedPhoto.style.backgroundPosition = "-" + (x * cx) + "px -" + (y * cy) + "px";
+  // value can also be read as zoomingLens.computedStyleMap().get('top').value
+  console.log("left (x): " + x + ",   top (y): " + y);
 }

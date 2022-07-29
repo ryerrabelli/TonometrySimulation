@@ -9,6 +9,7 @@ var radius = 100
 var lineWidth = 5;
 var separation = radius*2
 
+//import {moveZoomingLensByKey} from './headshot.js';
 
 // https://www.w3schools.com/graphics/game_intro.asp
 function startGame() {
@@ -32,12 +33,17 @@ function assessKey(oldKeyCodes, oldKeyVals, newKeyCodes, newKeyVals, keydirectio
     for (var i = 0; i < newKeyCodes.length; i++ ) {
       const newKeyCode = newKeyCodes[i];
       const newKeyVal = newKeyVals[i];
-      if (newKeyVal === "ArrowLeft" || newKeyCode == 37) { accelX    =-0.2; } // right
-      else if (newKeyVal === "ArrowRight" || newKeyCode == 39) { accelX    =+0.2; } // left
+      if (     newKeyVal === "ArrowLeft" || newKeyCode == 37) { accelX    =-0.2; } // right
+      else if (newKeyVal === "ArrowRight"|| newKeyCode == 39) { accelX    =+0.2; } // left
       else if (newKeyVal === "ArrowDown" || newKeyCode == 38) { accelY    =-0.2; } // down
-      else if (newKeyVal === "ArrowUp" || newKeyCode == 40) { accelY    =+0.2; } // up
-      else if (newKeyVal === " " || newKeyCode == 32) { dialSpeed =+0.1; } // space
-      else if (newKeyVal === "Shift" || newKeyCode == 16) { dialSpeed =-0.1; } // shift
+      else if (newKeyVal === "ArrowUp"   || newKeyCode == 40) { accelY    =+0.2; } // up
+      else if (newKeyVal === " "         || newKeyCode == 32) { dialSpeed =+0.1; } // space
+      else if (newKeyVal === "Shift"     || newKeyCode == 16) { dialSpeed =-0.1; } // shift
+      // I got tired of including both value options. They should be the same anyway
+      else if (newKeyVal === "a") { moveZoomingLensByKey(10,0); }
+      else if (newKeyVal === "d") { moveZoomingLensByKey(-10,0); }
+      else if (newKeyVal === "s") { }
+      else if (newKeyVal === "w") { }
     }
 
   }
