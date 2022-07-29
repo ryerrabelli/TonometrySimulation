@@ -2,12 +2,19 @@ var mireCircles;
 var myDial;
 var dialCoefficient = 5;
 
-var canvasWd = 360
-var canvasHt = 360
-var centerLineY = canvasHt/2
-var radius = 100
+// cordinates from top left, units in pixels
+var canvasWd = 360;
+var canvasHt = 360;
+var totalScreenWd = 3600;
+var totalScreenHt = 3600;
+var rightPupilLocX = 1500;
+var rightPupilLocY = 1390
+var leftPupilLocX = 2150;
+var leftPupilLocY = 1420
+var centerLineY = canvasHt/2;
+var radius = 100;
 var lineWidth = 5;
-var separation = radius*2
+var separation = radius*2;   // distance between mire circles when dial is not set
 
 //import {moveZoomingLensByKey} from './headshot.js';
 
@@ -15,8 +22,8 @@ var separation = radius*2
 function startGat() {
   // 120
   // mireCircle = new component(30, 30, "rgba(0, 0, 255, 0.5)", 10, 120);
-  mireCircle1 = new component(radius, radius, 0, canvasWd/2-separation/2, canvasHt/2, "arc", +1);
-  mireCircle2 = new component(radius, radius, 0, canvasWd/2+separation/2, canvasHt/2, "arc", -1);
+  mireCircle1 = new component(radius, radius, 0, rightPupilLocX-separation/2, leftPupilLocY, "arc", +1);
+  mireCircle2 = new component(radius, radius, 0, rightPupilLocX+separation/2, leftPupilLocY, "arc", -1);
   mireCircles = [mireCircle1, mireCircle2];
   myDial = new component("30px", "Consolas", "black", 10, 40, "text");
   gatScreen.start();
@@ -63,6 +70,8 @@ var gatScreen = {
     this.interval = setInterval(updateGatScreen, 20);
     this.keyCode = false;
     this.key = false;
+    this.lensX = 0;
+    this.lensY = 0;
 
     window.addEventListener('keydown', function (e) {
       oldKeyCode = gatScreen.keyCode;
@@ -113,10 +122,8 @@ function component(width, height, color, x, y, type, direction) {
     // below only relevant if this is a myDial component
     this.dial = 0;
     this.dialSpeed = 0;
-    this.radius = this.height/2;
-    // +1 -> above aka clockwise starting from rightmost point
-    // -1 -> aka counterclockwise starting from rightmost point
-    this.direction = direction;
+
+
 
     this.x = x;  // does not take into account the dial
     this.y = y;
@@ -125,9 +132,15 @@ function component(width, height, color, x, y, type, direction) {
     this.lrAccel = 0;
     this.udSpeed = 0;
     this.udAccel = 0;
-
+    this.radius = this.height/2;
+    // +1 -> above aka clockwise starting from rightmost point
+    // -1 -> aka counterclockwise starting from rightmost point
+    this.direction = direction;
+    console.log(direction)
     this.update = function() {
       ctx = gatScreen.context;
+      lensX = gatScreen.lensX;
+      lensY = gatScreen.lensY;
       if (this.type == "text") {
         ctx.font = this.width + " " + this.height;
         ctx.fillStyle = color;
@@ -139,32 +152,43 @@ function component(width, height, color, x, y, type, direction) {
 
         initialAngle = 0;           // radians
         finalAngle = 1 * Math.PI;   // radians
+
+        // translated means the coordinates are moved to be in the plane of the screen
+        translatedX = this.x-lensX*10;
+        translatedY = this.y-lensY*10;
+
+
+
         // Don't really have to separate out these conditions
-        if (direction <= 0 && this.y + this.radius < centerLineY) {
+        if (direction <= 0 && translatedY + this.radius < centerLineY) {
           // Nothing to draw as entire circle is not in its correct half of the canvas
-        } else if (direction > 0 && this.y - this.radius > centerLineY) {
+        } else if (direction > 0 && translatedY - this.radius > centerLineY) {
           // Nothing to draw as entire circle is not in its correct half of the canvas
         } else {
           // Put the separate circles out here because otherwise the nature of arc sin will cause the circle to not be drawn at all (0->0 instead of 0->2pi)
-          if (direction <= 0 && this.y - this.radius > centerLineY) {
+          if (direction <= 0 && translatedY - this.radius > centerLineY) {
             // Draw full circle as entire circle is on its correct half of the canvas
             offsetAngle = - Math.PI/2  // radians
-          } else if (direction > 0 && this.y + this.radius < centerLineY) {
+          } else if (direction > 0 && translatedY + this.radius < centerLineY) {
             // Draw full circle as entire circle is on its correct half of the canvas
             offsetAngle = - Math.PI/2  // radians
           } else {
             // Draw only the part of the circle on its correct half of the canvas
-            offsetAngle = Math.asin( (centerLineY-this.y)/this.radius)  // radians
+            offsetAngle = Math.asin( (centerLineY-translatedY)/this.radius)  // radians
           }
           initialAngle = 0 + offsetAngle;          // radians
           finalAngle = 1 * Math.PI - offsetAngle;  // radians
+
+          //console.log("Drawing Mire at (" + (this.x-lensX*10) + ", " + (this.y-lensY*10) + ")")
+          //console.log("Drawing Mire at (" + (this.x-lensX*10 + this.direction*myDial.dial*dialCoefficient) + ", " + (this.y-lensY*10) + "), direction=" + direction + ", angles=[" + initialAngle*180/Math.PI + "," + finalAngle*180/Math.PI + "]" )
+          //console.log("Drawing Mire at (" + (this.x-lensX*10 + this.direction*myDial.dial*dialCoefficient) + ", " + (this.y-lensY*10) + "), direction=" + direction + ", offset_angle=" + offsetAngle*180/Math.PI + "" )
 
           // Draw outline
           ctx.strokeStyle = "rgba(0,255,0,0.5)";
           ctx.fillStyle = "rgba(0,0,0,0)";
           ctx.lineWidth = lineWidth * 0.5;
           ctx.beginPath();
-          ctx.arc(this.x + this.direction*myDial.dial*dialCoefficient, this.y,
+          ctx.arc(translatedX + this.direction*myDial.dial*dialCoefficient, translatedY,
             this.height/2, initialAngle, finalAngle,
             (direction>0 ? true : false));
           ctx.stroke();
@@ -175,17 +199,16 @@ function component(width, height, color, x, y, type, direction) {
           ctx.fillStyle = "rgba(200,255,200,0.4)";
           ctx.lineWidth = lineWidth;
           ctx.beginPath();
-          ctx.arc(this.x + this.direction*myDial.dial*dialCoefficient, this.y,
+          ctx.arc(translatedX + this.direction*myDial.dial*dialCoefficient, translatedY,
             this.radius*0.9, initialAngle, finalAngle,
             (direction>0 ? true : false) );
           ctx.stroke();
           ctx.fill();
         }
 
-
       } else {
         ctx.fillStyle = color;
-        ctx.fillRect(this.x, this.y, this.width, this.height);
+        ctx.fillRect(this.x-lensX*10, this.y-lensY*10, this.width, this.height);
       }
 
     }
@@ -203,6 +226,9 @@ function updateGatScreen() {
     var x, height, gap, minHeight, maxHeight, minGap, maxGap;
     gatScreen.clear();
     gatScreen.frameNo += 1;
+    zoomingLens = document.getElementById("zoomingLens");
+    gatScreen.lensX = zoomingLens.computedStyleMap().get('left').value;
+    gatScreen.lensY = zoomingLens.computedStyleMap().get('top').value;
     if (gatScreen.frameNo == 1 || everyinterval(150)) {
         x = gatScreen.canvas.width;
         minHeight = 20;

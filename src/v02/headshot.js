@@ -47,7 +47,7 @@ function setUpPhotoZooming(origPhotoID, zoomedPhotoID, zoomingLensID) {
     /*display what the zoomingLens "sees":*/
     zoomedPhoto.style.backgroundPosition = "-" + (x * cx) + "px -" + (y * cy) + "px";
     // value can also be read as zoomingLens.computedStyleMap().get('top').value
-    console.log("left (x): " + x + ",   top (y): " + y);
+    //console.log("left (x): " + x + ",   top (y): " + y);
   }
   function getCursorPos(e) {
     var a, x = 0, y = 0;
