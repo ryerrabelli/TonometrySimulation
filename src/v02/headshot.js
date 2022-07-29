@@ -45,7 +45,7 @@ function setUpPhotoZooming(origPhotoID, zoomedPhotoID) {
 
     /*set the position of the zoomingLens:*/
     zoomingLens.style.left = x + "px";
-    zoomingLens.style.top = (zoomedPhoto.offsetHeight+y) + "px";
+    zoomingLens.style.top = y + "px";
     /*display what the zoomingLens "sees":*/
     zoomedPhoto.style.backgroundPosition = "-" + (x * cx) + "px -" + (y * cy) + "px";
   }

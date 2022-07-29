@@ -41,10 +41,14 @@
 <body onload="startGame()" style="text-align: center">
   <h1>GAT Simulation</h1>
   <div class="grid-container">
-    <div class="img-zoom-container">
+    <div>
       <!-- CIMED residency headshots are originally 6-7MB portrait photos of 3770px by 5655px (aspect ratio 1.5). I cropped them to b 3600px by 3600px. -->
       <div id="zoomedPhoto" class="img-zoom-result"></div>
-      <img id="origPhoto" src="data/Ashkhan-Hojati-008-cropped-square.jpg" width="360" height="360" alt="Ashkhan headshot">
+      <div class="img-zoom-container">
+        <!-- img-zooming-lens will be inserted here -->
+        <img id="origPhoto" src="data/Ashkhan-Hojati-008-cropped-square.jpg" width="360" height="360" alt="Ashkhan headshot">
+      </div>
+
     </div>
     <div id="GAT-game">
       <div id="GAT-game-controls">
