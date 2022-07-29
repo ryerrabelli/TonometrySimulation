@@ -14,7 +14,7 @@
     text-align: left;
   }
 
-  .img-zooming-lens {
+  #zoomingLens {
     position: absolute;
     border: 1px solid #d4d4d4;
     /*set the size of the lens:*/
@@ -45,6 +45,9 @@
       <!-- CIMED residency headshots are originally 6-7MB portrait photos of 3770px by 5655px (aspect ratio 1.5). I cropped them to b 3600px by 3600px. -->
       <div id="zoomedPhoto" class="img-zoom-result"></div>
       <div class="img-zoom-container">
+        <div id="zoomingLens">
+
+        </div>
         <!-- img-zooming-lens will be inserted here -->
         <img id="origPhoto" src="data/Ashkhan-Hojati-008-cropped-square.jpg" width="360" height="360" alt="Ashkhan headshot">
       </div>
@@ -70,7 +73,7 @@
 
 <script>
 // Initiate zoom effect:
-  setUpPhotoZooming("origPhoto", "zoomedPhoto");
+  setUpPhotoZooming("origPhoto", "zoomedPhoto", "zoomingLens");
 </script>
 
 </html>

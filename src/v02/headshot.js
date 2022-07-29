@@ -1,14 +1,11 @@
 // Original source: https://www.w3schools.com/howto/howto_js_image_zoom.asp
-function setUpPhotoZooming(origPhotoID, zoomedPhotoID) {
-  var origPhoto, zoomingLens, zoomedPhoto, cx, cy;
+function setUpPhotoZooming(origPhotoID, zoomedPhotoID, zoomingLensID) {
+  var origPhoto, zoomingLens, zoomedPhoto;
+  var cx, cy;
   origPhoto = document.getElementById(origPhotoID);
   zoomedPhoto = document.getElementById(zoomedPhotoID);
+  zoomingLens = document.getElementById(zoomingLensID);
 
-  /*create  and insertzoomingLens:*/
-  zoomingLens = document.createElement("div");
-  zoomingLens.setAttribute("class", "img-zooming-lens");
-  /*insert zoomingLens:*/
-  origPhoto.parentElement.insertBefore(zoomingLens, origPhoto);
   /*calculate the magnification by calculating the ratio between zoomedPhoto div (output) and zoomingLens (input):*/
   cx = zoomedPhoto.offsetWidth / zoomingLens.offsetWidth;
   cy = zoomedPhoto.offsetHeight / zoomingLens.offsetHeight;

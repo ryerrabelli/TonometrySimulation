@@ -21,23 +21,27 @@ function startGame() {
   myGameArea.start();
 }
 
-function assessKey(oldKey, key, keydirection) {
+function assessKey(oldKeyCodes, oldKeys, newKeyCodes, newKeys, keydirection) {
   accelX = NaN;
   accelY = NaN;
   dialSpeed = 0.0
   if (keydirection == "keyup") { stopMovement(); }
-  if (key) {
-    if (key == 37) { accelX    =-0.2; } // right
-    if (key == 39) { accelX    =+0.2; } // left
-    if (key == 38) { accelY    =-0.2; } // down
-    if (key == 40) { accelY    =+0.2; } // up
-    if (key == 32) { dialSpeed =+0.1; } // space
-    if (key == 16) { dialSpeed =-0.1; } // shift
+  // key codes https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/keyCode
+  if (newKeyCodes) {
+    for (const newKeyCode of newKeyCodes) {
+      if (newKey === "ArrowRight" || newKeyCode == 37) { accelX    =-0.2; } // right
+      else if (newKey === "ArrowLeft || newKeyCode == 39) { accelX    =+0.2; } // left
+      else if (newKey === "ArrowDown" || newKeyCode == 38) { accelY    =-0.2; } // down
+      else if (newKey === "ArrowUp" || newKeyCode == 40) { accelY    =+0.2; } // up
+      else if (newKey === " " || newKeyCode == 32) { dialSpeed =+0.1; } // space
+      else if (newKey === "Shift" || newKeyCode == 16) { dialSpeed =-0.1; } // shift
+    }
+
   }
 
-  console.log(key)
+  console.log(oldKeyCodes, oldKeys, " -> ", newKeyCodes, newKeys);
   accelerate(accelX,accelY);
-  changeDial(dialSpeed)
+  changeDial(dialSpeed);
 }
 
 var myGameArea = {
@@ -49,22 +53,48 @@ var myGameArea = {
     document.getElementById("GAT-game").insertBefore(this.canvas, document.getElementById("GAT-game-controls"));
     this.frameNo = 0;
     this.interval = setInterval(updateGameArea, 20);
+    this.keyCode = false;
     this.key = false;
+
     window.addEventListener('keydown', function (e) {
-      oldKey = myGameArea.key
-      myGameArea.key = e.keyCode;
+      oldKeyCode = myGameArea.keyCode;
+      oldKey = myGameArea.key;
+      myGameArea.keyCode = [e.keyCode];
+      myGameArea.key = [e.key];
       // Holding down the key eventually counts as multiple key presses
-      if (myGameArea.key != oldKey ) assessKey(oldKey, myGameArea.key, "keydown")
+      if ( !areArraysEqual(myGameArea.keyCode, oldKeyCode) ) {
+        assessKey(oldKeyCode, oldKey, myGameArea.keyCode, myGameArea.key, "keydown")
+      }
     })
     window.addEventListener('keyup', function (e) {
-      oldKey = myGameArea.key
+      oldKeyCode = myGameArea.keyCode;
+      oldKey = myGameArea.key;
+      myGameArea.keyCode = false;
       myGameArea.key = false;
-      if (myGameArea.key != oldKey ) assessKey(oldKey, myGameArea.key, "keyup")
+      if ( !areArraysEqual(myGameArea.keyCode, oldKeyCode) ) {
+        assessKey(oldKeyCode, oldKey, myGameArea.keyCode, myGameArea.key, "keyup")
+      }
     })
     },
   clear : function() {
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
   }
+}
+
+function areArraysEqual(a, b) {
+  if (a === b) return true;  // <- what happens if both are false or many other same non-array values
+  if (a == null || b == null) return false;
+  if (a.length !== b.length) return false;
+
+  // If you don't care about the order of the elements inside
+  // the array, you should sort both arrays here.
+  // Please note that calling sort on an array will modify that array.
+  // you might want to clone your array first.
+
+  for (var i = 0; i < a.length; ++i) {
+    if (a[i] !== b[i]) return false;
+  }
+  return true;
 }
 
 function component(width, height, color, x, y, type, direction) {
