@@ -41,9 +41,9 @@ def get_config():
     cfg = VersioneerConfig()
     cfg.VCS = "git"
     cfg.style = "pep440"
-    cfg.tag_prefix = ""
-    cfg.parentdir_prefix = ""
-    cfg.versionfile_source = "_version.py"
+    cfg.tag_prefix = "v"
+    cfg.parentdir_prefix = "TonometrySimulation-"
+    cfg.versionfile_source = "src/TonometrySimulation/_version.py"
     cfg.verbose = False
     return cfg
 
@@ -66,8 +66,7 @@ def register_vcs_handler(vcs, method):  # decorator
         return f
     return decorate
 
-#import ryerrabelli as rsy
-#@rsy.analyze_function(do=False)
+
 def run_command(commands, args, cwd=None, verbose=False, hide_stderr=False,
                 env=None):
     """Call the given command(s)."""

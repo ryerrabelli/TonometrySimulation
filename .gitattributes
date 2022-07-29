@@ -1,4 +1,5 @@
 _version.py export-subst
+src/TonometrySimulation/_version.py export-subst
 
 # Auto detect text files and perform LF normalization
 * text=auto
