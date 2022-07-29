@@ -1,0 +1,13 @@
+include setup.py
+include MANIFEST.in
+include docs/README.md
+include docs/LICENSE.txt
+include requirements.txt
+include versioneer.py
+include ryerrabelli/_version.py
+
+graft tests
+graft examples
+graft docs
+graft src
+graft ryerrabelli

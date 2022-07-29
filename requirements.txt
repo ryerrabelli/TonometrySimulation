@@ -1,0 +1,4 @@
+versioneer~=0.19
+#setuptools~=52.0.0
+#setuptools~=56.2.0   #setup tools 52.0.0 was giving bugs
+# Does NOT need ryerrabelli to be installed (would be a never-ending cycle if it did), unlike many other packages written by me. However, for consistency, if ryerrabelli is installed, the code will refer to itself as a package import instead of a relative import to match my other projects
