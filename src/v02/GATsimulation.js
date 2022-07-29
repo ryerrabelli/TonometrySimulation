@@ -1,4 +1,4 @@
-var myGamePieces;
+var mireCircles;
 var myDial;
 var dialCoefficient = 5;
 
@@ -12,14 +12,14 @@ var separation = radius*2
 //import {moveZoomingLensByKey} from './headshot.js';
 
 // https://www.w3schools.com/graphics/game_intro.asp
-function startGame() {
+function startGat() {
   // 120
-  // myGamePiece = new component(30, 30, "rgba(0, 0, 255, 0.5)", 10, 120);
-  myGamePiece1 = new component(radius, radius, 0, canvasWd/2-separation/2, canvasHt/2, "arc", +1);
-  myGamePiece2 = new component(radius, radius, 0, canvasWd/2+separation/2, canvasHt/2, "arc", -1);
-  myGamePieces = [myGamePiece1, myGamePiece2];
+  // mireCircle = new component(30, 30, "rgba(0, 0, 255, 0.5)", 10, 120);
+  mireCircle1 = new component(radius, radius, 0, canvasWd/2-separation/2, canvasHt/2, "arc", +1);
+  mireCircle2 = new component(radius, radius, 0, canvasWd/2+separation/2, canvasHt/2, "arc", -1);
+  mireCircles = [mireCircle1, mireCircle2];
   myDial = new component("30px", "Consolas", "black", 10, 40, "text");
-  myGameArea.start();
+  gatScreen.start();
 }
 
 function assessKey(oldKeyCodes, oldKeyVals, newKeyCodes, newKeyVals, keydirection) {
@@ -47,41 +47,40 @@ function assessKey(oldKeyCodes, oldKeyVals, newKeyCodes, newKeyVals, keydirectio
     }
 
   }
-
   console.log(oldKeyCodes, oldKeyVals, " -> ", newKeyCodes, newKeyVals);
   accelerate(accelX,accelY);
   changeDial(dialSpeed);
 }
 
-var myGameArea = {
+var gatScreen = {
   canvas : document.createElement("canvas"),
   start : function() {
-    this.canvas.width = 480;
+    this.canvas.width = 3;
     this.canvas.height = 360;
     this.context = this.canvas.getContext("2d");
-    document.getElementById("GAT-game").insertBefore(this.canvas, document.getElementById("GAT-game-controls"));
+    document.getElementById("GAT-area").insertBefore(this.canvas, document.getElementById("GAT-controls"));
     this.frameNo = 0;
-    this.interval = setInterval(updateGameArea, 20);
+    this.interval = setInterval(updateGatScreen, 20);
     this.keyCode = false;
     this.key = false;
 
     window.addEventListener('keydown', function (e) {
-      oldKeyCode = myGameArea.keyCode;
-      oldKey = myGameArea.key;
-      myGameArea.keyCode = [e.keyCode];
-      myGameArea.key = [e.key];
+      oldKeyCode = gatScreen.keyCode;
+      oldKey = gatScreen.key;
+      gatScreen.keyCode = [e.keyCode];
+      gatScreen.key = [e.key];
       // Holding down the key eventually counts as multiple key presses
-      if ( !areArraysEqual(myGameArea.keyCode, oldKeyCode) ) {
-        assessKey(oldKeyCode, oldKey, myGameArea.keyCode, myGameArea.key, "keydown")
+      if ( !areArraysEqual(gatScreen.keyCode, oldKeyCode) ) {
+        assessKey(oldKeyCode, oldKey, gatScreen.keyCode, gatScreen.key, "keydown")
       }
     })
     window.addEventListener('keyup', function (e) {
-      oldKeyCode = myGameArea.keyCode;
-      oldKey = myGameArea.key;
-      myGameArea.keyCode = false;
-      myGameArea.key = false;
-      if ( !areArraysEqual(myGameArea.keyCode, oldKeyCode) ) {
-        assessKey(oldKeyCode, oldKey, myGameArea.keyCode, myGameArea.key, "keyup")
+      oldKeyCode = gatScreen.keyCode;
+      oldKey = gatScreen.key;
+      gatScreen.keyCode = false;
+      gatScreen.key = false;
+      if ( !areArraysEqual(gatScreen.keyCode, oldKeyCode) ) {
+        assessKey(oldKeyCode, oldKey, gatScreen.keyCode, gatScreen.key, "keyup")
       }
     })
     },
@@ -121,14 +120,14 @@ function component(width, height, color, x, y, type, direction) {
 
     this.x = x;  // does not take into account the dial
     this.y = y;
-    // below only relevant if a myGamePiece
+    // below only relevant if a mireCircle object
     this.lrSpeed = 0;
     this.lrAccel = 0;
     this.udSpeed = 0;
     this.udAccel = 0;
 
     this.update = function() {
-      ctx = myGameArea.context;
+      ctx = gatScreen.context;
       if (this.type == "text") {
         ctx.font = this.width + " " + this.height;
         ctx.fillStyle = color;
@@ -200,7 +199,7 @@ function component(width, height, color, x, y, type, direction) {
         this.dial += this.dialSpeed
     }
     this.hitBottom = function() {
-        var rockbottom = myGameArea.canvas.height - this.height;
+        var rockbottom = gatScreen.canvas.height - this.height;
         if (this.y > rockbottom) {
             this.y = rockbottom;
             this.udSpeed = 0;
@@ -223,12 +222,12 @@ function component(width, height, color, x, y, type, direction) {
     }
 }
 
-function updateGameArea() {
+function updateGatScreen() {
     var x, height, gap, minHeight, maxHeight, minGap, maxGap;
-    myGameArea.clear();
-    myGameArea.frameNo += 1;
-    if (myGameArea.frameNo == 1 || everyinterval(150)) {
-        x = myGameArea.canvas.width;
+    gatScreen.clear();
+    gatScreen.frameNo += 1;
+    if (gatScreen.frameNo == 1 || everyinterval(150)) {
+        x = gatScreen.canvas.width;
         minHeight = 20;
         maxHeight = 200;
         height = Math.floor(Math.random()*(maxHeight-minHeight+1)+minHeight);
@@ -239,34 +238,34 @@ function updateGameArea() {
     myDial.text="Dial: " + myDial.dial.toFixed(1) + " mmHg";
     myDial.newPos();
     myDial.update();
-    for (i = 0; i < myGamePieces.length; i += 1) {
-      myGamePiece = myGamePieces[i]
-      myGamePiece.newPos();
-      myGamePiece.update();
+    for (i = 0; i < mireCircles.length; i += 1) {
+      mireCircle = mireCircles[i]
+      mireCircle.newPos();
+      mireCircle.update();
     }
 
 }
 
 function everyinterval(n) {
-    if ((myGameArea.frameNo / n) % 1 == 0) {return true;}
+    if ((gatScreen.frameNo / n) % 1 == 0) {return true;}
     return false;
 }
 
 function accelerate(x,y) {
-  for (i = 0; i < myGamePieces.length; i += 1) {
-    myGamePiece = myGamePieces[i]
+  for (i = 0; i < mireCircles.length; i += 1) {
+    mireCircle = mireCircles[i]
     // By allowing false check, you can change on edirection without the other
-    if (!isNaN(x)) { myGamePiece.lrAccel = x; }
-    if (!isNaN(y)) { myGamePiece.udAccel = y; }
+    if (!isNaN(x)) { mireCircle.lrAccel = x; }
+    if (!isNaN(y)) { mireCircle.udAccel = y; }
   }
 }
 function stopMovement() {
-  for (i = 0; i < myGamePieces.length; i += 1) {
-    myGamePiece = myGamePieces[i]
-    myGamePiece.lrSpeed = 0.0;
-    myGamePiece.udSpeed = 0.0;
+  for (i = 0; i < mireCircles.length; i += 1) {
+    mireCircle = mireCircles[i]
+    mireCircle.lrSpeed = 0.0;
+    mireCircle.udSpeed = 0.0;
   }
-  accelerate(0,0)
+  accelerate(0,0);
 }
 function changeDial(dialSpeed) {
   if (!isNaN(dialSpeed)) { myDial.dialSpeed = dialSpeed; }

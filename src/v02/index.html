@@ -38,7 +38,7 @@
   <script type="text/javascript" src="GATsimulation.js"></script>
 </head>
 
-<body onload="startGame()" style="text-align: center">
+<body onload="startGat()" style="text-align: center">
   <h1>GAT Simulation</h1>
   <div class="grid-container">
     <div>
@@ -53,8 +53,8 @@
       </div>
 
     </div>
-    <div id="GAT-game">
-      <div id="GAT-game-controls">
+    <div id="GAT-area">
+      <div id="GAT-controls">
         <button onmousedown="accelerate( NaN,-0.2)" onmouseup="stopMovement()"> U </button>
         <br />
         <button onmousedown="accelerate(-0.2, NaN)" onmouseup="stopMovement()"> L </button>
