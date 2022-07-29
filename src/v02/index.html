@@ -11,9 +11,10 @@
 
   .img-zoom-container {
     position: relative;
+    text-align: left;
   }
 
-  .img-zoom-lens {
+  .img-zooming-lens {
     position: absolute;
     border: 1px solid #d4d4d4;
     /*set the size of the lens:*/
@@ -21,11 +22,16 @@
     height: 36px;
   }
 
-  .img-zoom-result {
+  #zoomedPhoto {
     border: 1px solid #d4d4d4;
     /*set the size of the result div:*/
     width: 360px;
     height: 360px;
+  }
+
+  .grid-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
   }
   </style>
   <script type="text/javascript" src="GATsimulation.js"></script>
@@ -33,28 +39,34 @@
 </head>
 
 <body onload="startGame()" style="text-align: center">
-  <h1>GAT</h1>
-  <div class="img-zoom-container">
-    <!-- CIMED residency headshots are originally 6-7MB portrait photos of 3770px by 5655px (aspect ratio 1.5). I cropped them to b 3600px by 3600px. -->
-    <img id="myimage" src="data/Ashkhan-Hojati-008-cropped-square.jpg" width="360" height="360" alt="Ashkhan headshot">
-    <div id="myresult" class="img-zoom-result"></div>
+  <h1>GAT Simulation</h1>
+  <div class="grid-container">
+    <div class="img-zoom-container">
+      <!-- CIMED residency headshots are originally 6-7MB portrait photos of 3770px by 5655px (aspect ratio 1.5). I cropped them to b 3600px by 3600px. -->
+      <div id="zoomedPhoto" class="img-zoom-result"></div>
+      <img id="origPhoto" src="data/Ashkhan-Hojati-008-cropped-square.jpg" width="360" height="360" alt="Ashkhan headshot">
+    </div>
+    <div id="GAT-game">
+      <div id="GAT-game-controls">
+        <button onmousedown="accelerate( NaN,-0.2)" onmouseup="stopMovement()"> U </button>
+        <br />
+        <button onmousedown="accelerate(-0.2, NaN)" onmouseup="stopMovement()"> L </button>
+        <button onmousedown="accelerate( NaN, 0.2)" onmouseup="stopMovement()"> D </button>
+        <button onmousedown="accelerate( 0.2, NaN)" onmouseup="stopMovement()"> R </button>
+        <br />
+        <button onmousedown="changeDial(-0.1)" onmouseup="changeDial(0.0)"> Dial down (shift)</button>
+        <button onmousedown="changeDial( 0.1)" onmouseup="changeDial(0.0)"> Dial up (spacebar)</button>
+      </div>
+    </div>
   </div>
-  <br>
-  <div id="GAT-game-controls">
-    <button onmousedown="accelerate( NaN,-0.2)" onmouseup="stopMovement()"> U </button>
-    <br />
-    <button onmousedown="accelerate(-0.2, NaN)" onmouseup="stopMovement()"> L </button>
-    <button onmousedown="accelerate( NaN, 0.2)" onmouseup="stopMovement()"> D </button>
-    <button onmousedown="accelerate( 0.2, NaN)" onmouseup="stopMovement()"> R </button>
-    <br />
-    <button onmousedown="changeDial(-0.1)" onmouseup="changeDial(0.0)"> Dial down (shift)</button>
-    <button onmousedown="changeDial( 0.1)" onmouseup="changeDial(0.0)"> Dial up (spacebar)</button>
-  </div>
+
+
+
 </body>
 
 <script>
 // Initiate zoom effect:
-imageZoom("myimage", "myresult");
+  setUpPhotoZooming("origPhoto", "zoomedPhoto");
 </script>
 
 </html>
