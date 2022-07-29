@@ -194,31 +194,8 @@ function component(width, height, color, x, y, type, direction) {
         this.lrSpeed += this.lrAccel;
         this.x += this.lrSpeed;
         this.y += this.udSpeed;
-        this.hitBottom();
 
         this.dial += this.dialSpeed
-    }
-    this.hitBottom = function() {
-        var rockbottom = gatScreen.canvas.height - this.height;
-        if (this.y > rockbottom) {
-            this.y = rockbottom;
-            this.udSpeed = 0;
-        }
-    }
-    this.crashWith = function(otherobj) {
-        var myleft = this.x;
-        var myright = this.x + (this.width);
-        var mytop = this.y;
-        var mybottom = this.y + (this.height);
-        var otherleft = otherobj.x;
-        var otherright = otherobj.x + (otherobj.width);
-        var othertop = otherobj.y;
-        var otherbottom = otherobj.y + (otherobj.height);
-        var crash = true;
-        if ((mybottom < othertop) || (mytop > otherbottom) || (myright < otherleft) || (myleft > otherright)) {
-            crash = false;
-        }
-        return crash;
     }
 }
 
