@@ -80,14 +80,15 @@
       <div id="GAT-controls">
         <!-- Unicode characters https://www.w3schools.com/charsets/ref_utf_arrows.asp -->
         <div>
-          <h2>Movement</h2>
+
           <table>
+            <tr><th colspan="2"><h2>Movement</h2></th></tr>
             <tr>
               <td>
                 <button onmousedown="accelerateWindow({y:-0.2})" onmouseup="gatScreen.lens.stopMovement()"> &uarr; </button>
               </td>
               <td>
-                <button onmousedown="accelerateWindow({s:+0.02})" onmouseup="gatScreen.lens.stopMovement()"> &#8613;
+                <button onmousedown="accelerateWindow({s:+0.02})" onmouseup="gatScreen.lens.stopMovement()"> &#8613; (W)
                 </button>
               </td>
             </tr>
@@ -98,21 +99,27 @@
                 <button onmousedown="accelerateWindow({x:+0.2})" onmouseup="gatScreen.lens.stopMovement()"> &rarr; </button>
               </td>
               <td>
-                <button onmousedown="accelerateWindow({s:-0.02})" onmouseup="gatScreen.lens.stopMovement()"> &#8615;
+                <button onmousedown="accelerateWindow({s:-0.02})" onmouseup="gatScreen.lens.stopMovement()"> &#8615; (S)
                 </button>
               </td>
             </tr>
-
-          <br />
+            <tr><td>
+              left:<span id="xLocDisplayer"></span>,<br />
+              top:<span id="yLocDisplayer"></span>
+            </td><td>forward:<br /><span id="sLocDisplayer"></span></td>
+            </tr>
+            <tr><th colspan="2"><h2>Pressure Dial</h2></th></tr>
+            <tr>
+              <td><button onmousedown="changeDial(-0.1)" onmouseup="changeDial(0.0)"> &darr; (shift)</button></td>
+              <td><button onmousedown="changeDial( 0.1)" onmouseup="changeDial(0.0)"> &uarr; (spacebar)</button></td>
+            </tr>
 
           </table>
 
-          <p>left:<span id="xLocDisplayer"></span>, top:<span id="yLocDisplayer"></span></p>
+
         </div>
         <div>
-          <h2>Pressure Dial</h2>
-          <button onmousedown="changeDial(-0.1)" onmouseup="changeDial(0.0)"> &darr; (shift)</button>
-          <button onmousedown="changeDial( 0.1)" onmouseup="changeDial(0.0)"> &uarr; (spacebar)</button>
+
         </div>
 
       </div>

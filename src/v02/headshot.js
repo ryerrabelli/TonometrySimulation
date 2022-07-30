@@ -9,8 +9,6 @@ function setUpPhotoZooming(origPhotoID, zoomedPhotoID, zoomingLensID) {
   zoomedPhoto = document.getElementById(zoomedPhotoID);
   zoomingLens = document.getElementById(zoomingLensID);
 
-
-
   /*calculate the magnification by calculating the ratio between zoomedPhoto div (output) and zoomingLens (input):*/
   //scaleRatio.x = zoomedPhoto.offsetWidth / zoomingLens.offsetWidth;
   //scaleRatio.y = zoomedPhoto.offsetHeight / zoomingLens.offsetHeight;

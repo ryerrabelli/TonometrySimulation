@@ -65,8 +65,8 @@ function assessKey(oldKeyCodes, oldKeyVals, newKeyCodes, newKeyVals, keyDirectio
 //let scaleRatio = {x:scaleRatioInitial.x, y:scaleRatioInitial.y};
 
 let zoomingLensController = {
-  loc: {x:0,y:0,s:10},  // position
-  vel: {x:0,y:0,s:0},  // vel aka velocity
+  loc: {x:0,y:0,s:10},  // loc = location/position;  s stands for scale (aka zoom or how far into the screen you are)
+  vel: {x:0,y:0,s:0},  // vel = velocity
   accel: {x:0, y:0, s:0},
   setVelocity: function(vel) {
     let x = vel.x; let y = vel.y; let s = vel.s;
@@ -84,7 +84,7 @@ let zoomingLensController = {
     this.setVelocity({x:0,y:0,s:0});
     this.setAcceleration({x:0,y:0,s:0});
   },
-  getLoc: function() {  // form top left corner
+  getLoc: function() {  // from top left corner
     let x = zoomingLens.computedStyleMap().get("left").value;
     let y = zoomingLens.computedStyleMap().get("top").value;
     let scaleRatio = {x:zoomedPhoto.offsetWidth / zoomingLens.offsetWidth, y:zoomedPhoto.offsetHeight / zoomingLens.offsetHeight}
@@ -365,6 +365,7 @@ function updateGatScreen() {
   gatScreen.lens.updatePosition();
   $("#xLocDisplayer").html(gatScreen.lens.loc.x.toFixed(2).padStart(7," ").replace(" ","&nbsp;"));
   $("#yLocDisplayer").html(gatScreen.lens.loc.y.toFixed(2).padStart(7," ").replace(" ","&nbsp;"));
+  $("#sLocDisplayer").html(gatScreen.lens.loc.s.toFixed(1).padStart(3," ").replace(" ","&nbsp;"));
 }
 
 function everyInterval(n) {
