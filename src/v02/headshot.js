@@ -28,67 +28,6 @@ function setUpPhotoZooming(origPhotoID, zoomedPhotoID, zoomingLensID) {
   origPhoto.addEventListener("touchmove", moveZoomingLensByHover);
 }
 
-let zoomingLensController = {
-  vel: {x:0,y:0},  // vel aka velocity
-  accel: {x:0, y:0},
-  setVelocity: function(x,y) {this.vel.x = x; this.vel.y = y;},
-  setAcceleration: function(x,y) {this.accel.x = x; this.accel.y = y;},
-  getLoc: function() {  // form top left corner
-    let x = zoomingLens.computedStyleMap().get("left").value;
-    let y = zoomingLens.computedStyleMap().get("top").value;
-    return {x:x, y:y};
-  },
-  updatePosition: function() {
-    this.vel.x += this.accel.x;
-    this.vel.y += this.accel.y;
-    let currentLoc = gatScreen.lensLoc; // this.getLoc()
-    this.setLoc({
-      x: currentLoc.x+this.vel.x,
-      y: currentLoc.y+this.vel.y
-    });
-  },
-  checkNewLoc: function(newLoc, doReturnValue=true) {
-    /*prevent the zoomingLens from being positioned outside the image:*/
-    let changedCt = 0;
-    if (newLoc.x > origPhoto.width - zoomingLens.offsetWidth) {
-      newLoc.x = origPhoto.width - zoomingLens.offsetWidth;
-      changedCt++;
-    }
-    if (newLoc.x < 0) {
-      newLoc.x = 0;
-      changedCt++;
-    }
-    if (newLoc.y > origPhoto.height - zoomingLens.offsetHeight) {
-      newLoc.y = origPhoto.height - zoomingLens.offsetHeight;
-      changedCt++;
-    }
-    if (newLoc.y < 0) {
-      newLoc.y = 0;
-      changedCt++;
-    }
-    if (doReturnValue) {
-      return newLoc;
-    } else {
-      return changedCt > 0;
-    }
-  },
-  setLoc: function(loc) {
-    /*set the position of the zoomingLens:*/
-    zoomingLens.style.left = loc.x + "px";
-    zoomingLens.style.top  = loc.y + "px";
-    /*display what the zoomingLens "sees":*/
-    zoomedPhoto.style.backgroundPosition = "-" + (loc.x * scaleRatio.x) + "px -" + (loc.y * scaleRatio.y) + "px";
-    gatScreen.lensLoc.x = loc.x;
-    gatScreen.lensLoc.y = loc.y;
-  },
-  checkAndSetLoc: function(newLoc) {
-    newLoc = this.checkNewLoc(newLoc);
-    this.setLoc(newLoc);
-    return newLoc;
-  },
-
-}
-
 
 function getCursorPos(event) {
   event = event || window.event;
@@ -114,7 +53,7 @@ function moveZoomingLensByHover(event) {
     x: pos.x - (zoomingLens.offsetWidth / 2),
     y: pos.y - (zoomingLens.offsetHeight / 2)
   }
-  newLoc = zoomingLensController.checkAndSetLoc(newLoc);
+  newLoc = gatScreen.lens.checkAndSetLoc(newLoc);
   //console.log("left/x: " + newLoc.x.toFixed(2).padStart(7," ") + ", top/y: " + newLoc.y.toFixed(2).padStart(7," "));
 }
 
@@ -123,9 +62,9 @@ function moveZoomingLensByKey(dx, dy) {
   //console.assert(zoomingLens.computedStyleMap().get('top').unit === "px");
   console.log(zoomingLens.computedStyleMap().get('left') );
 
-  const currentLoc = zoomingLensController.getLoc();
+  const currentLoc = gatScreen.lens.getLoc();
   let newLoc = {x: currentLoc.x + dx, y: currentLoc.y + dy};
 
-  newLoc = zoomingLensController.checkAndSetLoc(newLoc);
-  //zoomingLensController.setLoc(newLoc);
+  newLoc = gatScreen.lens.checkAndSetLoc(newLoc);
+  //gatScreen.lens.setLoc(newLoc);
 }

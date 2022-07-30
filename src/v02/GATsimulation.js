@@ -28,8 +28,8 @@ function startGat() {
 }
 
 function assessKey(oldKeyCodes, oldKeyVals, newKeyCodes, newKeyVals, keyDirection) {
-  let accelMire = {x:NaN, y:NaN};
-  let accelWindow = {x:NaN, y:NaN};
+  let accelMire = {x:null, y:null};
+  let accelWindow = {x:null, y:null};  // null indicates don't change current value
   let dialSpeed = 0.0;
   if (keyDirection === "keyup") { stopMovementOfMires(); stopMovementOfWindow(); }
 
@@ -47,22 +47,10 @@ function assessKey(oldKeyCodes, oldKeyVals, newKeyCodes, newKeyVals, keyDirectio
       else if (newKeyVal === " "         || newKeyCode === 32) { dialSpeed = +0.1; } // space
       else if (newKeyVal === "Shift"     || newKeyCode === 16) { dialSpeed = -0.1; } // shift
       // I got tired of including both value options. They should be the same anyway
-      else if (newKeyVal === "a") {
-        accelWindow.x = -0.2;
-        //moveZoomingLensByKey(-10,  0);
-      }  // left
-      else if (newKeyVal === "d") {
-        accelWindow.x = +0.2;
-        //moveZoomingLensByKey(+10,  0);
-      }
-      else if (newKeyVal === "s") {
-        accelWindow.y = -0.2;
-        //moveZoomingLensByKey(  0,-10);
-      }  // down
-      else if (newKeyVal === "w") {
-        accelWindow.y = +0.2;
-        //moveZoomingLensByKey(  0,+10);
-      }
+      else if (newKeyVal === "a") { accelWindow.x = -0.2; }  // left
+      else if (newKeyVal === "d") { accelWindow.x = +0.2; }  // right
+      else if (newKeyVal === "s") { accelWindow.y = +0.2; }  // down
+      else if (newKeyVal === "w") { accelWindow.y = -0.2; }  // up
     }
 
   }
@@ -72,6 +60,72 @@ function assessKey(oldKeyCodes, oldKeyVals, newKeyCodes, newKeyVals, keyDirectio
   changeDial(dialSpeed);
 }
 
+let zoomingLensController = {
+  loc: {x:0,y:0},  // position
+  vel: {x:0,y:0},  // vel aka velocity
+  accel: {x:0, y:0},
+  setVelocity: function(x,y) {
+    if (x !== null) this.vel.x = x;
+    if (y !== null) this.vel.y = y;
+    },
+  setAcceleration: function(x,y) {
+    if (x !== null) this.accel.x = x;
+    if (y !== null) this.accel.y = y;
+    },
+  getLoc: function() {  // form top left corner
+    let x = zoomingLens.computedStyleMap().get("left").value;
+    let y = zoomingLens.computedStyleMap().get("top").value;
+    return {x:x, y:y};
+  },
+  updatePosition: function() {
+    this.vel.x += this.accel.x;
+    this.vel.y += this.accel.y;
+    let currentLoc = gatScreen.lens.loc; // this.getLoc()
+    this.checkAndSetLoc({
+      x: currentLoc.x+this.vel.x,
+      y: currentLoc.y+this.vel.y
+    });
+  },
+  checkNewLoc: function(newLoc, doReturnValue=true) {
+    /*prevent the zoomingLens from being positioned outside the image:*/
+    let changedCt = 0;
+    if (newLoc.x > origPhoto.width - zoomingLens.offsetWidth) {
+      newLoc.x = origPhoto.width - zoomingLens.offsetWidth;
+      changedCt++;
+    }
+    if (newLoc.x < 0) {
+      newLoc.x = 0;
+      changedCt++;
+    }
+    if (newLoc.y > origPhoto.height - zoomingLens.offsetHeight) {
+      newLoc.y = origPhoto.height - zoomingLens.offsetHeight;
+      changedCt++;
+    }
+    if (newLoc.y < 0) {
+      newLoc.y = 0;
+      changedCt++;
+    }
+    if (doReturnValue) {
+      return newLoc;
+    } else {
+      return changedCt > 0;
+    }
+  },
+  setLoc: function(newLoc) {
+    /*set the position of the zoomingLens:*/
+    zoomingLens.style.left = newLoc.x + "px";
+    zoomingLens.style.top  = newLoc.y + "px";
+    /*display what the zoomingLens "sees":*/
+    zoomedPhoto.style.backgroundPosition = "-" + (newLoc.x * scaleRatio.x) + "px -" + (newLoc.y * scaleRatio.y) + "px";
+    gatScreen.lens.loc.x = newLoc.x;
+    gatScreen.lens.loc.y = newLoc.y;
+  },
+  checkAndSetLoc: function(newLoc) {
+    newLoc = this.checkNewLoc(newLoc);
+    this.setLoc(newLoc);
+    return newLoc;
+  },
+}
 let gatScreen = {
   canvas : document.createElement("canvas"),
   start : function() {
@@ -83,8 +137,9 @@ let gatScreen = {
     this.interval = setInterval(updateGatScreen, 20);
     this.keyCode = false;
     this.key = false;
-    this.lensLoc = {x:0, y:0}
-    zoomingLensController.setLoc(this.lensLoc)
+    //this.lensLoc = {x:0, y:0}
+    this.lens = zoomingLensController;
+    //zoomingLensController.setLoc(this.lensLoc)
 
     window.addEventListener('keydown', function (event) {
       const oldKeyCode = gatScreen.keyCode;
@@ -175,8 +230,8 @@ class MovingComponent extends Component {
 class Rectangle extends MovingComponent {
   updateDrawing() {  // overrides empty method in Component
     let ctx = gatScreen.context;
-    let lensLoc = gatScreen.lensLoc;
-    //let lensLoc = {x:gatScreen.lensLoc.x, y:gatScreen.lensLoc.y};
+    let lensLoc = gatScreen.lens.loc;
+    //let lensLoc = {x:gatScreen.lens.loc.x, y:gatScreen.lens.loc.y};
     ctx.fillStyle = this.color;
     ctx.fillRect(this.x-lensLoc.x*scaleRatio.x, this.y-lensLoc.y*scaleRatio.y, this.width, this.height);
   }
@@ -191,8 +246,8 @@ class MireCircle extends MovingComponent {
   }
   updateDrawing() {  // overrides empty method in Component
     let ctx = gatScreen.context;
-    let lensLoc = gatScreen.lensLoc
-    //let lensLoc = {x:gatScreen.lensLoc.x, y:gatScreen.lensLoc.y};
+    let lensLoc = gatScreen.lens.loc
+    //let lensLoc = {x:gatScreen.lens.loc.x, y:gatScreen.lens.loc.y};
 
     // the angle starts from rightmost point (0) to bottom (pi/2) to leftmost (pi) backup through the top
     // arc inputs: x center, y center, radius, start angle (radians), end angle (radians), counterclockwise (optional)
@@ -258,10 +313,11 @@ class MireCircle extends MovingComponent {
 function updateGatScreen() {
   gatScreen.clear();
   gatScreen.frameNo += 1;
-  gatScreen.lensLoc = {
+
+  /*gatScreen.lensLoc = {
     x: zoomingLens.computedStyleMap().get('left').value,
     y: zoomingLens.computedStyleMap().get( 'top').value
-  };
+  };*/
 
   myDial.text="Dial: " + myDial.dial.toFixed(1) + " mmHg";
   myDial.updatePosition();
@@ -271,9 +327,9 @@ function updateGatScreen() {
     mireCircle.updatePosition();
     mireCircle.updateDrawing();
   }
-  zoomingLensController.updatePosition();
-  $("#xLocDisplayer").html(gatScreen.lensLoc.x.toFixed(2).padStart(7," ").replace(" ","&nbsp;"));
-  $("#yLocDisplayer").html(gatScreen.lensLoc.y.toFixed(2).padStart(7," ").replace(" ","&nbsp;"));
+  gatScreen.lens.updatePosition();
+  $("#xLocDisplayer").html(gatScreen.lens.loc.x.toFixed(2).padStart(7," ").replace(" ","&nbsp;"));
+  $("#yLocDisplayer").html(gatScreen.lens.loc.y.toFixed(2).padStart(7," ").replace(" ","&nbsp;"));
 }
 
 function everyInterval(n) {
@@ -281,7 +337,7 @@ function everyInterval(n) {
 }
 
 function accelerateWindow(x,y) {
-  zoomingLensController.setAcceleration(x,y);
+  gatScreen.lens.setAcceleration(x,y);
 }
 function accelerateMires(x,y) {
   for (let i = 0; i < mireCircles.length; i += 1) {
@@ -300,7 +356,7 @@ function stopMovementOfMires() {
   accelerateMires(0,0);
 }
 function stopMovementOfWindow() {
-  zoomingLensController.setVelocity(0,0);
+  gatScreen.lens.setVelocity(0,0);
   accelerateWindow(0,0);
 }
 function changeDial(dialSpeed) {
