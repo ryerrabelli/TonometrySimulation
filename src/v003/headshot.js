@@ -18,7 +18,7 @@ function setUpPhotoZooming(origPhotoID, zoomedPhotoID, zoomingLensID) {
   updateZoom()
 
   /*execute a function when someone moves the cursor over the image, or the zoomingLens:*/
-  zoomingLens.addEventListener("mousecmove", moveZoomingLensByHover);
+  zoomingLens.addEventListener("mousemove", moveZoomingLensByHover);
   origPhoto.addEventListener("mousemove", moveZoomingLensByHover);
   /*and also for touch screens:*/
   zoomingLens.addEventListener("touchmove", moveZoomingLensByHover);
