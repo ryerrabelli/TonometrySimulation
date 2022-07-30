@@ -81,11 +81,32 @@
         <!-- Unicode characters https://www.w3schools.com/charsets/ref_utf_arrows.asp -->
         <div>
           <h2>Movement</h2>
-          <button onmousedown="accelerate( NaN,-0.2)" onmouseup="stopMovement()"> &uarr; </button>
+          <table>
+            <tr>
+              <td>
+                <button onmousedown="accelerateWindow({y:-0.2})" onmouseup="gatScreen.lens.stopMovement()"> &uarr; </button>
+              </td>
+              <td>
+                <button onmousedown="accelerateWindow({s:+0.02})" onmouseup="gatScreen.lens.stopMovement()"> &#8613;
+                </button>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <button onmousedown="accelerateWindow({x:-0.2})" onmouseup="gatScreen.lens.stopMovement()"> &larr; </button>
+                <button onmousedown="accelerateWindow({y:+0.2})" onmouseup="gatScreen.lens.stopMovement()"> &darr; </button>
+                <button onmousedown="accelerateWindow({x:+0.2})" onmouseup="gatScreen.lens.stopMovement()"> &rarr; </button>
+              </td>
+              <td>
+                <button onmousedown="accelerateWindow({s:-0.02})" onmouseup="gatScreen.lens.stopMovement()"> &#8615;
+                </button>
+              </td>
+            </tr>
+
           <br />
-          <button onmousedown="accelerate(-0.2, NaN)" onmouseup="stopMovement()"> &larr; </button>
-          <button onmousedown="accelerate( NaN, 0.2)" onmouseup="stopMovement()"> &darr; </button>
-          <button onmousedown="accelerate( 0.2, NaN)" onmouseup="stopMovement()"> &rarr; </button>
+
+          </table>
+
           <p>left:<span id="xLocDisplayer"></span>, top:<span id="yLocDisplayer"></span></p>
         </div>
         <div>
