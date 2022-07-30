@@ -21,11 +21,11 @@ function setUpPhotoZooming(origPhotoID, zoomedPhotoID, zoomingLensID) {
   zoomedPhoto.style.backgroundImage = "url('" + origPhoto.src + "')";
   zoomedPhoto.style.backgroundSize = (origPhoto.width * scale_ratio.x) + "px " + (origPhoto.height * scale_ratio.y) + "px";
   /*execute a function when someone moves the cursor over the image, or the zoomingLens:*/
-  zoomingLens.addEventListener("mousemove", moveZoomingLens);
-  origPhoto.addEventListener("mousemove", moveZoomingLens);
+  zoomingLens.addEventListener("mousemove", moveZoomingLensByHover);
+  origPhoto.addEventListener("mousemove", moveZoomingLensByHover);
   /*and also for touch screens:*/
-  zoomingLens.addEventListener("touchmove", moveZoomingLens);
-  origPhoto.addEventListener("touchmove", moveZoomingLens);
+  zoomingLens.addEventListener("touchmove", moveZoomingLensByHover);
+  origPhoto.addEventListener("touchmove", moveZoomingLensByHover);
 }
 
 function getCursorPos(e) {
@@ -42,7 +42,7 @@ function getCursorPos(e) {
   return {x : x, y : y};
 }
 
-function moveZoomingLens(e) {
+function moveZoomingLensByHover(e) {
   let pos, x, y;
   /*prevent anyother actions that may occur when moving over the image:*/
   e.preventDefault();

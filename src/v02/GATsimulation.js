@@ -12,16 +12,14 @@ const MIRE_RADIUS = 100;
 const MIRE_LINE_WD = 5;
 const MIRE_SEPARATION = MIRE_RADIUS*2;   // distance between mire circles when dial is not set
 
-//import {moveZoomingLensByKey} from './headshot.js';
-
 // https://www.w3schools.com/graphics/game_intro.asp
 // https://www.w3schools.com/howto/howto_js_image_zoom.asp
 function startGat() {
   // mireCircle = new component(30, 30, "rgba(0, 0, 255, 0.5)", 10, 120);
   let mireCircleRightEye1 = new MireCircle(MIRE_RADIUS, MIRE_RADIUS, 0, rightPupilLoc.x, rightPupilLoc.y, +1);
   let mireCircleRightEye2 = new MireCircle(MIRE_RADIUS, MIRE_RADIUS, 0, rightPupilLoc.x, rightPupilLoc.y, -1);
-  let mireCircleLeftEye1 = new MireCircle(MIRE_RADIUS, MIRE_RADIUS, 0,  leftPupilLoc.x,  leftPupilLoc.y, +1);
-  let mireCircleLeftEye2 = new MireCircle(MIRE_RADIUS, MIRE_RADIUS, 0,  leftPupilLoc.x,  leftPupilLoc.y, -1);
+  let mireCircleLeftEye1  = new MireCircle(MIRE_RADIUS, MIRE_RADIUS, 0,  leftPupilLoc.x,  leftPupilLoc.y, +1);
+  let mireCircleLeftEye2  = new MireCircle(MIRE_RADIUS, MIRE_RADIUS, 0,  leftPupilLoc.x,  leftPupilLoc.y, -1);
   mireCircles = [mireCircleRightEye1, mireCircleRightEye2, mireCircleLeftEye1, mireCircleLeftEye2];
   myDial = new Dial("30px", "Consolas", "black", 10, 40, "text");
   gatScreen.start();
@@ -40,8 +38,8 @@ function assessKey(oldKeyCodes, oldKeyVals, newKeyCodes, newKeyVals, keyDirectio
       const newKeyVal = newKeyVals[i];
       if (     newKeyVal === "ArrowLeft" || newKeyCode == 37) { accel.x    =-0.2; } // right
       else if (newKeyVal === "ArrowRight"|| newKeyCode == 39) { accel.x    =+0.2; } // left
-      else if (newKeyVal === "ArrowDown" || newKeyCode == 40) { accel.y    =+0.2; } // down
-      else if (newKeyVal === "ArrowUp"   || newKeyCode == 38) { accel.y    =-0.2; } // up
+      else if (newKeyVal === "ArrowDown" || newKeyCode == 40) { accel.y    =-0.2; } // down
+      else if (newKeyVal === "ArrowUp"   || newKeyCode == 38) { accel.y    =+0.2; } // up
       else if (newKeyVal === " "         || newKeyCode == 32) { dialSpeed =+0.1; } // space
       else if (newKeyVal === "Shift"     || newKeyCode == 16) { dialSpeed =-0.1; } // shift
       // I got tired of including both value options. They should be the same anyway
