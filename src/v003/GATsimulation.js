@@ -107,10 +107,11 @@ let zoomingLensController = {
   checkNewLoc: function(newLoc, doReturnValue=true) {
     /* Check if newLoc will cause positioning out of bounds*/
     let changedCt = 0;
+    const scale = (newLoc.s===null ? gatScreen.lens.s : newLoc.s);
     const range = {
-      x:[0, origPhoto.width - zoomingLens.offsetWidth],
-      y:[0, origPhoto.height - zoomingLens.offsetHeight],
-      s:[1, Math.sqrt(canvasSz.ht/2*canvasSz.wd/2)],
+      x:[0, canvasSz.wd - canvasSz.wd/scale],
+      y:[0, canvasSz.ht - canvasSz.ht/scale],
+      s:[1, Math.sqrt(canvasSz.wd/2*canvasSz.ht/2)],
     };
     if (newLoc.x < range.x[0]) {
       newLoc.x = range.x[0];
