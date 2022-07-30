@@ -3,24 +3,26 @@ let myDial;
 const dialCoefficient = 5;
 
 // coordinates from top left, units in pixels
-let canvasSz = {wd: 360, ht: 360};
-let totalScreenSz = {wd: 3600, ht: 3600};
-let rightPupilLoc = {x:1500, y:1390};  // found from visually looking at the image
-let leftPupilLoc  = {x:2150, y:1420};  // found from visually looking at the image
-let centerLineY = canvasSz.ht/2;  // midpoint of screen where the distinction between top and bottom mire views is
-let mireRadius = 100;
-let mireLineWidth = 5;
-let mireSeparation = mireRadius*2;   // distance between mire circles when dial is not set
+let canvasSz      = {wd:360, ht:360};
+let totalScreenSz = {wd:3600,ht:3600};
+const rightPupilLoc = { x:1500, y:1390};  // found from visually looking at the image
+const leftPupilLoc  = { x:2150, y:1420};  // found from visually looking at the image
+const centerLineY = canvasSz.ht/2;  // midpoint of screen where the distinction between top and bottom mire views is
+const MIRE_RADIUS = 100;
+const MIRE_LINE_WD = 5;
+const MIRE_SEPARATION = MIRE_RADIUS*2;   // distance between mire circles when dial is not set
 
 //import {moveZoomingLensByKey} from './headshot.js';
 
 // https://www.w3schools.com/graphics/game_intro.asp
+// https://www.w3schools.com/howto/howto_js_image_zoom.asp
 function startGat() {
-  // 120
   // mireCircle = new component(30, 30, "rgba(0, 0, 255, 0.5)", 10, 120);
-  let mireCircle1 = new MireCircle(mireRadius, mireRadius, 0, rightPupilLoc.x-mireSeparation/2, rightPupilLoc.y, +1);
-  let mireCircle2 = new MireCircle(mireRadius, mireRadius, 0, rightPupilLoc.x+mireSeparation/2, rightPupilLoc.y, -1);
-  mireCircles = [mireCircle1, mireCircle2];
+  let mireCircleRightEye1 = new MireCircle(MIRE_RADIUS, MIRE_RADIUS, 0, rightPupilLoc.x, rightPupilLoc.y, +1);
+  let mireCircleRightEye2 = new MireCircle(MIRE_RADIUS, MIRE_RADIUS, 0, rightPupilLoc.x, rightPupilLoc.y, -1);
+  let mireCircleLeftEye1 = new MireCircle(MIRE_RADIUS, MIRE_RADIUS, 0,  leftPupilLoc.x,  leftPupilLoc.y, +1);
+  let mireCircleLeftEye2 = new MireCircle(MIRE_RADIUS, MIRE_RADIUS, 0,  leftPupilLoc.x,  leftPupilLoc.y, -1);
+  mireCircles = [mireCircleRightEye1, mireCircleRightEye2, mireCircleLeftEye1, mireCircleLeftEye2];
   myDial = new Dial("30px", "Consolas", "black", 10, 40, "text");
   gatScreen.start();
 }
@@ -29,6 +31,7 @@ function assessKey(oldKeyCodes, oldKeyVals, newKeyCodes, newKeyVals, keyDirectio
   let accel = {x:NaN, y:NaN};
   let dialSpeed = 0.0;
   if (keyDirection == "keyup") { stopMovement(); }
+
   // key codes https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/keyCode
   if (newKeyCodes) {
     console.assert(newKeyCodes.length === newKeyVals.length);
@@ -108,7 +111,7 @@ function areArraysEqual(firstArr, seconArr) {
   return true;
 }
 
-class ComponentItem {
+class Component {
   constructor(wd, ht, color, x, y) {
     this.width = wd;
     this.height = ht;
@@ -120,7 +123,7 @@ class ComponentItem {
   updateDrawing() {}
   updatePosition() {}
 }
-class Dial extends ComponentItem {
+class Dial extends Component {
   constructor(wd, ht, color, x, y) {
     super(wd, ht, color, x, y);
     this.dial = 0;
@@ -132,11 +135,11 @@ class Dial extends ComponentItem {
     ctx.fillStyle = this.color;
     ctx.fillText(this.text, this.x, this.y);
   }
-  updatePosition() {  // overrides empty method in ComponentItem
+  updatePosition() {  // overrides empty method in Component
     this.dial += this.dialSpeed
   }
 }
-class MovingComponent extends ComponentItem {
+class MovingComponent extends Component {
   constructor(wd, ht, color, x, y) {
     super(wd, ht, color, x, y);
     this.lrSpeed = 0;
@@ -144,7 +147,7 @@ class MovingComponent extends ComponentItem {
     this.udSpeed = 0;
     this.udAccel = 0;
   }
-  updatePosition() {  // overrides empty method in ComponentItem
+  updatePosition() {  // overrides empty method in Component
     super.updatePosition();  // does nothing currently
     this.udSpeed += this.udAccel;
     this.lrSpeed += this.lrAccel;
@@ -153,7 +156,7 @@ class MovingComponent extends ComponentItem {
   }
 }
 class Rectangle extends MovingComponent {
-  updateDrawing() {  // overrides empty method in ComponentItem
+  updateDrawing() {  // overrides empty method in Component
     let ctx = gatScreen.context;
     let lensLoc = gatScreen.lensLoc;
     //let lensLoc = {x:gatScreen.lensLoc.x, y:gatScreen.lensLoc.y};
@@ -163,13 +166,13 @@ class Rectangle extends MovingComponent {
 }
 class MireCircle extends MovingComponent {
   constructor(wd, ht, color, x, y, direction) {
-    super(wd, ht, color, x, y);
+    super(wd, ht, color, x-direction*MIRE_SEPARATION/2, y);
     this.radius = this.height/2;
     // +1 -> above aka clockwise starting from rightmost point
     // -1 -> aka counterclockwise starting from rightmost point
     this.direction = direction;
   }
-  updateDrawing() {  // overrides empty method in ComponentItem
+  updateDrawing() {  // overrides empty method in Component
     let ctx = gatScreen.context;
     let lensLoc = gatScreen.lensLoc
     //let lensLoc = {x:gatScreen.lensLoc.x, y:gatScreen.lensLoc.y};
@@ -213,7 +216,7 @@ class MireCircle extends MovingComponent {
       // Draw outline
       ctx.strokeStyle = "rgba(0,255,0,0.5)";
       ctx.fillStyle = "rgba(0,0,0,0)";
-      ctx.lineWidth = mireLineWidth * 0.5;
+      ctx.lineWidth = MIRE_LINE_WD * 0.5;
       ctx.beginPath();
       ctx.arc(locFromLens.x + this.direction*myDial.dial*dialCoefficient, locFromLens.y,
         this.height/2, arcAngleInitial, arcAngleFinal,
@@ -224,7 +227,7 @@ class MireCircle extends MovingComponent {
       // Draw actual green circle
       ctx.strokeStyle = "rgba(0,100,0,0.9)";
       ctx.fillStyle = "rgba(200,255,200,0.4)";
-      ctx.lineWidth = mireLineWidth;
+      ctx.lineWidth = MIRE_LINE_WD;
       ctx.beginPath();
       ctx.arc(locFromLens.x + this.direction*myDial.dial*dialCoefficient, locFromLens.y,
         this.radius*0.9, arcAngleInitial, arcAngleFinal,
@@ -243,7 +246,7 @@ function updateGatScreen() {
   gatScreen.lensLoc = {
     x:zoomingLens.computedStyleMap().get('left').value,
     y:zoomingLens.computedStyleMap().get('top').value
-  }
+  };
   if (gatScreen.frameNo == 1 || everyInterval(150)) {
     x = gatScreen.canvas.width;
     minHeight = 20;
@@ -256,8 +259,8 @@ function updateGatScreen() {
   myDial.text="Dial: " + myDial.dial.toFixed(1) + " mmHg";
   myDial.updatePosition();
   myDial.updateDrawing();
-  for (i = 0; i < mireCircles.length; i += 1) {
-    mireCircle = mireCircles[i]
+  for (let i = 0; i < mireCircles.length; i += 1) {
+    let mireCircle = mireCircles[i]
     mireCircle.updatePosition();
     mireCircle.updateDrawing();
   }
