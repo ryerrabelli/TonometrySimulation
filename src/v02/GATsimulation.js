@@ -1,20 +1,16 @@
-var mireCircles;
-var myDial;
-var dialCoefficient = 5;
+let mireCircles;
+let myDial;
+const dialCoefficient = 5;
 
-// cordinates from top left, units in pixels
-var canvasWd = 360;
-var canvasHt = 360;
-var totalScreenWd = 3600;
-var totalScreenHt = 3600;
-var rightPupilLocX = 1500;
-var rightPupilLocY = 1390
-var leftPupilLocX = 2150;
-var leftPupilLocY = 1420
-var centerLineY = canvasHt/2;
-var radius = 100;
-var lineWidth = 5;
-var separation = radius*2;   // distance between mire circles when dial is not set
+// coordinates from top left, units in pixels
+let canvasSz = {wd: 360, ht: 360};
+let totalScreenSz = {wd: 3600, ht: 3600};
+let rightPupilLoc = {x:1500, y:1390};  // found from visually looking at the image
+let leftPupilLoc = {x:2150, y:1420};  // found from visually looking at the image
+let centerLineY = canvasSz.ht/2;  // midpoint of screen where the distinction between top and bottom mire views is
+let mireRadius = 100;
+let mireLineWidth = 5;
+let mireSeparation = mireRadius*2;   // distance between mire circles when dial is not set
 
 //import {moveZoomingLensByKey} from './headshot.js';
 
@@ -22,16 +18,15 @@ var separation = radius*2;   // distance between mire circles when dial is not s
 function startGat() {
   // 120
   // mireCircle = new component(30, 30, "rgba(0, 0, 255, 0.5)", 10, 120);
-  mireCircle1 = new component(radius, radius, 0, rightPupilLocX-separation/2, leftPupilLocY, "arc", +1);
-  mireCircle2 = new component(radius, radius, 0, rightPupilLocX+separation/2, leftPupilLocY, "arc", -1);
+  let mireCircle1 = new component(mireRadius, mireRadius, 0, rightPupilLoc.x-mireSeparation/2, rightPupilLoc.y, "arc", +1);
+  let mireCircle2 = new component(mireRadius, mireRadius, 0, rightPupilLoc.x+mireSeparation/2, rightPupilLoc.y, "arc", -1);
   mireCircles = [mireCircle1, mireCircle2];
   myDial = new component("30px", "Consolas", "black", 10, 40, "text");
   gatScreen.start();
 }
 
 function assessKey(oldKeyCodes, oldKeyVals, newKeyCodes, newKeyVals, keydirection) {
-  let accelX = NaN;
-  let accelY = NaN;
+  let accel = {x:NaN, y:NaN};
   let dialSpeed = 0.0
   if (keydirection == "keyup") { stopMovement(); }
   // key codes https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/keyCode
@@ -40,30 +35,30 @@ function assessKey(oldKeyCodes, oldKeyVals, newKeyCodes, newKeyVals, keydirectio
     for (let i = 0; i < newKeyCodes.length; i++ ) {
       const newKeyCode = newKeyCodes[i];
       const newKeyVal = newKeyVals[i];
-      if (     newKeyVal === "ArrowLeft" || newKeyCode == 37) { accelX    =-0.2; } // right
-      else if (newKeyVal === "ArrowRight"|| newKeyCode == 39) { accelX    =+0.2; } // left
-      else if (newKeyVal === "ArrowDown" || newKeyCode == 40) { accelY    =+0.2; } // down
-      else if (newKeyVal === "ArrowUp"   || newKeyCode == 38) { accelY    =-0.2; } // up
+      if (     newKeyVal === "ArrowLeft" || newKeyCode == 37) { accel.x    =-0.2; } // right
+      else if (newKeyVal === "ArrowRight"|| newKeyCode == 39) { accel.x    =+0.2; } // left
+      else if (newKeyVal === "ArrowDown" || newKeyCode == 40) { accel.y    =+0.2; } // down
+      else if (newKeyVal === "ArrowUp"   || newKeyCode == 38) { accel.y    =-0.2; } // up
       else if (newKeyVal === " "         || newKeyCode == 32) { dialSpeed =+0.1; } // space
       else if (newKeyVal === "Shift"     || newKeyCode == 16) { dialSpeed =-0.1; } // shift
       // I got tired of including both value options. They should be the same anyway
-      else if (newKeyVal === "a") { moveZoomingLensByKey(-10,0); }  // left
-      else if (newKeyVal === "d") { moveZoomingLensByKey(10,0); }
-      else if (newKeyVal === "s") { moveZoomingLensByKey(0,-10); }  // down
-      else if (newKeyVal === "w") { moveZoomingLensByKey(0,10); }
+      else if (newKeyVal === "a") { moveZoomingLensByKey(-10,  0); }  // left
+      else if (newKeyVal === "d") { moveZoomingLensByKey(+10,  0); }
+      else if (newKeyVal === "s") { moveZoomingLensByKey(  0,-10); }  // down
+      else if (newKeyVal === "w") { moveZoomingLensByKey(  0,+10); }
     }
 
   }
   console.log(oldKeyCodes, oldKeyVals, " -> ", newKeyCodes, newKeyVals);
-  accelerate(accelX,accelY);
+  accelerate(accel.x,accel.y);
   changeDial(dialSpeed);
 }
 
-var gatScreen = {
+let gatScreen = {
   canvas : document.createElement("canvas"),
   start : function() {
-    this.canvas.width = canvasWd;
-    this.canvas.height = canvasHt;
+    this.canvas.width = canvasSz.wd;
+    this.canvas.height = canvasSz.ht;
     this.context = this.canvas.getContext("2d");
     document.getElementById("GAT-area").insertBefore(this.canvas, document.getElementById("GAT-controls"));
     this.frameNo = 0;
@@ -98,26 +93,26 @@ var gatScreen = {
   }
 }
 
-function areArraysEqual(a, b) {
-  if (a === b) return true;  // <- what happens if both are false or many other same non-array values
-  if (a == null || b == null) return false;
-  if (a.length !== b.length) return false;
+function areArraysEqual(firstArr, seconArr) {
+  if (firstArr === seconArr) return true;  // <- what happens if both are false or many other same non-array values
+  if (firstArr == null || seconArr == null) return false;
+  if (firstArr.length !== seconArr.length) return false;
 
   // If you don't care about the order of the elements inside
   // the array, you should sort both arrays here.
   // Please note that calling sort on an array will modify that array.
   // you might want to clone your array first.
 
-  for (var i = 0; i < a.length; ++i) {
-    if (a[i] !== b[i]) return false;
+  for (let i = 0; i < a.length; ++i) {
+    if (firstArr[i] !== seconArr[i]) return false;
   }
   return true;
 }
 
-function component(width, height, color, x, y, type, direction) {
+function component(wd, ht, color, x, y, type, direction) {
     this.type = type;
-    this.width = width;
-    this.height = height;
+    this.width = wd;
+    this.height = ht;
 
     // below only relevant if this is a myDial component
     this.dial = 0;
@@ -138,9 +133,9 @@ function component(width, height, color, x, y, type, direction) {
     this.direction = direction;
     console.log(direction)
     this.update = function() {
-      ctx = gatScreen.context;
-      lensX = gatScreen.lensX;
-      lensY = gatScreen.lensY;
+      let ctx = gatScreen.context;
+      let lensX = gatScreen.lensX;
+      let lensY = gatScreen.lensY;
       if (this.type == "text") {
         ctx.font = this.width + " " + this.height;
         ctx.fillStyle = color;
@@ -186,7 +181,7 @@ function component(width, height, color, x, y, type, direction) {
           // Draw outline
           ctx.strokeStyle = "rgba(0,255,0,0.5)";
           ctx.fillStyle = "rgba(0,0,0,0)";
-          ctx.lineWidth = lineWidth * 0.5;
+          ctx.lineWidth = mireLineWidth * 0.5;
           ctx.beginPath();
           ctx.arc(translatedX + this.direction*myDial.dial*dialCoefficient, translatedY,
             this.height/2, initialAngle, finalAngle,
@@ -197,7 +192,7 @@ function component(width, height, color, x, y, type, direction) {
           // Draw actual green circle
           ctx.strokeStyle = "rgba(0,100,0,0.9)";
           ctx.fillStyle = "rgba(200,255,200,0.4)";
-          ctx.lineWidth = lineWidth;
+          ctx.lineWidth = mireLineWidth;
           ctx.beginPath();
           ctx.arc(translatedX + this.direction*myDial.dial*dialCoefficient, translatedY,
             this.radius*0.9, initialAngle, finalAngle,
@@ -223,13 +218,13 @@ function component(width, height, color, x, y, type, direction) {
 }
 
 function updateGatScreen() {
-    var x, height, gap, minHeight, maxHeight, minGap, maxGap;
+    let x, height, gap, minHeight, maxHeight, minGap, maxGap;
     gatScreen.clear();
     gatScreen.frameNo += 1;
     zoomingLens = document.getElementById("zoomingLens");
     gatScreen.lensX = zoomingLens.computedStyleMap().get('left').value;
     gatScreen.lensY = zoomingLens.computedStyleMap().get('top').value;
-    if (gatScreen.frameNo == 1 || everyinterval(150)) {
+    if (gatScreen.frameNo == 1 || everyInterval(150)) {
         x = gatScreen.canvas.width;
         minHeight = 20;
         maxHeight = 200;
@@ -249,22 +244,22 @@ function updateGatScreen() {
 
 }
 
-function everyinterval(n) {
+function everyInterval(n) {
     if ((gatScreen.frameNo / n) % 1 == 0) {return true;}
     return false;
 }
 
 function accelerate(x,y) {
-  for (i = 0; i < mireCircles.length; i += 1) {
-    mireCircle = mireCircles[i]
+  for (let i = 0; i < mireCircles.length; i += 1) {
+    const mireCircle = mireCircles[i]
     // By allowing false check, you can change on edirection without the other
     if (!isNaN(x)) { mireCircle.lrAccel = x; }
     if (!isNaN(y)) { mireCircle.udAccel = y; }
   }
 }
 function stopMovement() {
-  for (i = 0; i < mireCircles.length; i += 1) {
-    mireCircle = mireCircles[i]
+  for (let i = 0; i < mireCircles.length; i += 1) {
+    const mireCircle = mireCircles[i]
     mireCircle.lrSpeed = 0.0;
     mireCircle.udSpeed = 0.0;
   }
