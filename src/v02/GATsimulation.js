@@ -272,6 +272,8 @@ function updateGatScreen() {
     mireCircle.updateDrawing();
   }
   zoomingLensController.updatePosition();
+  $("#xLocDisplayer").html(gatScreen.lensLoc.x.toFixed(2).padStart(7," ").replace(" ","&nbsp;"));
+  $("#yLocDisplayer").html(gatScreen.lensLoc.y.toFixed(2).padStart(7," ").replace(" ","&nbsp;"));
 }
 
 function everyInterval(n) {

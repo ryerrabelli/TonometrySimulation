@@ -115,7 +115,7 @@ function moveZoomingLensByHover(event) {
     y: pos.y - (zoomingLens.offsetHeight / 2)
   }
   newLoc = zoomingLensController.checkAndSetLoc(newLoc);
-  console.log("left/x: " + newLoc.x.toFixed(2) + ", top/y: " + newLoc.y.toFixed(2));
+  //console.log("left/x: " + newLoc.x.toFixed(2).padStart(7," ") + ", top/y: " + newLoc.y.toFixed(2).padStart(7," "));
 }
 
 function moveZoomingLensByKey(dx, dy) {
@@ -128,5 +128,4 @@ function moveZoomingLensByKey(dx, dy) {
 
   newLoc = zoomingLensController.checkAndSetLoc(newLoc);
   //zoomingLensController.setLoc(newLoc);
-  console.log("left/x: " + newLoc.x.toFixed(2) + ", top/y: " + newLoc.y.toFixed(2));
 }

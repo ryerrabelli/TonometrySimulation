@@ -54,8 +54,12 @@
       grid-template-columns: 1fr 1fr;
       grid-gap: 36px;
     }
+    #xLocDisplayer, #yLocDisplayer {
+      font-family: "courier-new";
+    }
   </style>
 
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
   <script type="text/javascript" src="headshot.js"></script>
   <script type="text/javascript" src="GATsimulation.js"></script>
   <title>GAT</title>
@@ -85,12 +89,14 @@
           <button onmousedown="accelerate(-0.2, NaN)" onmouseup="stopMovement()"> &larr; </button>
           <button onmousedown="accelerate( NaN, 0.2)" onmouseup="stopMovement()"> &darr; </button>
           <button onmousedown="accelerate( 0.2, NaN)" onmouseup="stopMovement()"> &rarr; </button>
+          <p>left:<span id="xLocDisplayer"></span>, top:<span id="yLocDisplayer"></span></p>
         </div>
         <div>
           <h2>Pressure Dial</h2>
           <button onmousedown="changeDial(-0.1)" onmouseup="changeDial(0.0)"> &darr; (shift)</button>
           <button onmousedown="changeDial( 0.1)" onmouseup="changeDial(0.0)"> &uarr; (spacebar)</button>
         </div>
+
       </div>
     </div>
   </div>
