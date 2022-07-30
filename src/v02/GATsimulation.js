@@ -6,7 +6,7 @@ const dialCoefficient = 5;
 let canvasSz = {wd: 360, ht: 360};
 let totalScreenSz = {wd: 3600, ht: 3600};
 let rightPupilLoc = {x:1500, y:1390};  // found from visually looking at the image
-let leftPupilLoc = {x:2150, y:1420};  // found from visually looking at the image
+let leftPupilLoc  = {x:2150, y:1420};  // found from visually looking at the image
 let centerLineY = canvasSz.ht/2;  // midpoint of screen where the distinction between top and bottom mire views is
 let mireRadius = 100;
 let mireLineWidth = 5;
@@ -109,146 +109,145 @@ function areArraysEqual(firstArr, seconArr) {
 }
 
 function component(wd, ht, color, x, y, type, direction) {
-    this.type = type;
-    this.width = wd;
-    this.height = ht;
+  this.type = type;
+  this.width = wd;
+  this.height = ht;
 
-    // below only relevant if this is a myDial component
-    this.dial = 0;
-    this.dialSpeed = 0;
-
-
-
-    this.x = x;  // does not take into account the dial
-    this.y = y;
-    // below only relevant if a mireCircle object
-    this.lrSpeed = 0;
-    this.lrAccel = 0;
-    this.udSpeed = 0;
-    this.udAccel = 0;
-    this.radius = this.height/2;
-    // +1 -> above aka clockwise starting from rightmost point
-    // -1 -> aka counterclockwise starting from rightmost point
-    this.direction = direction;
-    console.log(direction)
-    this.update = function() {
-      let ctx = gatScreen.context;
-      let lensLoc = gatScreen.lensLoc
-      //let lensLoc = {x:gatScreen.lensLoc.x, y:gatScreen.lensLoc.y};
-      if (this.type == "text") {
-        ctx.font = this.width + " " + this.height;
-        ctx.fillStyle = color;
-        ctx.fillText(this.text, this.x, this.y);
-
-      } else if (this.type == "arc") {
-        // the angle starts from rightmost point (0) to bottom (pi/2) to leftmost (pi) backup through the top
-        // arc inputs: x center, y center, radius, start angle (radians), end angle (radians), counterclockwise (optional)
-
-        initialAngle = 0;           // radians
-        finalAngle = 1 * Math.PI;   // radians
-
-        // translated means the coordinates are moved to be in the plane of the screen
-        locFromLens = {x:this.x-lensLoc.x*10,  y:this.y-lensLoc.y*10};
-        //locFromLens.x = this.x-lensLoc.x*10;
-        //locFromLens.y = this.y-lensLoc.y*10;
+  // below only relevant if this is a myDial component
+  this.dial = 0;
+  this.dialSpeed = 0;
 
 
 
-        // Don't really have to separate out these conditions
-        if (direction <= 0 && locFromLens.y + this.radius < centerLineY) {
-          // Nothing to draw as entire circle is not in its correct half of the canvas
-        } else if (direction > 0 && locFromLens.y - this.radius > centerLineY) {
-          // Nothing to draw as entire circle is not in its correct half of the canvas
-        } else {
-          // Put the separate circles out here because otherwise the nature of arc sin will cause the circle to not be drawn at all (0->0 instead of 0->2pi)
-          if (direction <= 0 && locFromLens.y - this.radius > centerLineY) {
-            // Draw full circle as entire circle is on its correct half of the canvas
-            offsetAngle = - Math.PI/2  // radians
-          } else if (direction > 0 && locFromLens.y + this.radius < centerLineY) {
-            // Draw full circle as entire circle is on its correct half of the canvas
-            offsetAngle = - Math.PI/2  // radians
-          } else {
-            // Draw only the part of the circle on its correct half of the canvas
-            offsetAngle = Math.asin( (centerLineY-locFromLens.y)/this.radius)  // radians
-          }
-          initialAngle = 0 + offsetAngle;          // radians
-          finalAngle = 1 * Math.PI - offsetAngle;  // radians
+  this.x = x;  // does not take into account the dial
+  this.y = y;
+  // below only relevant if a mireCircle object
+  this.lrSpeed = 0;
+  this.lrAccel = 0;
+  this.udSpeed = 0;
+  this.udAccel = 0;
+  this.radius = this.height/2;
+  // +1 -> above aka clockwise starting from rightmost point
+  // -1 -> aka counterclockwise starting from rightmost point
+  this.direction = direction;
+  console.log(direction)
+  this.update = function() {
+    let ctx = gatScreen.context;
+    let lensLoc = gatScreen.lensLoc
+    //let lensLoc = {x:gatScreen.lensLoc.x, y:gatScreen.lensLoc.y};
+    if (this.type == "text") {
+      ctx.font = this.width + " " + this.height;
+      ctx.fillStyle = color;
+      ctx.fillText(this.text, this.x, this.y);
 
-          //console.log("Drawing Mire at (" + (this.x-lensLoc.x*10) + ", " + (this.y-lensLoc.y*10) + ")")
-          //console.log("Drawing Mire at (" + (this.x-lensLoc.x*10 + this.direction*myDial.dial*dialCoefficient) + ", " + (this.y-lensLoc.y*10) + "), direction=" + direction + ", angles=[" + initialAngle*180/Math.PI + "," + finalAngle*180/Math.PI + "]" )
-          //console.log("Drawing Mire at (" + (this.x-lensLoc.x*10 + this.direction*myDial.dial*dialCoefficient) + ", " + (this.y-lensLoc.y*10) + "), direction=" + direction + ", offset_angle=" + offsetAngle*180/Math.PI + "" )
+    } else if (this.type == "arc") {
+      // the angle starts from rightmost point (0) to bottom (pi/2) to leftmost (pi) backup through the top
+      // arc inputs: x center, y center, radius, start angle (radians), end angle (radians), counterclockwise (optional)
 
-          // Draw outline
-          ctx.strokeStyle = "rgba(0,255,0,0.5)";
-          ctx.fillStyle = "rgba(0,0,0,0)";
-          ctx.lineWidth = mireLineWidth * 0.5;
-          ctx.beginPath();
-          ctx.arc(locFromLens.x + this.direction*myDial.dial*dialCoefficient, locFromLens.y,
-            this.height/2, initialAngle, finalAngle,
-            (direction>0 ? true : false));
-          ctx.stroke();
-          ctx.fill();
+      arcAngleInitial = 0;           // radians
+      arcAngleFinal = 1 * Math.PI;   // radians
 
-          // Draw actual green circle
-          ctx.strokeStyle = "rgba(0,100,0,0.9)";
-          ctx.fillStyle = "rgba(200,255,200,0.4)";
-          ctx.lineWidth = mireLineWidth;
-          ctx.beginPath();
-          ctx.arc(locFromLens.x + this.direction*myDial.dial*dialCoefficient, locFromLens.y,
-            this.radius*0.9, initialAngle, finalAngle,
-            (direction>0 ? true : false) );
-          ctx.stroke();
-          ctx.fill();
-        }
+      // translated means the coordinates are moved to be in the plane of the screen
+      locFromLens = {x:this.x-lensLoc.x*10,  y:this.y-lensLoc.y*10};
+      //locFromLens.x = this.x-lensLoc.x*10;
+      //locFromLens.y = this.y-lensLoc.y*10;
 
+
+      // Don't really have to separate out these conditions
+      if (direction <= 0 && locFromLens.y + this.radius < centerLineY) {
+        // Nothing to draw as entire circle is not in its correct half of the canvas
+      } else if (direction > 0 && locFromLens.y - this.radius > centerLineY) {
+        // Nothing to draw as entire circle is not in its correct half of the canvas
       } else {
-        ctx.fillStyle = color;
-        ctx.fillRect(this.x-lensLoc.x*10, this.y-lensLoc.y*10, this.width, this.height);
+        // Put the separate circles out here because otherwise the nature of arc sin will cause the circle to not be drawn at all (0->0 instead of 0->2pi)
+        if (direction <= 0 && locFromLens.y - this.radius > centerLineY) {
+          // Draw full circle as entire circle is on its correct half of the canvas
+          offsetAngle = - Math.PI/2  // radians
+        } else if (direction > 0 && locFromLens.y + this.radius < centerLineY) {
+          // Draw full circle as entire circle is on its correct half of the canvas
+          offsetAngle = - Math.PI/2  // radians
+        } else {
+          // Draw only the part of the circle on its correct half of the canvas
+          offsetAngle = Math.asin( (centerLineY-locFromLens.y)/this.radius)  // radians
+        }
+        arcAngleInitial = 0 + offsetAngle;          // radians
+        arcAngleFinal = 1 * Math.PI - offsetAngle;  // radians
+
+        //console.log("Drawing Mire at (" + (this.x-lensLoc.x*10) + ", " + (this.y-lensLoc.y*10) + ")")
+        //console.log("Drawing Mire at (" + (this.x-lensLoc.x*10 + this.direction*myDial.dial*dialCoefficient) + ", " + (this.y-lensLoc.y*10) + "), direction=" + direction + ", angles=[" + initialAngle*180/Math.PI + "," + finalAngle*180/Math.PI + "]" )
+        //console.log("Drawing Mire at (" + (this.x-lensLoc.x*10 + this.direction*myDial.dial*dialCoefficient) + ", " + (this.y-lensLoc.y*10) + "), direction=" + direction + ", offset_angle=" + offsetAngle*180/Math.PI + "" )
+
+        // Draw outline
+        ctx.strokeStyle = "rgba(0,255,0,0.5)";
+        ctx.fillStyle = "rgba(0,0,0,0)";
+        ctx.lineWidth = mireLineWidth * 0.5;
+        ctx.beginPath();
+        ctx.arc(locFromLens.x + this.direction*myDial.dial*dialCoefficient, locFromLens.y,
+          this.height/2, arcAngleInitial, arcAngleFinal,
+          (direction>0 ? true : false));
+        ctx.stroke();
+        ctx.fill();
+
+        // Draw actual green circle
+        ctx.strokeStyle = "rgba(0,100,0,0.9)";
+        ctx.fillStyle = "rgba(200,255,200,0.4)";
+        ctx.lineWidth = mireLineWidth;
+        ctx.beginPath();
+        ctx.arc(locFromLens.x + this.direction*myDial.dial*dialCoefficient, locFromLens.y,
+          this.radius*0.9, arcAngleInitial, arcAngleFinal,
+          (direction>0 ? true : false) );
+        ctx.stroke();
+        ctx.fill();
       }
 
+    } else {
+      ctx.fillStyle = color;
+      ctx.fillRect(this.x-lensLoc.x*10, this.y-lensLoc.y*10, this.width, this.height);
     }
-    this.newPos = function() {
-        this.udSpeed += this.udAccel;
-        this.lrSpeed += this.lrAccel;
-        this.x += this.lrSpeed;
-        this.y += this.udSpeed;
 
-        this.dial += this.dialSpeed
-    }
+  }
+  this.newPos = function() {
+    this.udSpeed += this.udAccel;
+    this.lrSpeed += this.lrAccel;
+    this.x += this.lrSpeed;
+    this.y += this.udSpeed;
+
+    this.dial += this.dialSpeed
+  }
 }
 
 function updateGatScreen() {
-    let x, height, gap, minHeight, maxHeight, minGap, maxGap;
-    gatScreen.clear();
-    gatScreen.frameNo += 1;
-    zoomingLens = document.getElementById("zoomingLens");
-    gatScreen.lensLoc = {
-        x:zoomingLens.computedStyleMap().get('left').value,
-        y:zoomingLens.computedStyleMap().get('top').value
-    }
-    if (gatScreen.frameNo == 1 || everyInterval(150)) {
-        x = gatScreen.canvas.width;
-        minHeight = 20;
-        maxHeight = 200;
-        height = Math.floor(Math.random()*(maxHeight-minHeight+1)+minHeight);
-        minGap = 50;
-        maxGap = 200;
-        gap = Math.floor(Math.random()*(maxGap-minGap+1)+minGap);
-    }
-    myDial.text="Dial: " + myDial.dial.toFixed(1) + " mmHg";
-    myDial.newPos();
-    myDial.update();
-    for (i = 0; i < mireCircles.length; i += 1) {
-      mireCircle = mireCircles[i]
-      mireCircle.newPos();
-      mireCircle.update();
-    }
+  let x, height, gap, minHeight, maxHeight, minGap, maxGap;
+  gatScreen.clear();
+  gatScreen.frameNo += 1;
+  zoomingLens = document.getElementById("zoomingLens");
+  gatScreen.lensLoc = {
+    x:zoomingLens.computedStyleMap().get('left').value,
+    y:zoomingLens.computedStyleMap().get('top').value
+  }
+  if (gatScreen.frameNo == 1 || everyInterval(150)) {
+    x = gatScreen.canvas.width;
+    minHeight = 20;
+    maxHeight = 200;
+    height = Math.floor(Math.random()*(maxHeight-minHeight+1)+minHeight);
+    minGap = 50;
+    maxGap = 200;
+    gap = Math.floor(Math.random()*(maxGap-minGap+1)+minGap);
+  }
+  myDial.text="Dial: " + myDial.dial.toFixed(1) + " mmHg";
+  myDial.newPos();
+  myDial.update();
+  for (i = 0; i < mireCircles.length; i += 1) {
+    mireCircle = mireCircles[i]
+    mireCircle.newPos();
+    mireCircle.update();
+  }
 
 }
 
 function everyInterval(n) {
-    if ((gatScreen.frameNo / n) % 1 == 0) {return true;}
-    return false;
+  if ((gatScreen.frameNo / n) % 1 == 0) {return true;}
+  return false;
 }
 
 function accelerate(x,y) {
