@@ -8,11 +8,9 @@ let totalScreenSz = {wd:3600,ht:3600};
 const rightPupilLoc = { x:1500, y:1390};  // found from visually looking at the image
 const leftPupilLoc  = { x:2150, y:1420};  // found from visually looking at the image
 const centerLineY = canvasSz.ht/2;  // midpoint of screen where the distinction between top and bottom mire views is
-const MIRE_RADIUS = 100;
-const MIRE_LINE_WD = 5;
+const MIRE_RADIUS     = 100;
+const MIRE_LINE_WD    = 5;
 const MIRE_SEPARATION = MIRE_RADIUS*2;   // distance between mire circles when dial is not set
-
-
 
 // https://www.w3schools.com/graphics/game_intro.asp
 // https://www.w3schools.com/howto/howto_js_image_zoom.asp
@@ -29,7 +27,7 @@ function startGat() {
 
 function assessKey(oldKeyCodes, oldKeyVals, newKeyCodes, newKeyVals, keyDirection) {
   let accelMire = {x:null, y:null};  // not used anymore. Mires do not move
-  let accelWindow = {x:null, y:null, s:null};  // null indicates don't change current value
+  let accelZoomingLens = {x:null, y:null, s:null};  // null indicates don't change current value
   let dialSpeed = 0.0;
   if (keyDirection === "keyup") { stopMovementOfMires(); gatScreen.lens.stopMovement(); }
 
@@ -42,20 +40,20 @@ function assessKey(oldKeyCodes, oldKeyVals, newKeyCodes, newKeyVals, keyDirectio
       const newKeyVal  = newKeyVals[i];
       if      (newKeyVal === " "         || newKeyCode === 32) { dialSpeed = +0.1; } // space
       else if (newKeyVal === "Shift"     || newKeyCode === 16) { dialSpeed = -0.1; } // shift
-      else if (newKeyVal === "ArrowLeft" || newKeyCode === 37) { accelWindow.x   = -0.2; } // left
-      else if (newKeyVal === "ArrowRight"|| newKeyCode === 39) { accelWindow.x   = +0.2; } // right
-      else if (newKeyVal === "ArrowDown" || newKeyCode === 40) { accelWindow.y   = +0.2; } // down
-      else if (newKeyVal === "ArrowUp"   || newKeyCode === 38) { accelWindow.y   = -0.2; } // up
+      else if (newKeyVal === "ArrowLeft" || newKeyCode === 37) { accelZoomingLens.x = -0.2; } // left
+      else if (newKeyVal === "ArrowRight"|| newKeyCode === 39) { accelZoomingLens.x = +0.2; } // right
+      else if (newKeyVal === "ArrowDown" || newKeyCode === 40) { accelZoomingLens.y = +0.2; } // down
+      else if (newKeyVal === "ArrowUp"   || newKeyCode === 38) { accelZoomingLens.y = -0.2; } // up
       // I got tired of including both value options. They should be the same anyway
-      else if (newKeyVal === "a") { accelWindow.x = -0.2; }  // left
-      else if (newKeyVal === "d") { accelWindow.x = +0.2; }  // right
-      else if (newKeyVal === "s") { accelWindow.s = -0.02; }  // down
-      else if (newKeyVal === "w") { accelWindow.s = +0.02; }  // up
+      else if (newKeyVal === "a") { accelZoomingLens.x = -0.2; }  // left
+      else if (newKeyVal === "d") { accelZoomingLens.x = +0.2; }  // right
+      else if (newKeyVal === "s") { accelZoomingLens.s = -0.02; }  // down
+      else if (newKeyVal === "w") { accelZoomingLens.s = +0.02; }  // up
     }
 
   }
   //console.log(oldKeyCodes, oldKeyVals, " -> ", newKeyCodes, newKeyVals);
-  accelerateWindow(accelWindow)
+  accelerateZoomingLens(accelZoomingLens);
   accelerateMires(accelMire.x, accelMire.y);
   changeDial(dialSpeed);
 }
@@ -66,7 +64,6 @@ function assessKey(oldKeyCodes, oldKeyVals, newKeyCodes, newKeyVals, keyDirectio
 
 let zoomingLensController = {
   loc: {x:0,y:0,s:10},  // loc = location/position;  s stands for scale (aka zoom or how far into the screen you are)
-
   vel: {x:0,y:0,s:0},  // vel = velocity
   accel: {x:0, y:0, s:0},
   setVelocity: function(newVal) {
@@ -113,7 +110,7 @@ let zoomingLensController = {
   },
 
   checkNewLoc: function(newLoc, doReturnValue=true) {
-    /* Check if newLoc will cause positioning out of bounds*/
+    /* Check if newLoc will cause positioning out of bounds */
     const scale = (newLoc.s===null ? gatScreen.lens.s : newLoc.s);
     const range = {
       x:[0, canvasSz.wd - canvasSz.wd/scale],
@@ -184,8 +181,7 @@ let gatScreen = {
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
   }
 }
-gatScreen.lens.scaleRatio = {x:gatScreen.lens.loc.s, y:gatScreen.lens.loc.s}
-console.log(gatScreen.lens.scaleRatio, gatScreen.lens.loc)
+gatScreen.lens.scaleRatio = {x:gatScreen.lens.loc.s, y:gatScreen.lens.loc.s};
 
 function areArraysEqual(firstArr, seconArr) {
   if (firstArr === seconArr) return true;  // <- what happens if both are false or many other same non-array values
@@ -275,8 +271,11 @@ class MireCircle extends MovingComponent {
     let arcAngleInitial = 0;           // radians
     let arcAngleFinal   = 1 * Math.PI;   // radians
 
-    // translated means the coordinates are moved to be in the plane of the screen
-    let locFromLens = {x:this.x-lens.loc.x*scaleRatio.x,  y:this.y-lens.loc.y*scaleRatio.y};
+    // locFromLens means the coordinates are moved to be in the plane of the screen
+    let locFromLens = {
+      x:this.x-lens.loc.x*scaleRatio.x,
+      y:this.y-lens.loc.y*scaleRatio.y
+    };
 
     // Don't really have to separate out these conditions
     if (this.direction <= 0 && locFromLens.y + this.radius < centerLineY) {
@@ -350,8 +349,8 @@ function everyInterval(n) {
   return ((gatScreen.frameNo / n) % 1 === 0)
 }
 
-function accelerateWindow(accelWindow) {
-  gatScreen.lens.setAcceleration(accelWindow);
+function accelerateZoomingLens(accelZoomingLens) {
+  gatScreen.lens.setAcceleration(accelZoomingLens);
 }
 function accelerateMires(x,y) {
   for (let i = 0; i < mireCircles.length; i += 1) {
