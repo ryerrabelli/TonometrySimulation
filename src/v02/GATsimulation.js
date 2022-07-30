@@ -105,7 +105,7 @@ function areArraysEqual(firstArr, seconArr) {
   // Please note that calling sort on an array will modify that array.
   // you might want to clone your array first.
 
-  for (let i = 0; i < a.length; ++i) {
+  for (let i = 0; i < firstArr.length; ++i) {
     if (firstArr[i] !== seconArr[i]) return false;
   }
   return true;
