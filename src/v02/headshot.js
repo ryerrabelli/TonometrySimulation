@@ -1,7 +1,5 @@
 
-// This is the ratio of the origPhoto (or zoomedPhoto) to the zoomingLens
-let scaleRatioInitial = {x:10, y:10};
-let scaleRatio = {x:scaleRatioInitial.x, y:scaleRatioInitial.y};
+
 let origPhoto, zoomingLens, zoomedPhoto;
 
 // https://www.w3schools.com/graphics/game_intro.asp
@@ -11,10 +9,7 @@ function setUpPhotoZooming(origPhotoID, zoomedPhotoID, zoomingLensID) {
   zoomedPhoto = document.getElementById(zoomedPhotoID);
   zoomingLens = document.getElementById(zoomingLensID);
 
-  origPhoto.style.width    = canvasSz.x + "px";
-  origPhoto.style.height   = canvasSz.y + "px";
-  zoomedPhoto.style.width  = canvasSz.x + "px";
-  zoomedPhoto.style.height = canvasSz.y + "px";
+
 
   /*calculate the magnification by calculating the ratio between zoomedPhoto div (output) and zoomingLens (input):*/
   //scaleRatio.x = zoomedPhoto.offsetWidth / zoomingLens.offsetWidth;
@@ -25,22 +20,28 @@ function setUpPhotoZooming(origPhotoID, zoomedPhotoID, zoomingLensID) {
   updateZoom()
 
   /*execute a function when someone moves the cursor over the image, or the zoomingLens:*/
-  zoomingLens.addEventListener("mousemove", moveZoomingLensByHover);
+  zoomingLens.addEventListener("mousecmove", moveZoomingLensByHover);
   origPhoto.addEventListener("mousemove", moveZoomingLensByHover);
   /*and also for touch screens:*/
   zoomingLens.addEventListener("touchmove", moveZoomingLensByHover);
   origPhoto.addEventListener("touchmove", moveZoomingLensByHover);
 
+  origPhoto.style.width    = canvasSz.wd + "px";
+  origPhoto.style.height   = canvasSz.ht + "px";
+  zoomedPhoto.style.width  = canvasSz.wd + "px";
+  zoomedPhoto.style.height = canvasSz.ht + "px";
+  console.log( origPhoto.computedStyleMap().get("width").value )
 }
 
 function updateZoom() {  // update with latest scaleRatio value
+  let scaleRatio = gatScreen.lens.scaleRatio;
   //zoomingLens.style.width  = 36 + "px";
   //zoomingLens.style.height = 36 + "px";
   //zoomingLens.style.width  = origPhoto.computedStyleMap().get("width").value  / scaleRatio.x + "px";
   //zoomingLens.style.height = origPhoto.computedStyleMap().get("height").value / scaleRatio.y + "px";
-  zoomingLens.style.width  = (canvasSz.x / scaleRatio.x) + "px";
-  zoomingLens.style.height = (canvasSz.y / scaleRatio.y) + "px";
-  zoomedPhoto.style.backgroundSize = (canvasSz.x * scaleRatio.x) + "px " + (canvasSz.y * scaleRatio.y) + "px";
+  zoomingLens.style.width  = (canvasSz.wd / scaleRatio.x) + "px";
+  zoomingLens.style.height = (canvasSz.ht / scaleRatio.y) + "px";
+  zoomedPhoto.style.backgroundSize = (canvasSz.wd * scaleRatio.x) + "px " + (canvasSz.ht * scaleRatio.y) + "px";
 }
 
 function getCursorPos(event) {
@@ -65,7 +66,7 @@ function moveZoomingLensByHover(event) {
   /*calculate the position of the zoomingLens:*/
   let newLoc = {
     x: pos.x - (zoomingLens.offsetWidth / 2),
-    y: pos.y - (zoomingLens.offsetHeight / 2)
+    y: pos.y - (zoomingLens.offsetHeight / 2),
   }
   newLoc = gatScreen.lens.checkAndSetLoc(newLoc);
   //console.log("left/x: " + newLoc.x.toFixed(2).padStart(7," ") + ", top/y: " + newLoc.y.toFixed(2).padStart(7," "));

@@ -29,10 +29,9 @@ function startGat() {
 
 function assessKey(oldKeyCodes, oldKeyVals, newKeyCodes, newKeyVals, keyDirection) {
   let accelMire = {x:null, y:null};
-  let accelWindow = {x:null, y:null};  // null indicates don't change current value
-  let accelZoom = null;
+  let accelWindow = {x:null, y:null, s:null};  // null indicates don't change current value
   let dialSpeed = 0.0;
-  if (keyDirection === "keyup") { stopMovementOfMires(); stopMovementOfWindow(); }
+  if (keyDirection === "keyup") { stopMovementOfMires(); gatScreen.lens.stopMovement(); }
 
   // key codes https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/keyCode
   if (newKeyCodes) {
@@ -43,8 +42,8 @@ function assessKey(oldKeyCodes, oldKeyVals, newKeyCodes, newKeyVals, keyDirectio
       const newKeyVal  = newKeyVals[i];
       if (     newKeyVal === "ArrowLeft" || newKeyCode === 37) { accelMire.x   = -0.2; } // left
       else if (newKeyVal === "ArrowRight"|| newKeyCode === 39) { accelMire.x   = +0.2; } // right
-      else if (newKeyVal === "ArrowDown" || newKeyCode === 40) { accelZoom   = -0.2; } // down
-      else if (newKeyVal === "ArrowUp"   || newKeyCode === 38) { accelZoom   = +0.2; } // up
+      else if (newKeyVal === "ArrowDown" || newKeyCode === 40) { accelWindow.s   = -0.02; } // down
+      else if (newKeyVal === "ArrowUp"   || newKeyCode === 38) { accelWindow.s   = +0.02; } // up
       else if (newKeyVal === " "         || newKeyCode === 32) { dialSpeed = +0.1; } // space
       else if (newKeyVal === "Shift"     || newKeyCode === 16) { dialSpeed = -0.1; } // shift
       // I got tired of including both value options. They should be the same anyway
@@ -56,37 +55,52 @@ function assessKey(oldKeyCodes, oldKeyVals, newKeyCodes, newKeyVals, keyDirectio
 
   }
   console.log(oldKeyCodes, oldKeyVals, " -> ", newKeyCodes, newKeyVals);
-  accelerateWindow(accelWindow.x, accelWindow.y)
+  accelerateWindow(accelWindow)
   accelerateMires(accelMire.x, accelMire.y);
   changeDial(dialSpeed);
 }
 
+// This is the ratio of the origPhoto (or zoomedPhoto) to the zoomingLens
+//let scaleRatioInitial = {x:10, y:10};
+//let scaleRatio = {x:scaleRatioInitial.x, y:scaleRatioInitial.y};
 
 let zoomingLensController = {
-  loc: {x:0,y:0},  // position
-  vel: {x:0,y:0},  // vel aka velocity
-  accel: {x:0, y:0},
-  scale,
-  setVelocity: function(x,y) {
-    if (x !== null) this.vel.x = x;
-    if (y !== null) this.vel.y = y;
+  loc: {x:0,y:0,s:10},  // position
+  vel: {x:0,y:0,s:0},  // vel aka velocity
+  accel: {x:0, y:0, s:0},
+  setVelocity: function(vel) {
+    let x = vel.x; let y = vel.y; let s = vel.s;
+    if (x !== null && x !== undefined) this.vel.x = x;
+    if (y !== null && y !== undefined) this.vel.y = y;
+    if (s !== null && s !== undefined) this.vel.s = s;
     },
-  setAcceleration: function(x,y) {
-    if (x !== null) this.accel.x = x;
-    if (y !== null) this.accel.y = y;
+  setAcceleration: function(accel) {
+    let x = accel.x; let y = accel.y; let s = accel.s;
+    if (x !== null && x !== undefined) this.accel.x = x;
+    if (y !== null && y !== undefined) this.accel.y = y;
+    if (s !== null && s !== undefined) this.accel.s = s;
     },
+  stopMovement: function() {
+    this.setVelocity({x:0,y:0,s:0});
+    this.setAcceleration({x:0,y:0,s:0});
+  },
   getLoc: function() {  // form top left corner
     let x = zoomingLens.computedStyleMap().get("left").value;
     let y = zoomingLens.computedStyleMap().get("top").value;
-    return {x:x, y:y};
+    let scaleRatio = {x:zoomedPhoto.offsetWidth / zoomingLens.offsetWidth, y:zoomedPhoto.offsetHeight / zoomingLens.offsetHeight}
+    return {x:x, y:y, s:scaleRatio.x};
   },
   updatePosition: function() {
     this.vel.x += this.accel.x;
     this.vel.y += this.accel.y;
+    this.vel.s += this.accel.s;
+    //scaleRatio.x = zoomedPhoto.offsetWidth / zoomingLens.offsetWidth;
+    //scaleRatio.y = zoomedPhoto.offsetHeight / zoomingLens.offsetHeight;
     let currentLoc = gatScreen.lens.loc; // this.getLoc()
     this.checkAndSetLoc({
       x: currentLoc.x+this.vel.x,
-      y: currentLoc.y+this.vel.y
+      y: currentLoc.y+this.vel.y,
+      s: currentLoc.s+this.vel.s,
     });
   },
   checkNewLoc: function(newLoc, doReturnValue=true) {
@@ -108,6 +122,15 @@ let zoomingLensController = {
       newLoc.y = 0;
       changedCt++;
     }
+    if (newLoc.s < 1) {
+      newLoc.s = 1;
+      changedCt++;
+    }
+    if (newLoc.s*newLoc.s > canvasSz.ht*canvasSz.wd/4) {
+      newLoc.s = canvasSz.ht/2;
+      changedCt++;
+    }
+
     if (doReturnValue) {
       return newLoc;
     } else {
@@ -115,13 +138,16 @@ let zoomingLensController = {
     }
   },
   setLoc: function(newLoc) {
+    if (newLoc.x !== null && newLoc.x !== undefined)  gatScreen.lens.loc.x = newLoc.x;
+    if (newLoc.y !== null && newLoc.y !== undefined)  gatScreen.lens.loc.y = newLoc.y;
+    if (newLoc.s !== null && newLoc.s !== undefined)  gatScreen.lens.loc.s = newLoc.s;
+    gatScreen.lens.scaleRatio = {x:gatScreen.lens.loc.s, y:gatScreen.lens.loc.s};
+    updateZoom();
     /*set the position of the zoomingLens:*/
     zoomingLens.style.left = newLoc.x + "px";
     zoomingLens.style.top  = newLoc.y + "px";
     /*display what the zoomingLens "sees":*/
-    zoomedPhoto.style.backgroundPosition = "-" + (newLoc.x * scaleRatio.x) + "px -" + (newLoc.y * scaleRatio.y) + "px";
-    gatScreen.lens.loc.x = newLoc.x;
-    gatScreen.lens.loc.y = newLoc.y;
+    zoomedPhoto.style.backgroundPosition = "-" + (newLoc.x * gatScreen.lens.scaleRatio.x) + "px -" + (newLoc.y * gatScreen.lens.scaleRatio.y) + "px";
   },
   checkAndSetLoc: function(newLoc) {
     newLoc = this.checkNewLoc(newLoc);
@@ -129,8 +155,10 @@ let zoomingLensController = {
     return newLoc;
   },
 }
+
 let gatScreen = {
   canvas : document.createElement("canvas"),
+  lens: zoomingLensController,
   start : function() {
     this.canvas.width = canvasSz.wd;
     this.canvas.height = canvasSz.ht;
@@ -142,7 +170,6 @@ let gatScreen = {
     this.keyCode = false;
     this.key = false;
     //this.lensLoc = {x:0, y:0}
-    this.lens = zoomingLensController;
     //zoomingLensController.setLoc(this.lensLoc)
 
     window.addEventListener('keydown', function (event) {
@@ -170,6 +197,8 @@ let gatScreen = {
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
   }
 }
+gatScreen.lens.scaleRatio = {x:gatScreen.lens.loc.s, y:gatScreen.lens.loc.s}
+console.log(gatScreen.lens.scaleRatio, gatScreen.lens.loc)
 
 function areArraysEqual(firstArr, seconArr) {
   if (firstArr === seconArr) return true;  // <- what happens if both are false or many other same non-array values
@@ -235,6 +264,7 @@ class Rectangle extends MovingComponent {
   updateDrawing() {  // overrides empty method in Component
     let ctx = gatScreen.context;
     let lensLoc = gatScreen.lens.loc;
+    let scaleRatio = gatScreen.lens.scaleRatio;
     //let lensLoc = {x:gatScreen.lens.loc.x, y:gatScreen.lens.loc.y};
     ctx.fillStyle = this.color;
     ctx.fillRect(this.x-lensLoc.x*scaleRatio.x, this.y-lensLoc.y*scaleRatio.y, this.width, this.height);
@@ -251,6 +281,7 @@ class MireCircle extends MovingComponent {
   updateDrawing() {  // overrides empty method in Component
     let ctx = gatScreen.context;
     let lensLoc = gatScreen.lens.loc
+    let scaleRatio = gatScreen.lens.scaleRatio;
     //let lensLoc = {x:gatScreen.lens.loc.x, y:gatScreen.lens.loc.y};
 
     // the angle starts from rightmost point (0) to bottom (pi/2) to leftmost (pi) backup through the top
@@ -340,8 +371,8 @@ function everyInterval(n) {
   return ((gatScreen.frameNo / n) % 1 === 0)
 }
 
-function accelerateWindow(x,y) {
-  gatScreen.lens.setAcceleration(x,y);
+function accelerateWindow(accelWindow) {
+  gatScreen.lens.setAcceleration(accelWindow);
 }
 function accelerateMires(x,y) {
   for (let i = 0; i < mireCircles.length; i += 1) {
@@ -359,11 +390,8 @@ function stopMovementOfMires() {
   }
   accelerateMires(0,0);
 }
-function stopMovementOfWindow() {
-  gatScreen.lens.setVelocity(0,0);
-  accelerateWindow(0,0);
-}
+
 function changeDial(dialSpeed) {
   // could also test !isNaN(dialSpeed)
-  if (dialSpeed !== null) { myDial.dialSpeed = dialSpeed; }
+  if (dialSpeed !== null && dialSpeed !== undefined) { myDial.dialSpeed = dialSpeed; }
 }
