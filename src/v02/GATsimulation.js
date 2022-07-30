@@ -50,7 +50,7 @@ function assessKey(oldKeyCodes, oldKeyVals, newKeyCodes, newKeyVals, keydirectio
 
   }
   console.log(oldKeyCodes, oldKeyVals, " -> ", newKeyCodes, newKeyVals);
-  accelerate(accel.x,accel.y);
+  accelerate(accel.x, accel.y);
   changeDial(dialSpeed);
 }
 
@@ -65,8 +65,7 @@ let gatScreen = {
     this.interval = setInterval(updateGatScreen, 20);
     this.keyCode = false;
     this.key = false;
-    this.lensX = 0;
-    this.lensY = 0;
+    this.lensLoc = {x:0, y:0}
 
     window.addEventListener('keydown', function (e) {
       oldKeyCode = gatScreen.keyCode;
@@ -134,8 +133,8 @@ function component(wd, ht, color, x, y, type, direction) {
     console.log(direction)
     this.update = function() {
       let ctx = gatScreen.context;
-      let lensX = gatScreen.lensX;
-      let lensY = gatScreen.lensY;
+      let lensLoc = gatScreen.lensLoc
+      //let lensLoc = {x:gatScreen.lensLoc.x, y:gatScreen.lensLoc.y};
       if (this.type == "text") {
         ctx.font = this.width + " " + this.height;
         ctx.fillStyle = color;
@@ -149,41 +148,42 @@ function component(wd, ht, color, x, y, type, direction) {
         finalAngle = 1 * Math.PI;   // radians
 
         // translated means the coordinates are moved to be in the plane of the screen
-        translatedX = this.x-lensX*10;
-        translatedY = this.y-lensY*10;
+        locFromLens = {x:this.x-lensLoc.x*10,  y:this.y-lensLoc.y*10};
+        //locFromLens.x = this.x-lensLoc.x*10;
+        //locFromLens.y = this.y-lensLoc.y*10;
 
 
 
         // Don't really have to separate out these conditions
-        if (direction <= 0 && translatedY + this.radius < centerLineY) {
+        if (direction <= 0 && locFromLens.y + this.radius < centerLineY) {
           // Nothing to draw as entire circle is not in its correct half of the canvas
-        } else if (direction > 0 && translatedY - this.radius > centerLineY) {
+        } else if (direction > 0 && locFromLens.y - this.radius > centerLineY) {
           // Nothing to draw as entire circle is not in its correct half of the canvas
         } else {
           // Put the separate circles out here because otherwise the nature of arc sin will cause the circle to not be drawn at all (0->0 instead of 0->2pi)
-          if (direction <= 0 && translatedY - this.radius > centerLineY) {
+          if (direction <= 0 && locFromLens.y - this.radius > centerLineY) {
             // Draw full circle as entire circle is on its correct half of the canvas
             offsetAngle = - Math.PI/2  // radians
-          } else if (direction > 0 && translatedY + this.radius < centerLineY) {
+          } else if (direction > 0 && locFromLens.y + this.radius < centerLineY) {
             // Draw full circle as entire circle is on its correct half of the canvas
             offsetAngle = - Math.PI/2  // radians
           } else {
             // Draw only the part of the circle on its correct half of the canvas
-            offsetAngle = Math.asin( (centerLineY-translatedY)/this.radius)  // radians
+            offsetAngle = Math.asin( (centerLineY-locFromLens.y)/this.radius)  // radians
           }
           initialAngle = 0 + offsetAngle;          // radians
           finalAngle = 1 * Math.PI - offsetAngle;  // radians
 
-          //console.log("Drawing Mire at (" + (this.x-lensX*10) + ", " + (this.y-lensY*10) + ")")
-          //console.log("Drawing Mire at (" + (this.x-lensX*10 + this.direction*myDial.dial*dialCoefficient) + ", " + (this.y-lensY*10) + "), direction=" + direction + ", angles=[" + initialAngle*180/Math.PI + "," + finalAngle*180/Math.PI + "]" )
-          //console.log("Drawing Mire at (" + (this.x-lensX*10 + this.direction*myDial.dial*dialCoefficient) + ", " + (this.y-lensY*10) + "), direction=" + direction + ", offset_angle=" + offsetAngle*180/Math.PI + "" )
+          //console.log("Drawing Mire at (" + (this.x-lensLoc.x*10) + ", " + (this.y-lensLoc.y*10) + ")")
+          //console.log("Drawing Mire at (" + (this.x-lensLoc.x*10 + this.direction*myDial.dial*dialCoefficient) + ", " + (this.y-lensLoc.y*10) + "), direction=" + direction + ", angles=[" + initialAngle*180/Math.PI + "," + finalAngle*180/Math.PI + "]" )
+          //console.log("Drawing Mire at (" + (this.x-lensLoc.x*10 + this.direction*myDial.dial*dialCoefficient) + ", " + (this.y-lensLoc.y*10) + "), direction=" + direction + ", offset_angle=" + offsetAngle*180/Math.PI + "" )
 
           // Draw outline
           ctx.strokeStyle = "rgba(0,255,0,0.5)";
           ctx.fillStyle = "rgba(0,0,0,0)";
           ctx.lineWidth = mireLineWidth * 0.5;
           ctx.beginPath();
-          ctx.arc(translatedX + this.direction*myDial.dial*dialCoefficient, translatedY,
+          ctx.arc(locFromLens.x + this.direction*myDial.dial*dialCoefficient, locFromLens.y,
             this.height/2, initialAngle, finalAngle,
             (direction>0 ? true : false));
           ctx.stroke();
@@ -194,7 +194,7 @@ function component(wd, ht, color, x, y, type, direction) {
           ctx.fillStyle = "rgba(200,255,200,0.4)";
           ctx.lineWidth = mireLineWidth;
           ctx.beginPath();
-          ctx.arc(translatedX + this.direction*myDial.dial*dialCoefficient, translatedY,
+          ctx.arc(locFromLens.x + this.direction*myDial.dial*dialCoefficient, locFromLens.y,
             this.radius*0.9, initialAngle, finalAngle,
             (direction>0 ? true : false) );
           ctx.stroke();
@@ -203,7 +203,7 @@ function component(wd, ht, color, x, y, type, direction) {
 
       } else {
         ctx.fillStyle = color;
-        ctx.fillRect(this.x-lensX*10, this.y-lensY*10, this.width, this.height);
+        ctx.fillRect(this.x-lensLoc.x*10, this.y-lensLoc.y*10, this.width, this.height);
       }
 
     }
@@ -222,8 +222,10 @@ function updateGatScreen() {
     gatScreen.clear();
     gatScreen.frameNo += 1;
     zoomingLens = document.getElementById("zoomingLens");
-    gatScreen.lensX = zoomingLens.computedStyleMap().get('left').value;
-    gatScreen.lensY = zoomingLens.computedStyleMap().get('top').value;
+    gatScreen.lensLoc = {
+        x:zoomingLens.computedStyleMap().get('left').value,
+        y:zoomingLens.computedStyleMap().get('top').value
+    }
     if (gatScreen.frameNo == 1 || everyInterval(150)) {
         x = gatScreen.canvas.width;
         minHeight = 20;
