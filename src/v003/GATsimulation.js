@@ -103,31 +103,37 @@ let zoomingLensController = {
       s: currentLoc.s+this.vel.s,
     });
   },
+
   checkNewLoc: function(newLoc, doReturnValue=true) {
-    /*prevent the zoomingLens from being positioned outside the image:*/
+    /* Check if newLoc will cause positioning out of bounds*/
     let changedCt = 0;
-    if (newLoc.x > origPhoto.width - zoomingLens.offsetWidth) {
-      newLoc.x = origPhoto.width - zoomingLens.offsetWidth;
+    const range = {
+      x:[0, origPhoto.width - zoomingLens.offsetWidth],
+      y:[0, origPhoto.height - zoomingLens.offsetHeight],
+      s:[1, Math.sqrt(canvasSz.ht/2*canvasSz.wd/2)],
+    };
+    if (newLoc.x < range.x[0]) {
+      newLoc.x = range.x[0];
       changedCt++;
     }
-    if (newLoc.x < 0) {
-      newLoc.x = 0;
+    if (newLoc.x >  range.x[1]) {
+      newLoc.x = range.x[1];
       changedCt++;
     }
-    if (newLoc.y > origPhoto.height - zoomingLens.offsetHeight) {
-      newLoc.y = origPhoto.height - zoomingLens.offsetHeight;
+    if (newLoc.y < range.y[0]) {
+      newLoc.y = range.y[0];
       changedCt++;
     }
-    if (newLoc.y < 0) {
-      newLoc.y = 0;
+    if (newLoc.y > range.y[1]) {
+      newLoc.y = range.y[1];
       changedCt++;
     }
-    if (newLoc.s < 1) {
-      newLoc.s = 1;
+    if (newLoc.s < range.s[0]) {
+      newLoc.s = range.s[0];
       changedCt++;
     }
-    if (newLoc.s*newLoc.s > canvasSz.ht*canvasSz.wd/4) {
-      newLoc.s = canvasSz.ht/2;
+    if (newLoc.s > range.s[1]) {
+      newLoc.s = range.s[1];
       changedCt++;
     }
 
