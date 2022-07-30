@@ -4,10 +4,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <style>
     body {
-      background-color: black;
-    }
-    canvas {
-      background-color: #052f9e;
+      background-color: #111122;
     }
     * {box-sizing: border-box;}
 
@@ -18,24 +15,26 @@
 
     #zoomingLens {
       position: absolute;
-      border: 1px solid #d4d4d4;
+      border: 2px solid #d4d4d4;
       /*set the size of the lens:*/
       width: 36px;
       height: 36px;
-      border-radius: 3px;
+      border-radius: 10px;
     }
-
     #zoomedPhoto, #origPhoto, canvas {
-      border: 3px solid #d4d4d4;
+      border: 4px solid #d4d4d4;
       /*set the size of the result div:*/
       width: 360px;
       height: 360px;
-      border-radius: 30px;
+      border-radius: 36px;
     }
-
+    canvas {
+      background-color: #052f9e;
+    }
     .grid-container {
       display: grid;
       grid-template-columns: 1fr 1fr;
+      grid-gap: 36px;
     }
   </style>
 
@@ -45,9 +44,9 @@
 </head>
 
 <body onload="startGat()" style="text-align: center">
-  <h1>GAT Simulation</h1>
+  <h1 style="color: #f1f1f1">GAT Simulation</h1>
   <div class="grid-container">
-    <div>
+    <div id="#photo-area" style="justify-self: end;">
       <!-- CIMED residency headshots are originally 6-7MB portrait photos of 3770px by 5655px (aspect ratio 1.5). I cropped them to b 3600px by 3600px. -->
       <div id="zoomedPhoto" class="img-zoom-result"></div>
       <div class="img-zoom-container">
@@ -57,9 +56,8 @@
         <!-- img-zooming-lens will be inserted here -->
         <img id="origPhoto" src="data/Ashkhan-Hojati-008-cropped-square.jpg" alt="Ashkhan headshot">
       </div>
-
     </div>
-    <div id="GAT-area">
+    <div id="GAT-area" style="justify-self: start">
       <div id="GAT-controls">
         <button onmousedown="accelerate( NaN,-0.2)" onmouseup="stopMovement()"> U </button>
         <br />
