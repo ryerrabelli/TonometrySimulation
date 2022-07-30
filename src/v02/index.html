@@ -4,8 +4,29 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <style>
     body {
-      background-color: #111122;
+      background: linear-gradient(-45deg, #111122, #0F0F0F, #112211, #222222);
+      background-size: 400% 400%;
+      animation: gradient 30s ease infinite;
+      font-family: Consolas;
+      color: #f1f1f1;
     }
+    canvas {
+      background: linear-gradient(-45deg, #111122, #072083, #0f59f2, #0a30a3);
+      background-size: 400% 400%;
+      animation: gradient 15s ease infinite;
+    }
+    @keyframes gradient {
+      0% {
+        background-position: 0% 50%;
+      }
+      50% {
+        background-position: 100% 50%;
+      }
+      100% {
+        background-position: 0% 50%;
+      }
+    }
+
     * {box-sizing: border-box;}
 
     .img-zoom-container {
@@ -28,9 +49,6 @@
       height: 360px;
       border-radius: 36px;
     }
-    canvas {
-      background-color: #052f9e;
-    }
     .grid-container {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -44,7 +62,7 @@
 </head>
 
 <body onload="startGat()" style="text-align: center">
-  <h1 style="color: #f1f1f1">GAT Simulation</h1>
+  <h1>GAT Simulation</h1>
   <div class="grid-container">
     <div id="#photo-area" style="justify-self: end;">
       <!-- CIMED residency headshots are originally 6-7MB portrait photos of 3770px by 5655px (aspect ratio 1.5). I cropped them to b 3600px by 3600px. -->
@@ -59,14 +77,20 @@
     </div>
     <div id="GAT-area" style="justify-self: start">
       <div id="GAT-controls">
-        <button onmousedown="accelerate( NaN,-0.2)" onmouseup="stopMovement()"> U </button>
-        <br />
-        <button onmousedown="accelerate(-0.2, NaN)" onmouseup="stopMovement()"> L </button>
-        <button onmousedown="accelerate( NaN, 0.2)" onmouseup="stopMovement()"> D </button>
-        <button onmousedown="accelerate( 0.2, NaN)" onmouseup="stopMovement()"> R </button>
-        <br />
-        <button onmousedown="changeDial(-0.1)" onmouseup="changeDial(0.0)"> Dial down (shift)</button>
-        <button onmousedown="changeDial( 0.1)" onmouseup="changeDial(0.0)"> Dial up (spacebar)</button>
+        <!-- Unicode characters https://www.w3schools.com/charsets/ref_utf_arrows.asp -->
+        <div>
+          <h2>Movement</h2>
+          <button onmousedown="accelerate( NaN,-0.2)" onmouseup="stopMovement()"> &uarr; </button>
+          <br />
+          <button onmousedown="accelerate(-0.2, NaN)" onmouseup="stopMovement()"> &larr; </button>
+          <button onmousedown="accelerate( NaN, 0.2)" onmouseup="stopMovement()"> &darr; </button>
+          <button onmousedown="accelerate( 0.2, NaN)" onmouseup="stopMovement()"> &rarr; </button>
+        </div>
+        <div>
+          <h2>Pressure Dial</h2>
+          <button onmousedown="changeDial(-0.1)" onmouseup="changeDial(0.0)"> &darr; (shift)</button>
+          <button onmousedown="changeDial( 0.1)" onmouseup="changeDial(0.0)"> &uarr; (spacebar)</button>
+        </div>
       </div>
     </div>
   </div>

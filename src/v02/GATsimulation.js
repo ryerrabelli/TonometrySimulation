@@ -23,7 +23,7 @@ function startGat() {
   let mireCircleLeftEye1  = new MireCircle(MIRE_RADIUS, MIRE_RADIUS, 0,  leftPupilLoc.x,  leftPupilLoc.y, +1);
   let mireCircleLeftEye2  = new MireCircle(MIRE_RADIUS, MIRE_RADIUS, 0,  leftPupilLoc.x,  leftPupilLoc.y, -1);
   mireCircles = [mireCircleRightEye1, mireCircleRightEye2, mireCircleLeftEye1, mireCircleLeftEye2];
-  myDial = new Dial("30px", "Consolas", "black", 10, 40, "text");
+  myDial = new Dial("30px", "Consolas", "rgba(255,255,255,0.5)", 10, 40, "text");
   gatScreen.start();
 }
 
