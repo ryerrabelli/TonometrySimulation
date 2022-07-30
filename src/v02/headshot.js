@@ -1,8 +1,10 @@
 var cx, cy;
 
+let origPhoto, zoomingLens, zoomedPhoto;
+
+
 // Original source: https://www.w3schools.com/howto/howto_js_image_zoom.asp
 function setUpPhotoZooming(origPhotoID, zoomedPhotoID, zoomingLensID) {
-  var origPhoto, zoomingLens, zoomedPhoto;
   origPhoto = document.getElementById(origPhotoID);
   zoomedPhoto = document.getElementById(zoomedPhotoID);
   zoomingLens = document.getElementById(zoomingLensID);
@@ -25,51 +27,52 @@ function setUpPhotoZooming(origPhotoID, zoomedPhotoID, zoomingLensID) {
   /*and also for touch screens:*/
   zoomingLens.addEventListener("touchmove", moveZoomingLens);
   origPhoto.addEventListener("touchmove", moveZoomingLens);
+}
 
-  function moveZoomingLens(e) {
-    var pos, x, y;
-    /*prevent any other actions that may occur when moving over the image:*/
-    e.preventDefault();
-    /*get the cursor's x and y positions:*/
-    pos = getCursorPos(e);
-    /*calculate the position of the zoomingLens:*/
-    x = pos.x - (zoomingLens.offsetWidth / 2);
-    y = pos.y - (zoomingLens.offsetHeight / 2);
-    /*prevent the zoomingLens from being positioned outside the image:*/
-    if (x > origPhoto.width - zoomingLens.offsetWidth) {x = origPhoto.width - zoomingLens.offsetWidth;}
-    if (x < 0) {x = 0;}
-    if (y > origPhoto.height - zoomingLens.offsetHeight) {y = origPhoto.height - zoomingLens.offsetHeight;}
-    if (y < 0) {y = 0;}
+function getCursorPos(e) {
+  let a, x = 0, y = 0;
+  e = e || window.event;
+  /*get the x and y positions of the image:*/
+  a = origPhoto.getBoundingClientRect();
+  /*calculate the cursor's x and y coordinates, relative to the image:*/
+  x = e.pageX - a.left;
+  y = e.pageY - a.top;
+  /*consider any page scrolling:*/
+  x = x - window.pageXOffset;
+  y = y - window.pageYOffset;
+  return {x : x, y : y};
+}
 
-    /*set the position of the zoomingLens:*/
-    zoomingLens.style.left = x + "px";
-    zoomingLens.style.top = y + "px";
-    /*display what the zoomingLens "sees":*/
-    zoomedPhoto.style.backgroundPosition = "-" + (x * cx) + "px -" + (y * cy) + "px";
-    // value can also be read as zoomingLens.computedStyleMap().get('top').value
-    //console.log("left (x): " + x + ",   top (y): " + y);
-  }
-  function getCursorPos(e) {
-    var a, x = 0, y = 0;
-    e = e || window.event;
-    /*get the x and y positions of the image:*/
-    a = origPhoto.getBoundingClientRect();
-    /*calculate the cursor's x and y coordinates, relative to the image:*/
-    x = e.pageX - a.left;
-    y = e.pageY - a.top;
-    /*consider any page scrolling:*/
-    x = x - window.pageXOffset;
-    y = y - window.pageYOffset;
-    return {x : x, y : y};
-  }
+function moveZoomingLens(e) {
+  let pos, x, y;
+  /*prevent anyother actions that may occur when moving over the image:*/
+  e.preventDefault();
+  /*get the cursor's x and y positions:*/
+  pos = getCursorPos(e);
+  /*calculate the position of the zoomingLens:*/
+  x = pos.x - (zoomingLens.offsetWidth / 2);
+  y = pos.y - (zoomingLens.offsetHeight / 2);
+  /*prevent the zoomingLens from being positioned outside the image:*/
+  if (x > origPhoto.width - zoomingLens.offsetWidth) {x = origPhoto.width - zoomingLens.offsetWidth;}
+  if (x < 0) {x = 0;}
+  if (y > origPhoto.height - zoomingLens.offsetHeight) {y = origPhoto.height - zoomingLens.offsetHeight;}
+  if (y < 0) {y = 0;}
+
+  /*set the position of the zoomingLens:*/
+  zoomingLens.style.left = x + "px";
+  zoomingLens.style.top = y + "px";
+  /*display what the zoomingLens "sees":*/
+  zoomedPhoto.style.backgroundPosition = "-" + (x * cx) + "px -" + (y * cy) + "px";
+  // value can also be read as zoomingLens.computedStyleMap().get('top').value
+  //console.log("left (x): " + x + ",   top (y): " + y);
 }
 
 function moveZoomingLensByKey(dx, dy) {
   //console.assert(zoomingLens.computedStyleMap().get('left').unit === "px");
   //console.assert(zoomingLens.computedStyleMap().get('top').unit === "px");
   console.log(zoomingLens.computedStyleMap().get('left') );
-  var x = zoomingLens.computedStyleMap().get('left').value;
-  var y = zoomingLens.computedStyleMap().get('top').value;
+  let x = zoomingLens.computedStyleMap().get('left').value;
+  let y = zoomingLens.computedStyleMap().get('top').value;
 
   x = x + dx;
   y = y + dy;
