@@ -28,7 +28,7 @@ function startGat() {
 }
 
 function assessKey(oldKeyCodes, oldKeyVals, newKeyCodes, newKeyVals, keyDirection) {
-  let accelMire = {x:null, y:null};
+  let accelMire = {x:null, y:null};  // not used anymore. Mires do not move
   let accelWindow = {x:null, y:null, s:null};  // null indicates don't change current value
   let dialSpeed = 0.0;
   if (keyDirection === "keyup") { stopMovementOfMires(); gatScreen.lens.stopMovement(); }
@@ -40,17 +40,17 @@ function assessKey(oldKeyCodes, oldKeyVals, newKeyCodes, newKeyVals, keyDirectio
     for (let i = 0; i < newKeyCodes.length; i++ ) {
       const newKeyCode = newKeyCodes[i];
       const newKeyVal  = newKeyVals[i];
-      if (     newKeyVal === "ArrowLeft" || newKeyCode === 37) { accelMire.x   = -0.2; } // left
-      else if (newKeyVal === "ArrowRight"|| newKeyCode === 39) { accelMire.x   = +0.2; } // right
-      else if (newKeyVal === "ArrowDown" || newKeyCode === 40) { accelWindow.s   = -0.02; } // down
-      else if (newKeyVal === "ArrowUp"   || newKeyCode === 38) { accelWindow.s   = +0.02; } // up
-      else if (newKeyVal === " "         || newKeyCode === 32) { dialSpeed = +0.1; } // space
+      if      (newKeyVal === " "         || newKeyCode === 32) { dialSpeed = +0.1; } // space
       else if (newKeyVal === "Shift"     || newKeyCode === 16) { dialSpeed = -0.1; } // shift
+      else if (newKeyVal === "ArrowLeft" || newKeyCode === 37) { accelWindow.x   = -0.2; } // left
+      else if (newKeyVal === "ArrowRight"|| newKeyCode === 39) { accelWindow.x   = +0.2; } // right
+      else if (newKeyVal === "ArrowDown" || newKeyCode === 40) { accelWindow.y   = +0.2; } // down
+      else if (newKeyVal === "ArrowUp"   || newKeyCode === 38) { accelWindow.y   = -0.2; } // up
       // I got tired of including both value options. They should be the same anyway
       else if (newKeyVal === "a") { accelWindow.x = -0.2; }  // left
       else if (newKeyVal === "d") { accelWindow.x = +0.2; }  // right
-      else if (newKeyVal === "s") { accelWindow.y = +0.2; }  // down
-      else if (newKeyVal === "w") { accelWindow.y = -0.2; }  // up
+      else if (newKeyVal === "s") { accelWindow.s = -0.02; }  // down
+      else if (newKeyVal === "w") { accelWindow.s = +0.02; }  // up
     }
 
   }
