@@ -30,6 +30,7 @@ function startGat() {
 function assessKey(oldKeyCodes, oldKeyVals, newKeyCodes, newKeyVals, keyDirection) {
   let accelMire = {x:null, y:null};
   let accelWindow = {x:null, y:null};  // null indicates don't change current value
+  let accelZoom = null;
   let dialSpeed = 0.0;
   if (keyDirection === "keyup") { stopMovementOfMires(); stopMovementOfWindow(); }
 
@@ -39,11 +40,11 @@ function assessKey(oldKeyCodes, oldKeyVals, newKeyCodes, newKeyVals, keyDirectio
     //zoomingLensController.
     for (let i = 0; i < newKeyCodes.length; i++ ) {
       const newKeyCode = newKeyCodes[i];
-      const newKeyVal = newKeyVals[i];
-      if (     newKeyVal === "ArrowLeft" || newKeyCode === 37) { accelMire.x   = -0.2; } // right
-      else if (newKeyVal === "ArrowRight"|| newKeyCode === 39) { accelMire.x   = +0.2; } // left
-      else if (newKeyVal === "ArrowDown" || newKeyCode === 40) { accelMire.y   = -0.2; } // down
-      else if (newKeyVal === "ArrowUp"   || newKeyCode === 38) { accelMire.y   = +0.2; } // up
+      const newKeyVal  = newKeyVals[i];
+      if (     newKeyVal === "ArrowLeft" || newKeyCode === 37) { accelMire.x   = -0.2; } // left
+      else if (newKeyVal === "ArrowRight"|| newKeyCode === 39) { accelMire.x   = +0.2; } // right
+      else if (newKeyVal === "ArrowDown" || newKeyCode === 40) { accelZoom   = -0.2; } // down
+      else if (newKeyVal === "ArrowUp"   || newKeyCode === 38) { accelZoom   = +0.2; } // up
       else if (newKeyVal === " "         || newKeyCode === 32) { dialSpeed = +0.1; } // space
       else if (newKeyVal === "Shift"     || newKeyCode === 16) { dialSpeed = -0.1; } // shift
       // I got tired of including both value options. They should be the same anyway
@@ -60,10 +61,12 @@ function assessKey(oldKeyCodes, oldKeyVals, newKeyCodes, newKeyVals, keyDirectio
   changeDial(dialSpeed);
 }
 
+
 let zoomingLensController = {
   loc: {x:0,y:0},  // position
   vel: {x:0,y:0},  // vel aka velocity
   accel: {x:0, y:0},
+  scale,
   setVelocity: function(x,y) {
     if (x !== null) this.vel.x = x;
     if (y !== null) this.vel.y = y;
@@ -134,6 +137,7 @@ let gatScreen = {
     this.context = this.canvas.getContext("2d");
     document.getElementById("GAT-area").insertBefore(this.canvas, document.getElementById("GAT-controls"));
     this.frameNo = 0;
+    // Despite what pycharm, the interval function is used
     this.interval = setInterval(updateGatScreen, 20);
     this.keyCode = false;
     this.key = false;
@@ -360,5 +364,6 @@ function stopMovementOfWindow() {
   accelerateWindow(0,0);
 }
 function changeDial(dialSpeed) {
-  if (!isNaN(dialSpeed)) { myDial.dialSpeed = dialSpeed; }
+  // could also test !isNaN(dialSpeed)
+  if (dialSpeed !== null) { myDial.dialSpeed = dialSpeed; }
 }
