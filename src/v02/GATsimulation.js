@@ -12,6 +12,8 @@ const MIRE_RADIUS = 100;
 const MIRE_LINE_WD = 5;
 const MIRE_SEPARATION = MIRE_RADIUS*2;   // distance between mire circles when dial is not set
 
+
+
 // https://www.w3schools.com/graphics/game_intro.asp
 // https://www.w3schools.com/howto/howto_js_image_zoom.asp
 function startGat() {
@@ -28,7 +30,7 @@ function startGat() {
 function assessKey(oldKeyCodes, oldKeyVals, newKeyCodes, newKeyVals, keyDirection) {
   let accel = {x:NaN, y:NaN};
   let dialSpeed = 0.0;
-  if (keyDirection == "keyup") { stopMovement(); }
+  if (keyDirection === "keyup") { stopMovement(); }
 
   // key codes https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/keyCode
   if (newKeyCodes) {
@@ -36,12 +38,12 @@ function assessKey(oldKeyCodes, oldKeyVals, newKeyCodes, newKeyVals, keyDirectio
     for (let i = 0; i < newKeyCodes.length; i++ ) {
       const newKeyCode = newKeyCodes[i];
       const newKeyVal = newKeyVals[i];
-      if (     newKeyVal === "ArrowLeft" || newKeyCode == 37) { accel.x    =-0.2; } // right
-      else if (newKeyVal === "ArrowRight"|| newKeyCode == 39) { accel.x    =+0.2; } // left
-      else if (newKeyVal === "ArrowDown" || newKeyCode == 40) { accel.y    =-0.2; } // down
-      else if (newKeyVal === "ArrowUp"   || newKeyCode == 38) { accel.y    =+0.2; } // up
-      else if (newKeyVal === " "         || newKeyCode == 32) { dialSpeed =+0.1; } // space
-      else if (newKeyVal === "Shift"     || newKeyCode == 16) { dialSpeed =-0.1; } // shift
+      if (     newKeyVal === "ArrowLeft" || newKeyCode === 37) { accel.x   = -0.2; } // right
+      else if (newKeyVal === "ArrowRight"|| newKeyCode === 39) { accel.x   = +0.2; } // left
+      else if (newKeyVal === "ArrowDown" || newKeyCode === 40) { accel.y   = -0.2; } // down
+      else if (newKeyVal === "ArrowUp"   || newKeyCode === 38) { accel.y   = +0.2; } // up
+      else if (newKeyVal === " "         || newKeyCode === 32) { dialSpeed = +0.1; } // space
+      else if (newKeyVal === "Shift"     || newKeyCode === 16) { dialSpeed = -0.1; } // shift
       // I got tired of including both value options. They should be the same anyway
       else if (newKeyVal === "a") { moveZoomingLensByKey(-10,  0); }  // left
       else if (newKeyVal === "d") { moveZoomingLensByKey(+10,  0); }
@@ -68,19 +70,20 @@ let gatScreen = {
     this.key = false;
     this.lensLoc = {x:0, y:0}
 
-    window.addEventListener('keydown', function (e) {
-      oldKeyCode = gatScreen.keyCode;
-      oldKey = gatScreen.key;
-      gatScreen.keyCode = [e.keyCode];
-      gatScreen.key = [e.key];
+    window.addEventListener('keydown', function (event) {
+      const oldKeyCode = gatScreen.keyCode;
+      const oldKey = gatScreen.key;
+      gatScreen.keyCode = [event.keyCode];
+      gatScreen.key = [event.key];
       // Holding down the key eventually counts as multiple key presses
       if ( !areArraysEqual(gatScreen.keyCode, oldKeyCode) ) {
         assessKey(oldKeyCode, oldKey, gatScreen.keyCode, gatScreen.key, "keydown")
       }
     })
-    window.addEventListener('keyup', function (e) {
-      oldKeyCode = gatScreen.keyCode;
-      oldKey = gatScreen.key;
+    window.addEventListener('keyup', function (event) {
+      const oldKeyCode = gatScreen.keyCode;
+      const oldKey = gatScreen.key;
+      // Need to integrate event to only delete the specific key held up
       gatScreen.keyCode = false;
       gatScreen.key = false;
       if ( !areArraysEqual(gatScreen.keyCode, oldKeyCode) ) {
@@ -159,7 +162,7 @@ class Rectangle extends MovingComponent {
     let lensLoc = gatScreen.lensLoc;
     //let lensLoc = {x:gatScreen.lensLoc.x, y:gatScreen.lensLoc.y};
     ctx.fillStyle = this.color;
-    ctx.fillRect(this.x-lensLoc.x*10, this.y-lensLoc.y*10, this.width, this.height);
+    ctx.fillRect(this.x-lensLoc.x*scaleRatio.x, this.y-lensLoc.y*scaleRatio.y, this.width, this.height);
   }
 }
 class MireCircle extends MovingComponent {
@@ -182,9 +185,9 @@ class MireCircle extends MovingComponent {
     let arcAngleFinal   = 1 * Math.PI;   // radians
 
     // translated means the coordinates are moved to be in the plane of the screen
-    let locFromLens = {x:this.x-lensLoc.x*10,  y:this.y-lensLoc.y*10};
-    //locFromLens.x = this.x-lensLoc.x*10;
-    //locFromLens.y = this.y-lensLoc.y*10;
+    let locFromLens = {x:this.x-lensLoc.x*scaleRatio.x,  y:this.y-lensLoc.y*scaleRatio.y};
+    //locFromLens.x = this.x-lensLoc.x*scaleRatio.x;
+    //locFromLens.y = this.y-lensLoc.y*scaleRatio.y;
 
     // Don't really have to separate out these conditions
     if (this.direction <= 0 && locFromLens.y + this.radius < centerLineY) {
@@ -193,7 +196,7 @@ class MireCircle extends MovingComponent {
       // Nothing to draw as entire circle is not in its correct half of the canvas
     } else {
       // Put the separate circles out here because otherwise the nature of arc sin will cause the circle to not be drawn at all (0->0 instead of 0->2pi)
-      let offsetAngle = undefined;
+      let offsetAngle;  // default is undefined
       if (this.direction <= 0 && locFromLens.y - this.radius > centerLineY) {
         // Draw full circle as entire circle is on its correct half of the canvas
         offsetAngle = - Math.PI/2  // radians
@@ -207,9 +210,9 @@ class MireCircle extends MovingComponent {
       arcAngleInitial =    0    + offsetAngle;  // radians
       arcAngleFinal   = Math.PI - offsetAngle;  // radians
 
-      //console.log("Drawing Mire at (" + (this.x-lensLoc.x*10) + ", " + (this.y-lensLoc.y*10) + ")")
-      //console.log("Drawing Mire at (" + (this.x-lensLoc.x*10 + this.direction*myDial.dial*dialCoefficient) + ", " + (this.y-lensLoc.y*10) + "), direction=" + this.direction + ", angles=[" + initialAngle*180/Math.PI + "," + finalAngle*180/Math.PI + "]" )
-      //console.log("Drawing Mire at (" + (this.x-lensLoc.x*10 + this.direction*myDial.dial*dialCoefficient) + ", " + (this.y-lensLoc.y*10) + "), direction=" + this.direction + ", offset_angle=" + offsetAngle*180/Math.PI + "" )
+      //console.log("Drawing Mire at (" +(this.x-lensLoc.x*scaleRatio.x) + ", " + (this.y-lensLoc.y*scaleRatio.y) + ")")
+      //console.log("Drawing Mire at (" +(this.x-lensLoc.x*scaleRatio.x + this.direction*myDial.dial*dialCoefficient) + ", " + (this.y-lensLoc.y*scaleRatio.y) + "), direction=" + this.direction + ", angles=[" + initialAngle*180/Math.PI + "," + finalAngle*180/Math.PI + "]" )
+      //console.log("Drawing Mire at (" +(this.x-lensLoc.x*scaleRatio.x + this.direction*myDial.dial*dialCoefficient) + ", " + (this.y-lensLoc.y*scaleRatio.y) + "), direction=" + this.direction + ", offset_angle=" + offsetAngle*180/Math.PI + "" )
 
       // Draw outline
       ctx.strokeStyle = "rgba(0,255,0,0.5)";
@@ -218,7 +221,7 @@ class MireCircle extends MovingComponent {
       ctx.beginPath();
       ctx.arc(locFromLens.x + this.direction*myDial.dial*dialCoefficient, locFromLens.y,
         this.height/2, arcAngleInitial, arcAngleFinal,
-        (this.direction>0 ? true : false));
+        (this.direction>0) );
       ctx.stroke();
       ctx.fill();
 
@@ -237,23 +240,13 @@ class MireCircle extends MovingComponent {
 }
 
 function updateGatScreen() {
-  let x, height, gap, minHeight, maxHeight, minGap, maxGap;
   gatScreen.clear();
   gatScreen.frameNo += 1;
-  zoomingLens = document.getElementById("zoomingLens");
   gatScreen.lensLoc = {
-    x:zoomingLens.computedStyleMap().get('left').value,
-    y:zoomingLens.computedStyleMap().get('top').value
+    x: zoomingLens.computedStyleMap().get('left').value,
+    y: zoomingLens.computedStyleMap().get( 'top').value
   };
-  if (gatScreen.frameNo == 1 || everyInterval(150)) {
-    x = gatScreen.canvas.width;
-    minHeight = 20;
-    maxHeight = 200;
-    height = Math.floor(Math.random()*(maxHeight-minHeight+1)+minHeight);
-    minGap = 50;
-    maxGap = 200;
-    gap = Math.floor(Math.random()*(maxGap-minGap+1)+minGap);
-  }
+
   myDial.text="Dial: " + myDial.dial.toFixed(1) + " mmHg";
   myDial.updatePosition();
   myDial.updateDrawing();
@@ -266,8 +259,7 @@ function updateGatScreen() {
 }
 
 function everyInterval(n) {
-  if ((gatScreen.frameNo / n) % 1 == 0) {return true;}
-  return false;
+  return ((gatScreen.frameNo / n) % 1 === 0)
 }
 
 function accelerate(x,y) {
