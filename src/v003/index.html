@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <style>
+    body {
+      background: linear-gradient(-45deg, #111122, #0F0F0F, #112211, #222222);
+      background-size: 400% 400%;
+      animation: gradient 30s ease infinite;
+      font-family: Consolas;
+      color: #f1f1f1;
+    }
+    canvas {
+      background: linear-gradient(-45deg, #111122, #072083, #0f59f2, #0a30a3);
+      background-size: 400% 400%;
+      animation: gradient 15s ease infinite;
+    }
+    @keyframes gradient {
+      0% {
+        background-position: 0% 50%;
+      }
+      50% {
+        background-position: 100% 50%;
+      }
+      100% {
+        background-position: 0% 50%;
+      }
+    }
+
+    * {box-sizing: border-box;}
+
+    .img-zoom-container {
+      position: relative;
+      text-align: left;
+    }
+
+    #zoomingLens {
+      position: absolute;
+      border: 2px solid #d4d4d4;
+      border-radius: 10px;
+    }
+    #zoomedPhoto, #origPhoto, canvas {
+      border: 4px solid #d4d4d4;
+      /*set the size of the result div:*/
+      /*width: 360px; // programmatically set now
+      height: 360px;*/
+      border-radius: 36px;
+    }
+    .grid-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-gap: 36px;
+    }
+    #xLocDisplayer, #yLocDisplayer {
+      font-family: "courier-new";
+    }
+  </style>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script type="text/javascript" src="headshot.js"></script>
+  <script type="text/javascript" src="GATsimulation.js"></script>
+  <title>GAT</title>
+</head>
+
+<body onload="startGat()" style="text-align: center">
+  <h1>GAT Simulation</h1>
+  <div class="grid-container">
+    <div id="#photo-area" style="justify-self: end;">
+      <!-- CIMED residency headshots are originally 6-7MB portrait photos of 3770px by 5655px (aspect ratio 1.5). I cropped them to b 3600px by 3600px. -->
+      <div id="zoomedPhoto" class="img-zoom-result"></div>
+      <div class="img-zoom-container">
+        <div id="zoomingLens">
+
+        </div>
+        <!-- img-zooming-lens will be inserted here -->
+        <img id="origPhoto" src="data/Ashkhan-Hojati-008-cropped-square.jpg" alt="Ashkhan headshot">
+      </div>
+    </div>
+    <div id="GAT-area" style="justify-self: start">
+      <div id="GAT-controls">
+        <!-- Unicode characters https://www.w3schools.com/charsets/ref_utf_arrows.asp -->
+        <div>
+
+          <table>
+            <tr><th colspan="2"><h2>Movement</h2></th></tr>
+            <tr>
+              <td>
+                <button onmousedown="accelerateWindow({y:-0.2})" onmouseup="gatScreen.lens.stopMovement()"> &uarr; </button>
+              </td>
+              <td>
+                <button onmousedown="accelerateWindow({s:+0.02})" onmouseup="gatScreen.lens.stopMovement()"> &#8613; (W)
+                </button>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <button onmousedown="accelerateWindow({x:-0.2})" onmouseup="gatScreen.lens.stopMovement()"> &larr; </button>
+                <button onmousedown="accelerateWindow({y:+0.2})" onmouseup="gatScreen.lens.stopMovement()"> &darr; </button>
+                <button onmousedown="accelerateWindow({x:+0.2})" onmouseup="gatScreen.lens.stopMovement()"> &rarr; </button>
+              </td>
+              <td>
+                <button onmousedown="accelerateWindow({s:-0.02})" onmouseup="gatScreen.lens.stopMovement()"> &#8615; (S)
+                </button>
+              </td>
+            </tr>
+            <tr><td>
+              left:<span id="xLocDisplayer"></span>,<br />
+              top:<span id="yLocDisplayer"></span>
+            </td><td>forward:<br /><span id="sLocDisplayer"></span></td>
+            </tr>
+            <tr><th colspan="2"><h2>Pressure Dial</h2></th></tr>
+            <tr>
+              <td><button onmousedown="changeDial(-0.1)" onmouseup="changeDial(0.0)"> &darr; (shift)</button></td>
+              <td><button onmousedown="changeDial( 0.1)" onmouseup="changeDial(0.0)"> &uarr; (spacebar)</button></td>
+            </tr>
+
+          </table>
+
+
+        </div>
+        <div>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+
+
+</body>
+
+<script>
+// Initiate zoom effect:
+  setUpPhotoZooming("origPhoto", "zoomedPhoto", "zoomingLens");
+</script>
+
+</html>
