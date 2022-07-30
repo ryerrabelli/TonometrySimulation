@@ -1,6 +1,7 @@
 let scaleRatio = {};
 let origPhoto, zoomingLens, zoomedPhoto;
 
+// https://www.w3schools.com/graphics/game_intro.asp
 // Original source: https://www.w3schools.com/howto/howto_js_image_zoom.asp
 function setUpPhotoZooming(origPhotoID, zoomedPhotoID, zoomingLensID) {
   origPhoto = document.getElementById(origPhotoID);
@@ -28,14 +29,26 @@ function setUpPhotoZooming(origPhotoID, zoomedPhotoID, zoomingLensID) {
 }
 
 let zoomingLensController = {
-  velocity: {x:0,y:0},
+  vel: {x:0,y:0},  // vel aka velocity
   accel: {x:0, y:0},
+  setVelocity: function(x,y) {this.vel.x = x; this.vel.y = y;},
+  setAcceleration: function(x,y) {this.accel.x = x; this.accel.y = y;},
   getLoc: function() {  // form top left corner
-    let x = zoomingLens.computedStyleMap().get('left').value;
-    let y = zoomingLens.computedStyleMap().get('top').value;
-    return {x:x, y:y}
+    let x = zoomingLens.computedStyleMap().get("left").value;
+    let y = zoomingLens.computedStyleMap().get("top").value;
+    return {x:x, y:y};
   },
-  checkNewLoc: function(newLoc, returnValue=true) {
+  updatePosition: function() {
+    return; /*
+    this.vel.x += this.accel.x;
+    this.vel.y += this.accel.y;
+    let currentLoc = gatScreen.lensLoc; // this.getLoc()
+    this.setLoc({
+      x: currentLoc.x+this.vel.x,
+      y: currentLoc.y+this.vel.y
+    });*/
+  },
+  checkNewLoc: function(newLoc, doReturnValue=true) {
     /*prevent the zoomingLens from being positioned outside the image:*/
     let changedCt = 0;
     if (newLoc.x > origPhoto.width - zoomingLens.offsetWidth) {
@@ -54,31 +67,38 @@ let zoomingLensController = {
       newLoc.y = 0;
       changedCt++;
     }
-    if (returnValue) {
-      return newLoc
+    if (doReturnValue) {
+      return newLoc;
     } else {
-      return changedCt > 0
+      return changedCt > 0;
     }
   },
-  updateLoc: function(loc) {
+  setLoc: function(loc) {
     /*set the position of the zoomingLens:*/
     zoomingLens.style.left = loc.x + "px";
     zoomingLens.style.top  = loc.y + "px";
     /*display what the zoomingLens "sees":*/
     zoomedPhoto.style.backgroundPosition = "-" + (loc.x * scaleRatio.x) + "px -" + (loc.y * scaleRatio.y) + "px";
-  }
+      return;
+    gatScreen.lensLoc.x = loc.x;
+    gatScreen.lensLoc.y = loc.y;
+  },
+  checkAndSetLoc: function(newLoc) {
+    newLoc = this.checkNewLoc(newLoc);
+    this.setLoc(newLoc);
+    return newLoc;
+  },
 
 }
 
 
 function getCursorPos(event) {
-  let a, x = 0, y = 0;
   event = event || window.event;
   /*get the x and y positions of the image:*/
-  a = origPhoto.getBoundingClientRect();
+  let a = origPhoto.getBoundingClientRect();
   /*calculate the cursor's x and y coordinates, relative to the image:*/
-  x = event.pageX - a.left;
-  y = event.pageY - a.top;
+  let x = event.pageX - a.left;
+  let y = event.pageY - a.top;
   /*consider any page scrolling:*/
   x = x - window.pageXOffset;
   y = y - window.pageYOffset;
@@ -96,8 +116,7 @@ function moveZoomingLensByHover(event) {
     x: pos.x - (zoomingLens.offsetWidth / 2),
     y: pos.y - (zoomingLens.offsetHeight / 2)
   }
-  newLoc = zoomingLensController.checkNewLoc(newLoc)
-  zoomingLensController.updateLoc(newLoc)
+  newLoc = zoomingLensController.checkAndSetLoc(newLoc);
   console.log("left (x): " + newLoc.x + ",   top (y): " + newLoc.y);
 }
 
@@ -106,10 +125,10 @@ function moveZoomingLensByKey(dx, dy) {
   //console.assert(zoomingLens.computedStyleMap().get('top').unit === "px");
   console.log(zoomingLens.computedStyleMap().get('left') );
 
-  const currentLoc = zoomingLensController.getLoc()
-  let newLoc = {x: currentLoc.x + dx, y: currentLoc.y + dy}
+  const currentLoc = zoomingLensController.getLoc();
+  let newLoc = {x: currentLoc.x + dx, y: currentLoc.y + dy};
 
-  newLoc = zoomingLensController.checkNewLoc(newLoc)
-  zoomingLensController.updateLoc(newLoc)
+  newLoc = zoomingLensController.checkAndSetLoc(newLoc);
+  //zoomingLensController.setLoc(newLoc);
   console.log("left (x): " + newLoc.x + ",   top (y): " + newLoc.y);
 }

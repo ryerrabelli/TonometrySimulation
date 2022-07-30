@@ -28,32 +28,47 @@ function startGat() {
 }
 
 function assessKey(oldKeyCodes, oldKeyVals, newKeyCodes, newKeyVals, keyDirection) {
-  let accel = {x:NaN, y:NaN};
+  let accelMire = {x:NaN, y:NaN};
+  let accelWindow = {x:NaN, y:NaN};
   let dialSpeed = 0.0;
-  if (keyDirection === "keyup") { stopMovement(); }
+  if (keyDirection === "keyup") { stopMovementOfMires(); stopMovementOfWindow(); }
 
   // key codes https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/keyCode
   if (newKeyCodes) {
     console.assert(newKeyCodes.length === newKeyVals.length);
+    //zoomingLensController.
     for (let i = 0; i < newKeyCodes.length; i++ ) {
       const newKeyCode = newKeyCodes[i];
       const newKeyVal = newKeyVals[i];
-      if (     newKeyVal === "ArrowLeft" || newKeyCode === 37) { accel.x   = -0.2; } // right
-      else if (newKeyVal === "ArrowRight"|| newKeyCode === 39) { accel.x   = +0.2; } // left
-      else if (newKeyVal === "ArrowDown" || newKeyCode === 40) { accel.y   = -0.2; } // down
-      else if (newKeyVal === "ArrowUp"   || newKeyCode === 38) { accel.y   = +0.2; } // up
+      if (     newKeyVal === "ArrowLeft" || newKeyCode === 37) { accelMire.x   = -0.2; } // right
+      else if (newKeyVal === "ArrowRight"|| newKeyCode === 39) { accelMire.x   = +0.2; } // left
+      else if (newKeyVal === "ArrowDown" || newKeyCode === 40) { accelMire.y   = -0.2; } // down
+      else if (newKeyVal === "ArrowUp"   || newKeyCode === 38) { accelMire.y   = +0.2; } // up
       else if (newKeyVal === " "         || newKeyCode === 32) { dialSpeed = +0.1; } // space
       else if (newKeyVal === "Shift"     || newKeyCode === 16) { dialSpeed = -0.1; } // shift
       // I got tired of including both value options. They should be the same anyway
-      else if (newKeyVal === "a") { moveZoomingLensByKey(-10,  0); }  // left
-      else if (newKeyVal === "d") { moveZoomingLensByKey(+10,  0); }
-      else if (newKeyVal === "s") { moveZoomingLensByKey(  0,-10); }  // down
-      else if (newKeyVal === "w") { moveZoomingLensByKey(  0,+10); }
+      else if (newKeyVal === "a") {
+        accelWindow.x = -0.2;
+        //moveZoomingLensByKey(-10,  0);
+      }  // left
+      else if (newKeyVal === "d") {
+        accelWindow.x = +0.2;
+        //moveZoomingLensByKey(+10,  0);
+      }
+      else if (newKeyVal === "s") {
+        accelWindow.y = -0.2;
+        //moveZoomingLensByKey(  0,-10);
+      }  // down
+      else if (newKeyVal === "w") {
+        accelWindow.y = +0.2;
+        //moveZoomingLensByKey(  0,+10);
+      }
     }
 
   }
   console.log(oldKeyCodes, oldKeyVals, " -> ", newKeyCodes, newKeyVals);
-  accelerate(accel.x, accel.y);
+  accelerateWindow(accelWindow.x, accelWindow.y)
+  accelerateMires(accelMire.x, accelMire.y);
   changeDial(dialSpeed);
 }
 
@@ -69,6 +84,7 @@ let gatScreen = {
     this.keyCode = false;
     this.key = false;
     this.lensLoc = {x:0, y:0}
+    zoomingLensController.setLoc(this.lensLoc)
 
     window.addEventListener('keydown', function (event) {
       const oldKeyCode = gatScreen.keyCode;
@@ -232,7 +248,7 @@ class MireCircle extends MovingComponent {
       ctx.beginPath();
       ctx.arc(locFromLens.x + this.direction*myDial.dial*dialCoefficient, locFromLens.y,
         this.radius*0.9, arcAngleInitial, arcAngleFinal,
-        (this.direction>0 ? true : false) );
+        (this.direction>0) );
       ctx.stroke();
       ctx.fill();
     }
@@ -255,14 +271,17 @@ function updateGatScreen() {
     mireCircle.updatePosition();
     mireCircle.updateDrawing();
   }
-
+  zoomingLensController.updatePosition();
 }
 
 function everyInterval(n) {
   return ((gatScreen.frameNo / n) % 1 === 0)
 }
 
-function accelerate(x,y) {
+function accelerateWindow(x,y) {
+  zoomingLensController.setAcceleration(x,y);
+}
+function accelerateMires(x,y) {
   for (let i = 0; i < mireCircles.length; i += 1) {
     const mireCircle = mireCircles[i]
     // By allowing false check, you can change on either direction without the other
@@ -270,13 +289,17 @@ function accelerate(x,y) {
     if (!isNaN(y)) { mireCircle.udAccel = y; }
   }
 }
-function stopMovement() {
+function stopMovementOfMires() {
   for (let i = 0; i < mireCircles.length; i += 1) {
     const mireCircle = mireCircles[i]
     mireCircle.lrSpeed = 0.0;
     mireCircle.udSpeed = 0.0;
   }
-  accelerate(0,0);
+  accelerateMires(0,0);
+}
+function stopMovementOfWindow() {
+  zoomingLensController.setVelocity(0,0);
+  accelerateWindow(0,0);
 }
 function changeDial(dialSpeed) {
   if (!isNaN(dialSpeed)) { myDial.dialSpeed = dialSpeed; }

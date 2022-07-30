@@ -1,42 +1,47 @@
 <!DOCTYPE html>
-<html>
+<html lang="en-us">
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <style>
-  canvas {
-      border:1px solid #d3d3d3;
-      background-color: #f1f1f1;
-  }
-  * {box-sizing: border-box;}
+    body {
+      background-color: black;
+    }
+    canvas {
+      background-color: #052f9e;
+    }
+    * {box-sizing: border-box;}
 
-  .img-zoom-container {
-    position: relative;
-    text-align: left;
-  }
+    .img-zoom-container {
+      position: relative;
+      text-align: left;
+    }
 
-  #zoomingLens {
-    position: absolute;
-    border: 1px solid #d4d4d4;
-    /*set the size of the lens:*/
-    width: 36px;
-    height: 36px;
-  }
+    #zoomingLens {
+      position: absolute;
+      border: 1px solid #d4d4d4;
+      /*set the size of the lens:*/
+      width: 36px;
+      height: 36px;
+      border-radius: 3px;
+    }
 
-  #zoomedPhoto {
-    border: 1px solid #d4d4d4;
-    /*set the size of the result div:*/
-    width: 360px;
-    height: 360px;
-  }
+    #zoomedPhoto, #origPhoto, canvas {
+      border: 3px solid #d4d4d4;
+      /*set the size of the result div:*/
+      width: 360px;
+      height: 360px;
+      border-radius: 30px;
+    }
 
-  .grid-container {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-  }
+    .grid-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
   </style>
 
   <script type="text/javascript" src="headshot.js"></script>
   <script type="text/javascript" src="GATsimulation.js"></script>
+  <title>GAT</title>
 </head>
 
 <body onload="startGat()" style="text-align: center">
@@ -50,7 +55,7 @@
 
         </div>
         <!-- img-zooming-lens will be inserted here -->
-        <img id="origPhoto" src="data/Ashkhan-Hojati-008-cropped-square.jpg" width="360" height="360" alt="Ashkhan headshot">
+        <img id="origPhoto" src="data/Ashkhan-Hojati-008-cropped-square.jpg" alt="Ashkhan headshot">
       </div>
 
     </div>
