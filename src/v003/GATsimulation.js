@@ -54,7 +54,7 @@ function assessKey(oldKeyCodes, oldKeyVals, newKeyCodes, newKeyVals, keyDirectio
     }
 
   }
-  console.log(oldKeyCodes, oldKeyVals, " -> ", newKeyCodes, newKeyVals);
+  //console.log(oldKeyCodes, oldKeyVals, " -> ", newKeyCodes, newKeyVals);
   accelerateWindow(accelWindow)
   accelerateMires(accelMire.x, accelMire.y);
   changeDial(dialSpeed);
@@ -71,12 +71,12 @@ let zoomingLensController = {
   accel: {x:0, y:0, s:0},
   setVelocity: function(newVal) {
     for (const key in newVal) {
-      if (newVal[key] !== null && newVal[key] !== undefined) this.vel.x = newVal[key];
+      if (newVal[key] !== null && newVal[key] !== undefined) this.vel[key] = newVal[key];
     }
   },
   setAcceleration: function(newVal) {
     for (const key in newVal) {
-      if (newVal[key] !== null && newVal[key] !== undefined) this.accel.x = newVal[key];
+      if (newVal[key] !== null && newVal[key] !== undefined) this.accel[key] = newVal[key];
     }
   },
   setLoc: function(newVal) {
@@ -108,6 +108,7 @@ let zoomingLensController = {
       this.vel[key] += this.accel[key];
       newLoc[key] += this.vel[key];
     }
+    console.log(this.loc, this.vel, this.accel)
     this.checkAndSetLoc(newLoc);
   },
 
