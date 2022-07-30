@@ -71,8 +71,8 @@ function moveZoomingLensByKey(dx, dy) {
   var x = zoomingLens.computedStyleMap().get('left').value;
   var y = zoomingLens.computedStyleMap().get('top').value;
 
-  var x = x + dx;
-  var x = x + dy;
+  x = x + dx;
+  y = y + dy;
 
   /*prevent the zoomingLens from being positioned outside the image:*/
   if (x > origPhoto.width - zoomingLens.offsetWidth) {x = origPhoto.width - zoomingLens.offsetWidth;}

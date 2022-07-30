@@ -30,14 +30,14 @@ function startGat() {
 }
 
 function assessKey(oldKeyCodes, oldKeyVals, newKeyCodes, newKeyVals, keydirection) {
-  accelX = NaN;
-  accelY = NaN;
-  dialSpeed = 0.0
+  let accelX = NaN;
+  let accelY = NaN;
+  let dialSpeed = 0.0
   if (keydirection == "keyup") { stopMovement(); }
   // key codes https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/keyCode
   if (newKeyCodes) {
     console.assert(newKeyCodes.length === newKeyVals.length);
-    for (var i = 0; i < newKeyCodes.length; i++ ) {
+    for (let i = 0; i < newKeyCodes.length; i++ ) {
       const newKeyCode = newKeyCodes[i];
       const newKeyVal = newKeyVals[i];
       if (     newKeyVal === "ArrowLeft" || newKeyCode == 37) { accelX    =-0.2; } // right
@@ -47,10 +47,10 @@ function assessKey(oldKeyCodes, oldKeyVals, newKeyCodes, newKeyVals, keydirectio
       else if (newKeyVal === " "         || newKeyCode == 32) { dialSpeed =+0.1; } // space
       else if (newKeyVal === "Shift"     || newKeyCode == 16) { dialSpeed =-0.1; } // shift
       // I got tired of including both value options. They should be the same anyway
-      else if (newKeyVal === "a") { moveZoomingLensByKey(10,0); }
-      else if (newKeyVal === "d") { moveZoomingLensByKey(-10,0); }
-      else if (newKeyVal === "s") { }
-      else if (newKeyVal === "w") { }
+      else if (newKeyVal === "a") { moveZoomingLensByKey(-10,0); }  // left
+      else if (newKeyVal === "d") { moveZoomingLensByKey(10,0); }
+      else if (newKeyVal === "s") { moveZoomingLensByKey(0,-10); }  // down
+      else if (newKeyVal === "w") { moveZoomingLensByKey(0,10); }
     }
 
   }
