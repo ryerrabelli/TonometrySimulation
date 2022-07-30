@@ -75,8 +75,8 @@ function moveZoomingLensByKey(dx, dy) {
   //console.assert(zoomingLens.computedStyleMap().get('top').unit === "px");
   console.log(zoomingLens.computedStyleMap().get('left') );
 
-  const currentLoc = gatScreen.lens.getLoc();
-  let newLoc = {x: currentLoc.x + dx, y: currentLoc.y + dy};
+  const lens = gatScreen.lens;
+  let newLoc = {x: lens.loc.x + dx, y: lens.loc.y + dy};
 
   newLoc = gatScreen.lens.checkAndSetLoc(newLoc);
   //gatScreen.lens.setLoc(newLoc);
