@@ -1,5 +1,4 @@
 
-
 let origPhoto, zoomingLens, zoomedPhoto;
 
 // https://www.w3schools.com/graphics/game_intro.asp
@@ -8,10 +7,6 @@ function setUpPhotoZooming(origPhotoID, zoomedPhotoID, zoomingLensID) {
   origPhoto = document.getElementById(origPhotoID);
   zoomedPhoto = document.getElementById(zoomedPhotoID);
   zoomingLens = document.getElementById(zoomingLensID);
-
-  /*calculate the magnification by calculating the ratio between zoomedPhoto div (output) and zoomingLens (input):*/
-  //scaleRatio.x = zoomedPhoto.offsetWidth / zoomingLens.offsetWidth;
-  //scaleRatio.y = zoomedPhoto.offsetHeight / zoomingLens.offsetHeight;
 
   /*set background properties for the zoomedPhoto DIV:*/
   zoomedPhoto.style.backgroundImage = "url('" + origPhoto.src + "')";
@@ -31,15 +26,17 @@ function setUpPhotoZooming(origPhotoID, zoomedPhotoID, zoomingLensID) {
   console.log( origPhoto.computedStyleMap().get("width").value )
 }
 
-function updateZoom() {  // update with latest scaleRatio value
-  let scaleRatio = gatScreen.lens.scaleRatio;
-  //zoomingLens.style.width  = 36 + "px";
-  //zoomingLens.style.height = 36 + "px";
-  //zoomingLens.style.width  = origPhoto.computedStyleMap().get("width").value  / scaleRatio.x + "px";
-  //zoomingLens.style.height = origPhoto.computedStyleMap().get("height").value / scaleRatio.y + "px";
-  zoomingLens.style.width  = (canvasSz.wd / scaleRatio.x) + "px";
-  zoomingLens.style.height = (canvasSz.ht / scaleRatio.y) + "px";
-  zoomedPhoto.style.backgroundSize = (canvasSz.wd * scaleRatio.x) + "px " + (canvasSz.ht * scaleRatio.y) + "px";
+function updateZoom() {  // update with latest values of lens size and loc
+  /*set the sizing of the zoomingLens and */
+  zoomingLens.style.width  = gatScreen.lens.sz.wd + "px";
+  zoomingLens.style.height = gatScreen.lens.sz.ht + "px";
+  zoomedPhoto.style.backgroundSize = (canvasSz.wd * gatScreen.lens.loc.s) + "px " + (canvasSz.ht * gatScreen.lens.loc.s) + "px";
+  /*set the position of the zoomingLens:*/
+  zoomingLens.style.left = gatScreen.lens.loc.x + "px";
+  zoomingLens.style.top  = gatScreen.lens.loc.y + "px";
+  /*display what the zoomingLens "sees":*/
+  zoomedPhoto.style.backgroundPosition = "-" + (gatScreen.lens.loc.x * gatScreen.lens.loc.s) + "px -" + (gatScreen.lens.loc.y * gatScreen.lens.loc.s) + "px";
+
 }
 
 function getCursorPos(event) {

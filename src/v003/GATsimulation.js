@@ -5,10 +5,10 @@ const dialCoefficient = 5;
 // coordinates from top left, units in pixels
 let canvasSz      = {wd:360, ht:360};
 let totalScreenSz = {wd:3600,ht:3600};
-const rightPupilLoc = { x:1500, y:1390};  // found from visually looking at the image
-const leftPupilLoc  = { x:2150, y:1420};  // found from visually looking at the image
+const rightPupilLoc = { x:1500/10, y:1390/10};  // found from visually looking at the image
+const leftPupilLoc  = { x:2150/10, y:1420/10};  // found from visually looking at the image
 const centerLineY = canvasSz.ht/2;  // midpoint of screen where the distinction between top and bottom mire views is
-const MIRE_RADIUS     = 100;
+const MIRE_RADIUS     = 10;
 const MIRE_LINE_WD    = 5;
 const MIRE_SEPARATION = MIRE_RADIUS*2;   // distance between mire circles when dial is not set
 
@@ -58,14 +58,22 @@ function assessKey(oldKeyCodes, oldKeyVals, newKeyCodes, newKeyVals, keyDirectio
   changeDial(dialSpeed);
 }
 
-// This is the ratio of the origPhoto (or zoomedPhoto) to the zoomingLens
-//let scaleRatioInitial = {x:10, y:10};
-//let scaleRatio = {x:scaleRatioInitial.x, y:scaleRatioInitial.y};
+
 
 let zoomingLensController = {
+  get sz() {
+    return this.getSzForSof(this.loc.s);
+  },
+  getSzForSof(s) {
+    return {wd: canvasSz.wd / s, ht: canvasSz.ht / s}
+  },
   loc: {x:0,y:0,s:10},  // loc = location/position;  s stands for scale (aka zoom or how far into the screen you are)
   vel: {x:0,y:0,s:0},  // vel = velocity
   accel: {x:0, y:0, s:0},
+  get locCenter() {
+    // This is the ratio of the origPhoto (or zoomedPhoto) to the zoomingLens
+    return {x:this.loc.x, y:this.loc.y}  // in case I ever want to implement separate scale for different axes
+  },
   setVelocity: function(newVal) {
     for (const key in newVal) {
       if (newVal[key] !== null && newVal[key] !== undefined) this.vel[key] = newVal[key];
@@ -80,23 +88,18 @@ let zoomingLensController = {
     for (const key in newVal) {
       if (newVal[key] !== null && newVal[key] !== undefined) gatScreen.lens.loc[key] = newVal[key];
     }
-    gatScreen.lens.scaleRatio = {x:gatScreen.lens.loc.s, y:gatScreen.lens.loc.s};
     updateZoom();
-    /*set the position of the zoomingLens:*/
-    zoomingLens.style.left = gatScreen.lens.loc.x + "px";
-    zoomingLens.style.top  = gatScreen.lens.loc.y + "px";
-    /*display what the zoomingLens "sees":*/
-    zoomedPhoto.style.backgroundPosition = "-" + (gatScreen.lens.loc.x * gatScreen.lens.scaleRatio.x) + "px -" + (gatScreen.lens.loc.y * gatScreen.lens.scaleRatio.y) + "px";
   },
   stopMovement: function() {
     this.setVelocity({x:0,y:0,s:0});
     this.setAcceleration({x:0,y:0,s:0});
   },
-  getVisualLoc: function() {  // from top left corner
+  get drawnLoc() {  // from top left corner
     let x = zoomingLens.computedStyleMap().get("left").value;
     let y = zoomingLens.computedStyleMap().get("top").value;
-    let scaleRatio = {x:zoomedPhoto.offsetWidth / zoomingLens.offsetWidth, y:zoomedPhoto.offsetHeight / zoomingLens.offsetHeight}
-    return {x:x, y:y, s:scaleRatio.x};
+    // ss = plural of s (aka scale)
+    let ss = {x:zoomedPhoto.offsetWidth / zoomingLens.offsetWidth, y:zoomedPhoto.offsetHeight / zoomingLens.offsetHeight}
+    return {x:x, y:y, s:ss.x};
   },
   updatePosition: function() {
     let currentLoc = gatScreen.lens.loc; // this.getLoc
@@ -105,16 +108,15 @@ let zoomingLensController = {
       this.vel[key] += this.accel[key];
       newLoc[key] += this.vel[key];
     }
-    console.log(this.loc, this.vel, this.accel)
     this.checkAndSetLoc(newLoc);
   },
 
   checkNewLoc: function(newLoc, doReturnValue=true) {
     /* Check if newLoc will cause positioning out of bounds */
-    const scale = (newLoc.s===null ? gatScreen.lens.s : newLoc.s);
+    const newS = (newLoc.s===null ? gatScreen.lens.s : newLoc.s);
     const range = {
-      x:[0, canvasSz.wd - canvasSz.wd/scale],
-      y:[0, canvasSz.ht - canvasSz.ht/scale],
+      x:[0, canvasSz.wd - gatScreen.lens.getSzForSof(newS)],
+      y:[0, canvasSz.ht - gatScreen.lens.getSzForSof(newS)],
       s:[1, Math.sqrt(canvasSz.wd/2*canvasSz.ht/2)],
     };
     let changedCt = 0;
@@ -181,7 +183,6 @@ let gatScreen = {
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
   }
 }
-gatScreen.lens.scaleRatio = {x:gatScreen.lens.loc.s, y:gatScreen.lens.loc.s};
 
 function areArraysEqual(firstArr, seconArr) {
   if (firstArr === seconArr) return true;  // <- what happens if both are false or many other same non-array values
@@ -247,9 +248,8 @@ class Rectangle extends MovingComponent {
   updateDrawing() {  // overrides empty method in Component
     let ctx = gatScreen.context;
     let lens = gatScreen.lens;
-    let scaleRatio = gatScreen.lens.scaleRatio;
     ctx.fillStyle = this.color;
-    ctx.fillRect(this.x-lens.loc.x*scaleRatio.x, this.y-lens.loc.y*scaleRatio.y, this.width, this.height);
+    ctx.fillRect(this.x-lens.loc.x, this.y-lens.loc.y, this.width, this.height);
   }
 }
 class MireCircle extends MovingComponent {
@@ -263,7 +263,6 @@ class MireCircle extends MovingComponent {
   updateDrawing() {  // overrides empty method in Component
     let ctx = gatScreen.context;
     let lens = gatScreen.lens
-    let scaleRatio = gatScreen.lens.scaleRatio;
 
     // the angle starts from rightmost point (0) to bottom (pi/2) to leftmost (pi) backup through the top
     // arc inputs: x center, y center, radius, start angle (radians), end angle (radians), counterclockwise (optional)
@@ -272,10 +271,14 @@ class MireCircle extends MovingComponent {
     let arcAngleFinal   = 1 * Math.PI;   // radians
 
     // locFromLens means the coordinates are moved to be in the plane of the screen
+
+
     let locFromLens = {
-      x:this.x-lens.loc.x*scaleRatio.x,
-      y:this.y-lens.loc.y*scaleRatio.y
+      x:this.x-lens.loc.x,
+      y:this.y-lens.loc.y
     };
+    //if (this.x>1600 && this.direction > 0) console.log( (this.y-lens.loc.y*scaleRatio.y).toFixed(1)+" = " + this.y.toFixed(1) + " - " + lens.loc.y.toFixed(1) + "x" + scaleRatio.y.toFixed(1));
+    if (this.x>100 && this.direction > 0) console.log( (this.y-lens.loc.y).toFixed(1)+" = " + this.y.toFixed(1) + " - " + lens.loc.y.toFixed(1));
 
     // Don't really have to separate out these conditions
     if (this.direction <= 0 && locFromLens.y + this.radius < centerLineY) {
@@ -297,10 +300,6 @@ class MireCircle extends MovingComponent {
       }
       arcAngleInitial =    0    + offsetAngle;  // radians
       arcAngleFinal   = Math.PI - offsetAngle;  // radians
-
-      //console.log("Drawing Mire at (" +(this.x-lens.loc.x*scaleRatio.x) + ", " + (this.y-lens.loc.y*scaleRatio.y) + ")")
-      //console.log("Drawing Mire at (" +(this.x-lens.loc.x*scaleRatio.x + this.direction*myDial.dial*dialCoefficient) + ", " + (this.y-lens.loc.y*scaleRatio.y) + "), direction=" + this.direction + ", angles=[" + initialAngle*180/Math.PI + "," + finalAngle*180/Math.PI + "]" )
-      //console.log("Drawing Mire at (" +(this.x-lens.loc.x*scaleRatio.x + this.direction*myDial.dial*dialCoefficient) + ", " + (this.y-lens.loc.y*scaleRatio.y) + "), direction=" + this.direction + ", offset_angle=" + offsetAngle*180/Math.PI + "" )
 
       // Draw outline
       ctx.strokeStyle = "rgba(0,255,0,0.5)";
