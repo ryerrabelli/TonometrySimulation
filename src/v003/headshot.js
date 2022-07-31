@@ -26,7 +26,7 @@ function setUpPhotoZooming(origPhotoID, zoomedPhotoID, zoomingLensID) {
   console.log( origPhoto.computedStyleMap().get("width").value )
 }
 
-function updateZoom() {  // update with latest values of lens size and loc
+function updateZoom() {  // update with the latest values of lens size and loc
   /*set the sizing of the zoomingLens and */
   zoomingLens.style.width  = gatScreen.lens.sz.wd + "px";
   zoomingLens.style.height = gatScreen.lens.sz.ht + "px";
@@ -64,17 +64,5 @@ function moveZoomingLensByHover(event) {
     y: pos.y - (zoomingLens.offsetHeight / 2),
   }
   newLoc = gatScreen.lens.checkAndSetLoc(newLoc);
-  //console.log("left/x: " + newLoc.x.toFixed(2).padStart(7," ") + ", top/y: " + newLoc.y.toFixed(2).padStart(7," "));
 }
 
-function moveZoomingLensByKey(dx, dy) {
-  //console.assert(zoomingLens.computedStyleMap().get('left').unit === "px");
-  //console.assert(zoomingLens.computedStyleMap().get('top').unit === "px");
-  console.log(zoomingLens.computedStyleMap().get('left') );
-
-  const lens = gatScreen.lens;
-  let newLoc = {x: lens.loc.x + dx, y: lens.loc.y + dy};
-
-  newLoc = gatScreen.lens.checkAndSetLoc(newLoc);
-  //gatScreen.lens.setLoc(newLoc);
-}

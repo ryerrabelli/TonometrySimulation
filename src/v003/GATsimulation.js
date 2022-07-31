@@ -3,10 +3,11 @@ let myDial;
 const dialCoefficient = 5;
 
 // coordinates from top left, units in pixels
-let canvasSz      = {wd:360, ht:360};
-let totalScreenSz = {wd:3600,ht:3600};
-const rightPupilLoc = { x:1500/10, y:1390/10};  // found from visually looking at the image
-const leftPupilLoc  = { x:2150/10, y:1420/10};  // found from visually looking at the image
+const canvasSz    = {wd:360, ht:360};
+const photoResSz = {wd:3600,ht:3600};  // resolution from original file
+const fileScale = {x:canvasSz.wd/photoResSz.wd, y:canvasSz.ht/photoResSz.ht };
+const rightPupilLoc = { x:1500/fileScale.x, y:1390/fileScale.y};  // found from visually looking at the image
+const leftPupilLoc  = { x:2150/fileScale.x, y:1420/fileScale.y};  // found from visually looking at the image
 const centerLineY = canvasSz.ht/2;  // midpoint of screen where the distinction between top and bottom mire views is
 const MIRE_RADIUS     = 3;  // will be multipled by s (scale)
 const MIRE_LINE_WD    = 0.5;   // will be multipled by s (scale)
@@ -284,15 +285,7 @@ class MireCircle extends MovingComponent {
     };
     const radiusScaled = this.radius * lens.loc.s;
 
-    //if (this.x>1600 && this.direction > 0) console.log( (this.y-lens.loc.y*scaleRatio.y).toFixed(1)+" = " + this.y.toFixed(1) + " - " + lens.loc.y.toFixed(1) + "x" + scaleRatio.y.toFixed(1));
-    if (this.x>100 && this.direction > 0) {
-      //console.log( (this.y-lens.loc.y).toFixed(1)+" = " + this.y.toFixed(1) + " - " + lens.loc.y.toFixed(1));
-    }
-
-    if (this.direction<=0) console.log((locFromLens.y + this.radius) + "<" + centerLineY);
-    else if (this.direction>0) console.log((locFromLens.y - this.radius) + ">" + centerLineY);
-
-    let offsetAngle = null;  // default is undefined
+    let offsetAngle = null;  // indicates how much of the arc should NOT be drawn on ea (radians)
 
     // Don't really have to separate out the first two conditions
     // However, need to put the full circles in separate code because otherwise the nature of arc sin (asin) will
