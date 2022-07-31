@@ -8,18 +8,18 @@ let totalScreenSz = {wd:3600,ht:3600};
 const rightPupilLoc = { x:1500/10, y:1390/10};  // found from visually looking at the image
 const leftPupilLoc  = { x:2150/10, y:1420/10};  // found from visually looking at the image
 const centerLineY = canvasSz.ht/2;  // midpoint of screen where the distinction between top and bottom mire views is
-const MIRE_RADIUS     = 10;
-const MIRE_LINE_WD    = 5;
+const MIRE_RADIUS     = 3;  // will be multipled by s (scale)
+const MIRE_LINE_WD    = 0.5;   // will be multipled by s (scale)
 const MIRE_SEPARATION = MIRE_RADIUS*2;   // distance between mire circles when dial is not set
 
 // https://www.w3schools.com/graphics/game_intro.asp
 // https://www.w3schools.com/howto/howto_js_image_zoom.asp
 function startGat() {
   // mireCircle = new component(30, 30, "rgba(0, 0, 255, 0.5)", 10, 120);
-  let mireCircleRightEye1 = new MireCircle(MIRE_RADIUS, MIRE_RADIUS, 0, rightPupilLoc.x, rightPupilLoc.y, +1);
-  let mireCircleRightEye2 = new MireCircle(MIRE_RADIUS, MIRE_RADIUS, 0, rightPupilLoc.x, rightPupilLoc.y, -1);
-  let mireCircleLeftEye1  = new MireCircle(MIRE_RADIUS, MIRE_RADIUS, 0,  leftPupilLoc.x,  leftPupilLoc.y, +1);
-  let mireCircleLeftEye2  = new MireCircle(MIRE_RADIUS, MIRE_RADIUS, 0,  leftPupilLoc.x,  leftPupilLoc.y, -1);
+  let mireCircleRightEye1 = new MireCircle(MIRE_RADIUS*2, MIRE_RADIUS*2, 0, rightPupilLoc.x, rightPupilLoc.y, +1);
+  let mireCircleRightEye2 = new MireCircle(MIRE_RADIUS*2, MIRE_RADIUS*2, 0, rightPupilLoc.x, rightPupilLoc.y, -1);
+  let mireCircleLeftEye1  = new MireCircle(MIRE_RADIUS*2, MIRE_RADIUS*2, 0,  leftPupilLoc.x,  leftPupilLoc.y, +1);
+  let mireCircleLeftEye2  = new MireCircle(MIRE_RADIUS*2, MIRE_RADIUS*2, 0,  leftPupilLoc.x,  leftPupilLoc.y, -1);
   mireCircles = [mireCircleRightEye1, mireCircleRightEye2, mireCircleLeftEye1, mireCircleLeftEye2];
   myDial = new Dial("30px", "Consolas", "rgba(255,255,255,0.5)", 10, 40, "text");
   gatScreen.start();
@@ -76,17 +76,17 @@ let zoomingLensController = {
   },
   setVelocity: function(newVal) {
     for (const key in newVal) {
-      if (newVal[key] !== null && newVal[key] !== undefined) this.vel[key] = newVal[key];
+      if (!isNullOrUndef(newVal[key])) this.vel[key] = newVal[key];
     }
   },
   setAcceleration: function(newVal) {
     for (const key in newVal) {
-      if (newVal[key] !== null && newVal[key] !== undefined) this.accel[key] = newVal[key];
+      if (!isNullOrUndef(newVal[key])) this.accel[key] = newVal[key];
     }
   },
   setLoc: function(newVal) {
     for (const key in newVal) {
-      if (newVal[key] !== null && newVal[key] !== undefined) gatScreen.lens.loc[key] = newVal[key];
+      if (!isNullOrUndef(newVal[key])) gatScreen.lens.loc[key] = newVal[key];
     }
     updateZoom();
   },
@@ -113,12 +113,13 @@ let zoomingLensController = {
 
   checkNewLoc: function(newLoc, doReturnValue=true) {
     /* Check if newLoc will cause positioning out of bounds */
-    const newS = (newLoc.s===null ? gatScreen.lens.s : newLoc.s);
+    const newS = ( isNullOrUndef(newLoc.s) ? gatScreen.lens.loc.s : newLoc.s);
     const range = {
-      x:[0, canvasSz.wd - gatScreen.lens.getSzForSof(newS)],
-      y:[0, canvasSz.ht - gatScreen.lens.getSzForSof(newS)],
+      x:[0, canvasSz.wd - gatScreen.lens.getSzForSof(newS).wd],
+      y:[0, canvasSz.ht - gatScreen.lens.getSzForSof(newS).ht],
       s:[1, Math.sqrt(canvasSz.wd/2*canvasSz.ht/2)],
     };
+
     let changedCt = 0;
     for (const key in range) {
       if (newLoc[key] < range[key][0]) {
@@ -184,9 +185,13 @@ let gatScreen = {
   }
 }
 
+function isNullOrUndef(myvar) {
+  return myvar === null || myvar === undefined;
+}
+
 function areArraysEqual(firstArr, seconArr) {
   if (firstArr === seconArr) return true;  // <- what happens if both are false or many other same non-array values
-  if (firstArr == null || seconArr == null) return false;
+  if (isNullOrUndef(firstArr) || isNullOrUndef(seconArr)) return false;
   if (firstArr.length !== seconArr.length) return false;
 
   // If you don't care about the order of the elements inside
@@ -268,46 +273,55 @@ class MireCircle extends MovingComponent {
     // arc inputs: x center, y center, radius, start angle (radians), end angle (radians), counterclockwise (optional)
 
     let arcAngleInitial = 0;           // radians
-    let arcAngleFinal   = 1 * Math.PI;   // radians
+    let arcAngleFinal   = 1 * Math.PI;   // radians, aka 180 degrees
 
     // locFromLens means the coordinates are moved to be in the plane of the screen
 
-
+    // get coordinates but translated to be within the lens and scaled up (zoom)
     let locFromLens = {
-      x:this.x-lens.loc.x,
-      y:this.y-lens.loc.y
+      x:(this.x-lens.loc.x)*lens.loc.s,
+      y:(this.y-lens.loc.y)*lens.loc.s
     };
-    //if (this.x>1600 && this.direction > 0) console.log( (this.y-lens.loc.y*scaleRatio.y).toFixed(1)+" = " + this.y.toFixed(1) + " - " + lens.loc.y.toFixed(1) + "x" + scaleRatio.y.toFixed(1));
-    if (this.x>100 && this.direction > 0) console.log( (this.y-lens.loc.y).toFixed(1)+" = " + this.y.toFixed(1) + " - " + lens.loc.y.toFixed(1));
+    const radiusScaled = this.radius * lens.loc.s;
 
-    // Don't really have to separate out these conditions
-    if (this.direction <= 0 && locFromLens.y + this.radius < centerLineY) {
-      // Nothing to draw as entire circle is not in its correct half of the canvas
-    } else if (this.direction > 0 && locFromLens.y - this.radius > centerLineY) {
-      // Nothing to draw as entire circle is not in its correct half of the canvas
+    //if (this.x>1600 && this.direction > 0) console.log( (this.y-lens.loc.y*scaleRatio.y).toFixed(1)+" = " + this.y.toFixed(1) + " - " + lens.loc.y.toFixed(1) + "x" + scaleRatio.y.toFixed(1));
+    if (this.x>100 && this.direction > 0) {
+      //console.log( (this.y-lens.loc.y).toFixed(1)+" = " + this.y.toFixed(1) + " - " + lens.loc.y.toFixed(1));
+    }
+
+    if (this.direction<=0) console.log((locFromLens.y + this.radius) + "<" + centerLineY);
+    else if (this.direction>0) console.log((locFromLens.y - this.radius) + ">" + centerLineY);
+
+    let offsetAngle = null;  // default is undefined
+
+    // Don't really have to separate out the first two conditions
+    // However, need to put the full circles in separate code because otherwise the nature of arc sin (asin) will
+    // cause the circle to not be drawn at all (0->0 instead of 0->2pi)
+    if (this.direction <= 0 && locFromLens.y + radiusScaled < centerLineY) {
+      // Nothing to draw as entire circle is NOT in its correct half of the canvas
+    } else if (this.direction > 0 && locFromLens.y - radiusScaled > centerLineY) {
+      // Nothing to draw as entire circle is NOT in its correct half of the canvas
+    } else if (this.direction <= 0 && locFromLens.y - radiusScaled > centerLineY) {
+      // Draw full circle as entire circle is on its correct half of the canvas
+      offsetAngle = - Math.PI/2;  // -90 degrees, but in radian units
+    } else if (this.direction > 0 && locFromLens.y + radiusScaled < centerLineY) {
+      // Draw full circle as entire circle is on its correct half of the canvas
+      offsetAngle = - Math.PI/2;  // -90 degrees, but in radian units
     } else {
-      // Put the separate circles out here because otherwise the nature of arc sin will cause the circle to not be drawn at all (0->0 instead of 0->2pi)
-      let offsetAngle;  // default is undefined
-      if (this.direction <= 0 && locFromLens.y - this.radius > centerLineY) {
-        // Draw full circle as entire circle is on its correct half of the canvas
-        offsetAngle = - Math.PI/2  // radians
-      } else if (this.direction > 0 && locFromLens.y + this.radius < centerLineY) {
-        // Draw full circle as entire circle is on its correct half of the canvas
-        offsetAngle = - Math.PI/2  // radians
-      } else {
-        // Draw only the part of the circle on its correct half of the canvas
-        offsetAngle = Math.asin( (centerLineY-locFromLens.y)/this.radius)  // radians
-      }
+      // Draw only the part of the circle that is on its correct half of the canvas
+      offsetAngle = Math.asin( (centerLineY-locFromLens.y)/radiusScaled)  // radians
+    }
+    if (!isNullOrUndef(offsetAngle)) {
       arcAngleInitial =    0    + offsetAngle;  // radians
       arcAngleFinal   = Math.PI - offsetAngle;  // radians
 
       // Draw outline
       ctx.strokeStyle = "rgba(0,255,0,0.5)";
       ctx.fillStyle = "rgba(0,0,0,0)";
-      ctx.lineWidth = MIRE_LINE_WD * 0.5;
+      ctx.lineWidth = MIRE_LINE_WD * lens.loc.s * 0.5;  // half thickness of routline
       ctx.beginPath();
       ctx.arc(locFromLens.x + this.direction*myDial.dial*dialCoefficient, locFromLens.y,
-        this.height/2, arcAngleInitial, arcAngleFinal,
+        radiusScaled, arcAngleInitial, arcAngleFinal,
         (this.direction>0) );
       ctx.stroke();
       ctx.fill();
@@ -315,11 +329,10 @@ class MireCircle extends MovingComponent {
       // Draw actual green circle
       ctx.strokeStyle = "rgba(0,100,0,0.9)";
       ctx.fillStyle = "rgba(200,255,200,0.4)";
-      ctx.lineWidth = MIRE_LINE_WD;
+      ctx.lineWidth = MIRE_LINE_WD * lens.loc.s;
       ctx.beginPath();
       ctx.arc(locFromLens.x + this.direction*myDial.dial*dialCoefficient, locFromLens.y,
-        this.radius*0.9, arcAngleInitial, arcAngleFinal,
-        (this.direction>0) );
+        radiusScaled*0.9, arcAngleInitial, arcAngleFinal, (this.direction>0) );
       ctx.stroke();
       ctx.fill();
     }
@@ -370,5 +383,5 @@ function stopMovementOfMires() {
 
 function changeDial(dialSpeed) {
   // could also test !isNaN(dialSpeed)
-  if (dialSpeed !== null && dialSpeed !== undefined) { myDial.dialSpeed = dialSpeed; }
+  if (!isNullOrUndef(dialSpeed)) { myDial.dialSpeed = dialSpeed; }
 }
