@@ -11,7 +11,7 @@ const leftPupilLoc  = { x:2150/fileScale.x, y:1420/fileScale.y};  // found from 
 const centerLineY = canvasSz.ht/2;  // midpoint of screen where the distinction between top and bottom mire views is
 const MIRE_RADIUS     = 3;  // will be multipled by s (scale)
 const MIRE_LINE_WD    = 0.5;   // will be multipled by s (scale)
-const MIRE_SEPARATION = MIRE_RADIUS*2;   // distance between mire circles when dial is not set
+const MIRE_SEPARATION = MIRE_RADIUS*4;   // distance between mire circle centers when dial pressure is not set (or set at 0)
 
 // https://www.w3schools.com/graphics/game_intro.asp
 // https://www.w3schools.com/howto/howto_js_image_zoom.asp
