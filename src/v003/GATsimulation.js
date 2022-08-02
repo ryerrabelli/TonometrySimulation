@@ -5,7 +5,7 @@ const dialCoefficient = 5;
 // coordinates from top left, units in pixels
 const canvasSz    = {wd:360, ht:360};
 const photoResSz = {wd:3600,ht:3600};  // resolution from original file
-const fileScale = {x:canvasSz.wd/photoResSz.wd, y:canvasSz.ht/photoResSz.ht };
+const fileScale = {x:photoResSz.wd/canvasSz.wd, y:photoResSz.ht/canvasSz.ht };
 const rightPupilLoc = { x:1500/fileScale.x, y:1390/fileScale.y};  // found from visually looking at the image
 const leftPupilLoc  = { x:2150/fileScale.x, y:1420/fileScale.y};  // found from visually looking at the image
 const centerLineY = canvasSz.ht/2;  // midpoint of screen where the distinction between top and bottom mire views is
@@ -259,6 +259,15 @@ class Rectangle extends MovingComponent {
   }
 }
 class MireCircle extends MovingComponent {
+  /**
+   * Create a Mire Circle.
+   * @param {number} wd - indicates diameter of circle (wd and ht args both given to match othe rclasses)
+   * @param {number} ht - indicates diameter of circle (wd and ht args both given to match othe rclasses)
+   * @param {string} color - The y value.
+   * @param {number} x - x component of location relative to the entire screen
+   * @param {number} y - x component of location relative to the entire screen
+   * @param {(number|boolean)} direction - indicates the portion of the circle on the top of the canvas will be drawn. Positive/true -> top, negative/false -> bottom
+   */
   constructor(wd, ht, color, x, y, direction) {
     super(wd, ht, color, x-direction*MIRE_SEPARATION/2, y);
     this.radius = this.height/2;
@@ -302,7 +311,7 @@ class MireCircle extends MovingComponent {
       offsetAngle = - Math.PI/2;  // -90 degrees, but in radian units
     } else {
       // Draw only the part of the circle that is on its correct half of the canvas
-      offsetAngle = Math.asin( (centerLineY-locFromLens.y)/radiusScaled)  // radians
+      offsetAngle = Math.asin( (centerLineY-locFromLens.y)/radiusScaled);  // radians
     }
     if (!isNullOrUndef(offsetAngle)) {
       arcAngleInitial =    0    + offsetAngle;  // radians
