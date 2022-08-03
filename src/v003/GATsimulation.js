@@ -207,8 +207,25 @@ class ZoomingLensController extends Controller {
 let gatScreen = {
   canvas : document.createElement("canvas"),
   lens: new ZoomingLensController(),
-  areMiresViewable: function() {
-    return this.lens.loc.s >= 10;
+  getMiresVisibility: function() {
+    if (this.lens.loc.s<=1) {
+      // ward off against invalid values
+      return 0.0;
+    } else if (this.lens.loc.s>40) {
+      // save calculations as the logistic function will aready give a value close to 1.0
+      return 1.0;
+    } else {
+      //return 1/(1+(this.lens.loc.s-10))
+
+      const x = this.lens.loc.s;
+      const sigmoidCenter = 10.0;  // valye at which mireVisibility will be 0.5
+      const k = 0.05;  // the greater the k, the more that the effect will be dampened (aka further from sigmoidCenter to get a value of 0.000 or 1.000)
+      // center x as a new variable to put into logistic (sigmoid) function
+      const z = -(Math.log10(x) - Math.log10(sigmoidCenter))/k;
+      // logistic (sigmoid) function
+      const mireVisibility = 1 / (1+ Math.exp( z ))
+      return mireVisibility;
+    }
   },
   start : function() {
     this.canvas.width = canvasSz.wd;
@@ -355,7 +372,8 @@ class MireCircle extends MovingComponent {
     };
     const radiusScaled = this.radius * lens.loc.s;
 
-    if (gatScreen.areMiresViewable()) {
+    const miresVisibility = gatScreen.getMiresVisibility();
+    if (miresVisibility > 0.01) {
       let offsetAngle = null;  // indicates how much of the arc should NOT be drawn on ea (radians)
 
       // Don't really have to separate out the first two conditions
@@ -378,9 +396,10 @@ class MireCircle extends MovingComponent {
       if (!isNullOrUndef(offsetAngle)) {
         arcAngleInitial =    0    + offsetAngle;  // radians
         arcAngleFinal   = Math.PI - offsetAngle;  // radians
-
+        const alpha = miresVisibility;
+        console.log(alpha);
         // Draw outline
-        ctx.strokeStyle = "rgba(0,255,0,0.5)";
+        ctx.strokeStyle = "rgba(0,255,0," + (alpha*0.5) + ")";
         ctx.fillStyle = "rgba(0,0,0,0)";
         ctx.lineWidth = MIRE_LINE_WD * lens.loc.s * 0.5;  // half thickness of routline
         ctx.beginPath();
@@ -391,8 +410,8 @@ class MireCircle extends MovingComponent {
         ctx.fill();
 
         // Draw actual green circle
-        ctx.strokeStyle = "rgba(0,100,0,0.9)";
-        ctx.fillStyle = "rgba(200,255,200,0.4)";
+        ctx.strokeStyle = "rgba(0,100,0," + (alpha*0.9) + ")";
+        ctx.fillStyle = "rgba(200,255,200," + (alpha*0.5) + ")";
         ctx.lineWidth = MIRE_LINE_WD * lens.loc.s;
         ctx.beginPath();
         ctx.arc(locFromLens.x + this.direction*myDial.dial*dialCoefficient, locFromLens.y,
