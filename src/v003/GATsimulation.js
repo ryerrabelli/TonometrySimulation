@@ -1,4 +1,3 @@
-let mireCircles;
 let myDial;
 const dialCoefficient = 5;
 
@@ -8,6 +7,8 @@ const photoResSz = {wd:3600,ht:3600};  // resolution from original file
 const fileScale = {x:photoResSz.wd/canvasSz.wd, y:photoResSz.ht/canvasSz.ht };
 const rightPupilLoc = { x:1500/fileScale.x, y:1390/fileScale.y};  // found from visually looking at the image
 const leftPupilLoc  = { x:2150/fileScale.x, y:1420/fileScale.y};  // found from visually looking at the image
+
+
 const centerLineY = canvasSz.ht/2;  // midpoint of screen where the distinction between top and bottom mire views is
 const MIRE_RADIUS     = 3;  // will be multipled by s (scale)
 const MIRE_LINE_WD    = 0.5;   // will be multipled by s (scale)
@@ -26,7 +27,7 @@ function startGat() {
   gatScreen.start();
 }
 
-function assessKey(oldKeyCodes, oldKeyVals, newKeyCodes, newKeyVals, keyDirection) {
+function assessKey(oldKeyCodes, oldKeyStrs, newKeyCodes, newKeyStrs, keyDirection) {
   let accelMire = {x:null, y:null};  // not used anymore. Mires do not move
   let accelZoomingLens = {x:null, y:null, s:null};  // null indicates don't change current value
   let dialSpeed = 0.0;
@@ -34,121 +35,165 @@ function assessKey(oldKeyCodes, oldKeyVals, newKeyCodes, newKeyVals, keyDirectio
 
   // key codes https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/keyCode
   if (newKeyCodes) {
-    console.assert(newKeyCodes.length === newKeyVals.length);
+    console.assert(newKeyCodes.length === newKeyStrs.length);
     //zoomingLensController.
     for (let i = 0; i < newKeyCodes.length; i++ ) {
       const newKeyCode = newKeyCodes[i];
-      const newKeyVal  = newKeyVals[i];
-      if      (newKeyVal === " "         || newKeyCode === 32) { dialSpeed = +0.1; } // space
-      else if (newKeyVal === "Shift"     || newKeyCode === 16) { dialSpeed = -0.1; } // shift
-      else if (newKeyVal === "ArrowLeft" || newKeyCode === 37) { accelZoomingLens.x = -0.2; } // left
-      else if (newKeyVal === "ArrowRight"|| newKeyCode === 39) { accelZoomingLens.x = +0.2; } // right
-      else if (newKeyVal === "ArrowDown" || newKeyCode === 40) { accelZoomingLens.y = +0.2; } // down
-      else if (newKeyVal === "ArrowUp"   || newKeyCode === 38) { accelZoomingLens.y = -0.2; } // up
+      const newKeyStr  = newKeyStrs[i];
+      if      (newKeyStr === " "         || newKeyCode === 32) { dialSpeed = +0.1; } // space
+      else if (newKeyStr === "Shift"     || newKeyCode === 16) { dialSpeed = -0.1; } // shift
+      else if (newKeyStr === "ArrowLeft" || newKeyCode === 37) { accelZoomingLens.x = -0.2; } // left
+      else if (newKeyStr === "ArrowRight"|| newKeyCode === 39) { accelZoomingLens.x = +0.2; } // right
+      else if (newKeyStr === "ArrowDown" || newKeyCode === 40) { accelZoomingLens.y = +0.2; } // down
+      else if (newKeyStr === "ArrowUp"   || newKeyCode === 38) { accelZoomingLens.y = -0.2; } // up
       // I got tired of including both value options. They should be the same anyway
-      else if (newKeyVal === "a") { accelZoomingLens.x = -0.2; }  // left
-      else if (newKeyVal === "d") { accelZoomingLens.x = +0.2; }  // right
-      else if (newKeyVal === "s") { accelZoomingLens.s = -0.02; }  // down
-      else if (newKeyVal === "w") { accelZoomingLens.s = +0.02; }  // up
+      else if (newKeyStr === "a") { accelZoomingLens.x = -0.2; }  // left
+      else if (newKeyStr === "d") { accelZoomingLens.x = +0.2; }  // right
+      else if (newKeyStr === "s") { accelZoomingLens.s = -0.02; }  // down
+      else if (newKeyStr === "w") { accelZoomingLens.s = +0.02; }  // up
     }
 
   }
-  //console.log(oldKeyCodes, oldKeyVals, " -> ", newKeyCodes, newKeyVals);
+  //console.log(oldKeyCodes, oldKeyStrs, " -> ", newKeyCodes, newKeyStrs);
   accelerateZoomingLens(accelZoomingLens);
   accelerateMires(accelMire.x, accelMire.y);
   changeDial(dialSpeed);
 }
 
 
-
-let zoomingLensController = {
+class Controller {
+  val = {};    // loc  = location/position;
+  vel = {};    // vel  = velocity
+  accel = {};  // accel = acceleration
+  setValue(newAmount) {
+    for (const key in newAmount) {
+      if (!isNullOrUndef(newAmount[key])) this.val[key] = newAmount[key];
+    }
+  }
+  setVelocity(newAmount) {
+    for (const key in newAmount) {
+      if (!isNullOrUndef(newAmount[key])) this.vel[key] = newAmount[key];
+    }
+  }
+  setAcceleration(newAmount) {
+    for (const key in newAmount) {
+      if (!isNullOrUndef(newAmount[key])) this.accel[key] = newAmount[key];
+    }
+  }
+}
+class ZoomingLensController extends Controller {
+  constructor() {
+    super();
+    this.val = {x:0, y:0, s:0};
+    this.vel = {x:0, y:0, s:0};
+    this.accel = {x:0, y:0, s:0};
+  }
   get sz() {
     return this.getSzForSof(this.loc.s);
-  },
+  }
   getSzForSof(s) {
     return {wd: canvasSz.wd / s, ht: canvasSz.ht / s}
-  },
-  loc: {x:0,y:0,s:10},  // loc = location/position;  s stands for scale (aka zoom or how far into the screen you are)
-  vel: {x:0,y:0,s:0},  // vel = velocity
-  accel: {x:0, y:0, s:0},
-  get locCenter() {
-    // This is the ratio of the origPhoto (or zoomedPhoto) to the zoomingLens
-    return {x:this.loc.x, y:this.loc.y}  // in case I ever want to implement separate scale for different axes
-  },
-  setVelocity: function(newVal) {
-    for (const key in newVal) {
-      if (!isNullOrUndef(newVal[key])) this.vel[key] = newVal[key];
-    }
-  },
-  setAcceleration: function(newVal) {
-    for (const key in newVal) {
-      if (!isNullOrUndef(newVal[key])) this.accel[key] = newVal[key];
-    }
-  },
-  setLoc: function(newVal) {
-    for (const key in newVal) {
-      if (!isNullOrUndef(newVal[key])) gatScreen.lens.loc[key] = newVal[key];
-    }
-    updateZoom();
-  },
-  stopMovement: function() {
+  }
+  stopMovement() {
     this.setVelocity({x:0,y:0,s:0});
     this.setAcceleration({x:0,y:0,s:0});
-  },
+  }
+  updatePosition() {
+    let currentLoc = gatScreen.lens.loc; // this.getLoc
+    let newLoc = Object.assign({},currentLoc);  // does shallow copy
+    for (const key in newLoc) {
+      this.vel[key] += this.accel[key];
+      newLoc[key] += this.vel[key];
+    }
+    newLoc = this.checkAndSetLoc(newLoc);
+    //console.log( newLoc );
+    //console.log(this.loc)
+  }
+  get loc() {
+    return this.val;
+  }
+  get locCenter() {
+    // This is the ratio of the origPhoto (or zoomedPhoto) to the zoomingLens
+    return {
+      x: this.loc.x + sz().wd/2,
+      y: this.loc.y + sz().ht/2
+    }
+  }
   get drawnLoc() {  // from top left corner
     let x = zoomingLens.computedStyleMap().get("left").value;
     let y = zoomingLens.computedStyleMap().get("top").value;
     // ss = plural of s (aka scale)
     let ss = {x:zoomedPhoto.offsetWidth / zoomingLens.offsetWidth, y:zoomedPhoto.offsetHeight / zoomingLens.offsetHeight}
     return {x:x, y:y, s:ss.x};
-  },
-  updatePosition: function() {
-    let currentLoc = gatScreen.lens.loc; // this.getLoc
-    let newLoc = Object.assign({},currentLoc);  // does copy
-    for (const key in newLoc) {
-      this.vel[key] += this.accel[key];
-      newLoc[key] += this.vel[key];
-    }
-    this.checkAndSetLoc(newLoc);
-  },
-
-  checkNewLoc: function(newLoc, doReturnValue=true) {
-    /* Check if newLoc will cause positioning out of bounds */
-    const newS = ( isNullOrUndef(newLoc.s) ? gatScreen.lens.loc.s : newLoc.s);
-    const range = {
-      x:[0, canvasSz.wd - gatScreen.lens.getSzForSof(newS).wd],
-      y:[0, canvasSz.ht - gatScreen.lens.getSzForSof(newS).ht],
+  }
+  setLoc(newAmount) {
+    this.setValue(newAmount);
+    updateZoom();
+  }
+  // rangeConstant represents the range of values that they must NEVER go out of
+  static rangeConstant = {
+    /* syntax is [min, max] */
+    x:[0, canvasSz.wd],
+    y:[0, canvasSz.ht],
+    s:[1, canvasSz.ht],
+  }
+  // # indicates a private method
+  #getRangeSpecific(proposedLoc) {
+    const rangeSpecific = {
+      /* syntax is [min, max] */
+      x:[0, canvasSz.wd - gatScreen.lens.getSzForSof(proposedLoc.s).wd],
+      y:[0, canvasSz.ht - gatScreen.lens.getSzForSof(proposedLoc.s).ht],
       s:[1, Math.sqrt(canvasSz.wd/2*canvasSz.ht/2)],
     };
-
+    return rangeSpecific;
+  }
+  #boundWithinRange(proposedLoc, range) {
     let changedCt = 0;
     for (const key in range) {
-      if (newLoc[key] < range[key][0]) {
-        newLoc[key] = range[key][0];
+      //console.assert(range[key][1]>=range[key][0], key + " range = [" + range[key][0] + ", " + range[key][0] + "]")
+      if (proposedLoc[key] < range[key][0]) {
+        proposedLoc[key] = range[key][0];
         changedCt++;
       }
-      if (newLoc[key] >  range[key][1]) {
-        newLoc[key] = range[key][1];
+      if (proposedLoc[key] > range[key][1]) {
+        proposedLoc[key] = range[key][1];
         changedCt++;
       }
     }
+    return [proposedLoc, changedCt];
+  }
+  checkNewLoc(proposedLoc, doReturnValue=true) {
+    /* Check if proposedLoc will cause positioning out of bounds */
+    // proposedLoc will have proposedLoc value or the original value if null/undefined
+    let proposedLocFilled0 = Object.assign({},proposedLoc);  // does shallow copy
+    for (const key in ZoomingLensController.rangeConstant) {
+      if (isNullOrUndef(proposedLoc[key])) {
+        proposedLocFilled0[key] = this.loc[key];
+      }
+    }
+    // First check if any of the proposed values are outside rangeConstant
+    let range = ZoomingLensController.rangeConstant;
+    let [proposedLocFilled1, changedCt1] = this.#boundWithinRange(proposedLocFilled0, range);
+    // Then check if any of the proposed values are outside the range possible given the specific other proposed values
+    range = this.#getRangeSpecific(proposedLocFilled1);
+    let [proposedLocFilled2, changedCt2] = this.#boundWithinRange(proposedLocFilled1, range);
 
     if (doReturnValue) {
-      return newLoc;
+      return proposedLocFilled2;
     } else {
-      return changedCt > 0;
+      return changedCt1+changedCt2;
     }
-  },
-  checkAndSetLoc: function(newLoc) {
+  }
+  checkAndSetLoc(newLoc) {
     newLoc = this.checkNewLoc(newLoc);
     this.setLoc(newLoc);
     return newLoc;
-  },
+  }
 }
 
 let gatScreen = {
   canvas : document.createElement("canvas"),
-  lens: zoomingLensController,
+  lens: new ZoomingLensController(),
   start : function() {
     this.canvas.width = canvasSz.wd;
     this.canvas.height = canvasSz.ht;
@@ -158,26 +203,26 @@ let gatScreen = {
     // Despite what pycharm, the interval function is used
     this.interval = setInterval(updateGatScreen, 20);
     this.keyCode = false;
-    this.key = false;
+    this.keyStr = false;
 
     window.addEventListener('keydown', function (event) {
       const oldKeyCode = gatScreen.keyCode;
-      const oldKey = gatScreen.key;
+      const oldKeyStr = gatScreen.keyStr;
       gatScreen.keyCode = [event.keyCode];
-      gatScreen.key = [event.key];
+      gatScreen.keyStr = [event.key];
       // Holding down the key eventually counts as multiple key presses
       if ( !areArraysEqual(gatScreen.keyCode, oldKeyCode) ) {
-        assessKey(oldKeyCode, oldKey, gatScreen.keyCode, gatScreen.key, "keydown")
+        assessKey(oldKeyCode, oldKeyStr, gatScreen.keyCode, gatScreen.keyStr, "keydown")
       }
     })
     window.addEventListener('keyup', function (event) {
       const oldKeyCode = gatScreen.keyCode;
-      const oldKey = gatScreen.key;
+      const oldKeyStr = gatScreen.keyStr;
       // Need to integrate event to only delete the specific key held up
       gatScreen.keyCode = false;
-      gatScreen.key = false;
+      gatScreen.keyStr = false;
       if ( !areArraysEqual(gatScreen.keyCode, oldKeyCode) ) {
-        assessKey(oldKeyCode, oldKey, gatScreen.keyCode, gatScreen.key, "keyup")
+        assessKey(oldKeyCode, oldKeyStr, gatScreen.keyCode, gatScreen.keyStr, "keyup")
       }
     })
     },
