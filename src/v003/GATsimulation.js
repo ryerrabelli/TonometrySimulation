@@ -13,6 +13,7 @@ const centerLineY = canvasSz.ht/2;  // midpoint of screen where the distinction 
 const MIRE_RADIUS     = 3;  // will be multipled by s (scale)
 const MIRE_LINE_WD    = 0.5;   // will be multipled by s (scale)
 const MIRE_SEPARATION = MIRE_RADIUS*4;   // distance between mire circle centers when dial pressure is not set (or set at 0)
+const DEFAULT_ZOOMING_LENS_LOC = {x:0, y:0, s:5};
 
 // https://www.w3schools.com/graphics/game_intro.asp
 // https://www.w3schools.com/howto/howto_js_image_zoom.asp
@@ -84,8 +85,9 @@ class Controller {
 class ZoomingLensController extends Controller {
   constructor() {
     super();
-    this.val = {x:0, y:0, s:0};
-    this.vel = {x:0, y:0, s:0};
+    // Object.assign performs shallow copy
+    this.val   = Object.assign({}, DEFAULT_ZOOMING_LENS_LOC);
+    this.vel   = {x:0, y:0, s:0};
     this.accel = {x:0, y:0, s:0};
   }
   get sz() {
@@ -95,6 +97,7 @@ class ZoomingLensController extends Controller {
     return {wd: canvasSz.wd / s, ht: canvasSz.ht / s}
   }
   stopMovement() {
+    // Note, s cannot be 0, but its velocity and acceleration can
     this.setVelocity({x:0,y:0,s:0});
     this.setAcceleration({x:0,y:0,s:0});
   }
@@ -147,6 +150,12 @@ class ZoomingLensController extends Controller {
     };
     return rangeSpecific;
   }
+  /**
+   * force proposedLoc to be between range
+   * @param{object} proposedLoc
+   * @param{object}
+   * @return{object}
+   */
   #boundWithinRange(proposedLoc, range) {
     let changedCt = 0;
     for (const key in range) {
@@ -162,6 +171,10 @@ class ZoomingLensController extends Controller {
     }
     return [proposedLoc, changedCt];
   }
+  /**
+   * Check if a proposed location is valid
+   * @param{object} proposedLoc
+   */
   checkNewLoc(proposedLoc, doReturnValue=true) {
     /* Check if proposedLoc will cause positioning out of bounds */
     // proposedLoc will have proposedLoc value or the original value if null/undefined
@@ -194,6 +207,9 @@ class ZoomingLensController extends Controller {
 let gatScreen = {
   canvas : document.createElement("canvas"),
   lens: new ZoomingLensController(),
+  areMiresViewable: function() {
+    return this.lens.loc.s >= 10;
+  },
   start : function() {
     this.canvas.width = canvasSz.wd;
     this.canvas.height = canvasSz.ht;
@@ -339,49 +355,51 @@ class MireCircle extends MovingComponent {
     };
     const radiusScaled = this.radius * lens.loc.s;
 
-    let offsetAngle = null;  // indicates how much of the arc should NOT be drawn on ea (radians)
+    if (gatScreen.areMiresViewable()) {
+      let offsetAngle = null;  // indicates how much of the arc should NOT be drawn on ea (radians)
 
-    // Don't really have to separate out the first two conditions
-    // However, need to put the full circles in separate code because otherwise the nature of arc sin (asin) will
-    // cause the circle to not be drawn at all (0->0 instead of 0->2pi)
-    if (this.direction <= 0 && locFromLens.y + radiusScaled < centerLineY) {
-      // Nothing to draw as entire circle is NOT in its correct half of the canvas
-    } else if (this.direction > 0 && locFromLens.y - radiusScaled > centerLineY) {
-      // Nothing to draw as entire circle is NOT in its correct half of the canvas
-    } else if (this.direction <= 0 && locFromLens.y - radiusScaled > centerLineY) {
-      // Draw full circle as entire circle is on its correct half of the canvas
-      offsetAngle = - Math.PI/2;  // -90 degrees, but in radian units
-    } else if (this.direction > 0 && locFromLens.y + radiusScaled < centerLineY) {
-      // Draw full circle as entire circle is on its correct half of the canvas
-      offsetAngle = - Math.PI/2;  // -90 degrees, but in radian units
-    } else {
-      // Draw only the part of the circle that is on its correct half of the canvas
-      offsetAngle = Math.asin( (centerLineY-locFromLens.y)/radiusScaled);  // radians
-    }
-    if (!isNullOrUndef(offsetAngle)) {
-      arcAngleInitial =    0    + offsetAngle;  // radians
-      arcAngleFinal   = Math.PI - offsetAngle;  // radians
+      // Don't really have to separate out the first two conditions
+      // However, need to put the full circles in separate code because otherwise the nature of arc sin (asin) will
+      // cause the circle to not be drawn at all (0->0 instead of 0->2pi)
+      if (this.direction <= 0 && locFromLens.y + radiusScaled < centerLineY) {
+        // Nothing to draw as entire circle is NOT in its correct half of the canvas
+      } else if (this.direction > 0 && locFromLens.y - radiusScaled > centerLineY) {
+        // Nothing to draw as entire circle is NOT in its correct half of the canvas
+      } else if (this.direction <= 0 && locFromLens.y - radiusScaled > centerLineY) {
+        // Draw full circle as entire circle is on its correct half of the canvas
+        offsetAngle = - Math.PI/2;  // -90 degrees, but in radian units
+      } else if (this.direction > 0 && locFromLens.y + radiusScaled < centerLineY) {
+        // Draw full circle as entire circle is on its correct half of the canvas
+        offsetAngle = - Math.PI/2;  // -90 degrees, but in radian units
+      } else {
+        // Draw only the part of the circle that is on its correct half of the canvas
+        offsetAngle = Math.asin( (centerLineY-locFromLens.y)/radiusScaled);  // radians
+      }
+      if (!isNullOrUndef(offsetAngle)) {
+        arcAngleInitial =    0    + offsetAngle;  // radians
+        arcAngleFinal   = Math.PI - offsetAngle;  // radians
 
-      // Draw outline
-      ctx.strokeStyle = "rgba(0,255,0,0.5)";
-      ctx.fillStyle = "rgba(0,0,0,0)";
-      ctx.lineWidth = MIRE_LINE_WD * lens.loc.s * 0.5;  // half thickness of routline
-      ctx.beginPath();
-      ctx.arc(locFromLens.x + this.direction*myDial.dial*dialCoefficient, locFromLens.y,
-        radiusScaled, arcAngleInitial, arcAngleFinal,
-        (this.direction>0) );
-      ctx.stroke();
-      ctx.fill();
+        // Draw outline
+        ctx.strokeStyle = "rgba(0,255,0,0.5)";
+        ctx.fillStyle = "rgba(0,0,0,0)";
+        ctx.lineWidth = MIRE_LINE_WD * lens.loc.s * 0.5;  // half thickness of routline
+        ctx.beginPath();
+        ctx.arc(locFromLens.x + this.direction*myDial.dial*dialCoefficient, locFromLens.y,
+          radiusScaled, arcAngleInitial, arcAngleFinal,
+          (this.direction>0) );
+        ctx.stroke();
+        ctx.fill();
 
-      // Draw actual green circle
-      ctx.strokeStyle = "rgba(0,100,0,0.9)";
-      ctx.fillStyle = "rgba(200,255,200,0.4)";
-      ctx.lineWidth = MIRE_LINE_WD * lens.loc.s;
-      ctx.beginPath();
-      ctx.arc(locFromLens.x + this.direction*myDial.dial*dialCoefficient, locFromLens.y,
-        radiusScaled*0.9, arcAngleInitial, arcAngleFinal, (this.direction>0) );
-      ctx.stroke();
-      ctx.fill();
+        // Draw actual green circle
+        ctx.strokeStyle = "rgba(0,100,0,0.9)";
+        ctx.fillStyle = "rgba(200,255,200,0.4)";
+        ctx.lineWidth = MIRE_LINE_WD * lens.loc.s;
+        ctx.beginPath();
+        ctx.arc(locFromLens.x + this.direction*myDial.dial*dialCoefficient, locFromLens.y,
+          radiusScaled*0.9, arcAngleInitial, arcAngleFinal, (this.direction>0) );
+        ctx.stroke();
+        ctx.fill();
+      }
     }
   }
 }
