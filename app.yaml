@@ -1,0 +1,65 @@
+# Comments are created with "#" like python
+runtime: python310
+env: standard
+instance_class: F1
+runtime_config:  # The runtime_config setting is for App Engine flex only and isn't needed for App Engine Standard. You can safely remove it.
+  python_version: 3
+
+
+# If `entrypoint` is not defined in app.yaml, App Engine will look for an app called `app` in `main.py`.
+# That entrypoint is like:
+# entrypoint: gunicorn -b :$PORT main:app
+# Not having a number before port means "-b 0.0.0.0:$PORT". This is different from "-b 127.0.0.1:$PORT" or "-b localhost:$PORT", which only works on the running computer
+# In my projects, I put all the code in the src/ folder.
+# The --chdir argument allows you to change the current working directory so the code works out of src/
+# If you didn't use --chdir and did src.YerrabelliFlask:app then all subsequent internal imports would require "src."
+# first as well
+# entrypoint: gunicorn -b :$PORT --chdir src/ YerrabelliFlask:app  # One option, but cannot access folders (like 'data') in top level
+# An alternative strategy is to just add src/ to the pythonpath. This allows access to src folder automatically plus any topic level folders.
+entrypoint: gunicorn -t 30 -b :$PORT --log-level debug --pythonpath 'src/' TonometrySimulation:app  # Currently used entrypoint
+
+# Note, you can also run it using PyCharm -> run, but there might be slight differences between running on terminal and running via PyCharm
+
+# You can test the server locally by inputting the entrypoint code line into terminal (assuming 'pip install gunicorn' is already done)
+# To run locally, the port variable needs to be defined: i.e. by
+# export PORT=5000  # only needs to be done locally
+# Then you can access the page by using "curl $URL" or via a web browser using the URLs:
+# -Only on the same computer:
+# http://localhost:5000/
+# http://127.0.0.1:5000/
+# -Only on any computer in the same LAN/wifi:
+# http://10.0.0.191:5000/    # assuming 10.0.0.191 is the internal ip address of the running computer (it is of my macbook pro in Urbana, IL on 2021_07_03)
+# -Works anywhere (except maybe inside the same LAN/wifi)
+# http://73.168.79.211:5000/  # Note, wasn't successfully working when testing? # assuming 73.168.79.211 is the external ip address of my Urbana, IL apt, and port forwarding has been setup with the router
+
+env_variables:
+  RUN_THROUGH_APP_YAML: true
+
+# VPC connection is necessary to access GCP from Google Cloud engine, even if it's via regular ip address access
+# Reference: https://cloud.google.com/appengine/docs/standard/python3/connecting-vpc
+vpc_access_connector:
+  name: projects/yerrabelli-2650/locations/.us-central1/connectors/connector1
+
+handlers:
+# Matches requests to /images/... to files in static/images/...
+- url: /images
+  static_dir: static/images
+
+- url: /js
+  static_dir: static/js
+
+#handlers:
+#- url: /css # Matches requests to /images/... to files in static/images/...
+#  static_dir: static/css
+#
+#- url: /.*
+#  redirect_http_response_code: 301
+#  script: auto
+#
+#
+#automatic_scaling:
+#  max_instances: 5
+#  min_pending_latency: automatic
+#  max_pending_latency: automatic
+#
+#network: {}

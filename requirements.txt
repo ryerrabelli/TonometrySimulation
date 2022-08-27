@@ -1,4 +1,38 @@
-versioneer~=0.19
+## INSTRUCTIONS
+# To run this file and install the requirements, cd to the folder this file is located and then run the below
+# lines in terminal. Notably, it appears setuptools needs to be installed independently before running at all.
+# $ pip install setuptools    # may change to setuptools~=52.0.0  if later version conflicts
+# $ pip install -r requirements.txt
+# A potential alternative is below, but as of now the formatting isn't acceptable for conda
+# $ conda install --file requirements.txt
+# Another alternative that I think should work is:
+# python setup.py install
+# Notes: (for pip 21.0.1 on anaconda->python3.8)
+# 1) 'pip install -r requirements.txt' won't uninstall any other packagse that aren't listed here. It will only uninstall a package here if an upgrade is needed.
+# 2) It appears it will not install any of the requirements if an error is found (either an error for not finding a package, not finding a package with the right version, or an error while installing the package itself- presumably any other errors too)
+#
+# Similarly, a requirements.txt file can be created by:
+# $ pip freeze > requirements.txt
+# $ conda list -e > requirements.txt
+# Note that the requirements.txt files between the two won't be inter-compatible (in either direction)
+#
+# To test the installation process, you can uninstall the items in this file, then try installing them:
+# $ pip uninstall -y -r requirements.txt
+# $ pip uninstall -y ryerrabelli ResourceSummarizer        # for some reason, ryerrabelli and ResourceSummarizer aren't uninstalled unless stated specifically
+# $ pip install -r requirements.txt
+# The -y argument above skips all the yesno questions- (there is one question per package)
+
+versioneer>=0.23
 #setuptools~=52.0.0
 #setuptools~=56.2.0   #setup tools 52.0.0 was giving bugs
-# Does NOT need ryerrabelli to be installed (would be a never-ending cycle if it did), unlike many other packages written by me. However, for consistency, if ryerrabelli is installed, the code will refer to itself as a package import instead of a relative import to match my other projects
+#ryerrabelli==1.0.62
+
+# Flask web imports
+flask>=2.2.2
+flask-login
+flask-cors
+pymongo # I don't think this is trully needed, except to debug, as I can just called flask-mongoengine
+Werkzeug>=2.2.2
+Jinja2>=3.0
+itsdangerous>=2.0
+click>=8.0
