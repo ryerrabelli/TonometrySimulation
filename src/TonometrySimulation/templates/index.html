@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <style>
+
+  </style>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename= 'css/main.css') }}">
+  <script type="text/javascript" src="{{ url_for('static', filename= 'js/headshot.js') }}"></script>
+  <script type="text/javascript" src="{{ url_for('static', filename= 'js/GATsimulation.js') }}"></script>
+  <title>GAT</title>
+</head>
+
+<body onload="startGat()" style="text-align: center">
+  <h1>GAT Simulation</h1>
+  <div class="grid-container">
+    <div id="#photo-area" style="justify-self: end;">
+      <!-- CIMED residency headshots are originally 6-7MB portrait photos of 3770px by 5655px (aspect ratio 1.5). I cropped them to b 3600px by 3600px. -->
+      <div id="zoomedPhoto" class="img-zoom-result">
+        <!-- Zoomed in version of high resolution photo will be here -->
+      </div>
+      <div class="img-zoom-container">
+        <div id="zoomingLens">
+          <!-- the code will insert html to control the zoomingLens hovering over the low resolution headshot-->
+        </div>
+        <img id="origPhoto" src="" alt="headshot low resolution">
+      </div>
+    </div>
+    <div id="GAT-area" style="justify-self: start">
+      <div id="GAT-controls">
+        <!-- Unicode characters https://www.w3schools.com/charsets/ref_utf_arrows.asp -->
+        <div>
+
+          <table>
+            <tr><th colspan="2"><h2>Movement</h2></th></tr>
+            <tr>
+              <td>
+                <button onmousedown="accelerateWindow({y:-0.2})" onmouseup="gatScreen.lens.stopMovement()"> &uarr; </button>
+              </td>
+              <td>
+                <button onmousedown="accelerateWindow({s:+0.02})" onmouseup="gatScreen.lens.stopMovement()"> &#8613; (W)
+                </button>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <button onmousedown="accelerateWindow({x:-0.2})" onmouseup="gatScreen.lens.stopMovement()"> &larr; </button>
+                <button onmousedown="accelerateWindow({y:+0.2})" onmouseup="gatScreen.lens.stopMovement()"> &darr; </button>
+                <button onmousedown="accelerateWindow({x:+0.2})" onmouseup="gatScreen.lens.stopMovement()"> &rarr; </button>
+              </td>
+              <td>
+                <button onmousedown="accelerateWindow({s:-0.02})" onmouseup="gatScreen.lens.stopMovement()"> &#8615; (S)
+                </button>
+              </td>
+            </tr>
+            <tr><td>
+              left:<span id="xLocDisplayer"></span>,<br />
+              top:<span id="yLocDisplayer"></span>
+            </td><td>forward:<br /><span id="sLocDisplayer"></span></td>
+            </tr>
+            <tr><th colspan="2"><h2>Pressure Dial</h2></th></tr>
+            <tr>
+              <td><button onmousedown="changeDial(-0.1)" onmouseup="changeDial(0.0)"> &darr; (shift)</button></td>
+              <td><button onmousedown="changeDial( 0.1)" onmouseup="changeDial(0.0)"> &uarr; (spacebar)</button></td>
+            </tr>
+
+          </table>
+
+
+        </div>
+        <div>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+
+
+</body>
+
+<script>
+  // Initiate zoom effect:
+  setUpPhotoZooming("origPhoto", "zoomedPhoto", "zoomingLens");
+</script>
+
+</html>

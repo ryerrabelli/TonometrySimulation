@@ -52,7 +52,21 @@ def hello():
     return f"Hi. sys.version={sys.version}</p>"
 
 
+@app.route("/data/<string:name>")
+def get_data(name):
+    folder_path = "static"
+    return flask.send_file(os.path.join(folder_path, name))
 
+
+@app.route("/v004")
+def layout():
+    now = datetime.datetime.now()
+    return flask.render_template("index.html",
+                           datetime=now.strftime("%a, %b %-d %Y %X %z"),  # Reference: https://strftime.org/
+                           #seed=seed,   #"/".join([lev0,lev1,lev2,lev3]) # doesn't work bc those are ints, not str
+                           version=__version__,
+                           #combined_img_contents_str=combined_img_contents_str,
+                           )
 
 """Conventionally in python, __name__ is "__main__" if the module (aka python file) that is being run (aka this 
 current file) is the main program. Otherwise, __name__ is "xyz.py" where xyz.py is the name of the main program (i.e. 
