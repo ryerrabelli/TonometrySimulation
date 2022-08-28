@@ -260,22 +260,23 @@ let gatScreen = {
         }
       })
 
-      $(".img-zoom-container").on('mousedown', function(event) {
-        let accelMire = {x:null, y:null};  // not used anymore. Mires do not move
+      $(".click-to-zoom").on("mousedown", function(event) {
         let accelZoomingLens = {x:null, y:null, s:null};  // null indicates don't change current value
-        // 0 is left, 1 is middle, 2 is right
-        if (event.button==0) {
-          accelZoomingLens.s = +0.02;
+        if (event.button==0) {  // 0 is left, 1 is middle, 2 is right
+          accelZoomingLens.s = +0.002;
         } else if (event.button==2) {
-          accelZoomingLens.s = -0.02;
+          accelZoomingLens.s = -0.002;
         }
         accelerateZoomingLens(accelZoomingLens);
-        accelerateMires(accelMire.x, accelMire.y);
       });
-      $(".img-zoom-container").on("mouseup", function() {
+      $(".click-to-zoom").on("mouseup", function() {
         stopMovementOfMires();
         gatScreen.lens.stopMovement();
       });
+      // Turn off right click menu
+      $(".click-to-zoom").on("contextmenu", function() {
+        return false;
+    });
     },
   clear : function() {
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
