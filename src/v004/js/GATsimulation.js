@@ -232,7 +232,7 @@ let gatScreen = {
     this.canvas.width = canvasSz.wd;
     this.canvas.height = canvasSz.ht;
     this.context = this.canvas.getContext("2d");
-    //document.getElementById("GAT-area").insertBefore(this.canvas, document.getElementById("GAT-controls"));
+    //document.getElementById("GAT-area").insertBefore(this.canvas, document.getElementById("GAT-editor"));
     $("#GAT-view").append(this.canvas);
 
     this.frameNo = 0;
@@ -460,8 +460,14 @@ function updateGatScreen() {
   $("#x-loc-displayer").html(gatScreen.lens.loc.x.toFixed(1).padStart(5).replaceAll(" ","&nbsp;"));
   $("#y-loc-displayer").html(gatScreen.lens.loc.y.toFixed(1).padStart(5).replaceAll(" ","&nbsp;"));
   $("#s-loc-displayer").html(gatScreen.lens.loc.s.toFixed(1).padStart(3).replaceAll(" ","&nbsp;"));
-  $("#press-displayer").html(myDial.dial.toFixed(1).padStart(3).replaceAll(" ","&nbsp;")+"mmHg");
+  $("#press-displayer").html(myDial.dial.toFixed(1).padStart(3).replaceAll(" ","&nbsp;")+" mmHg");
 
+}
+
+function displayOnConsole(message) {
+  const time = (new Date()).toLocaleTimeString();
+  const newElement = `<tr><td>${message}</td><td>${time}</td></tr>`;
+  $("#GAT-console tbody").prepend(newElement);
 }
 
 function everyInterval(n) {

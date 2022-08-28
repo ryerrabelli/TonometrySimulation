@@ -38,18 +38,24 @@
     <div id="GAT-area" style="justify-self: start">
       <!-- Mire screen will be added here -->
       <div id="GAT-view"></div>
-      <div id="GAT-controls">
-        <h2>Console</h2>
-        <div id="console">
-          <p>Hello</p>
-          <p>Hello</p>
-        </div>
-        <table>
-          <tr><th colspan="7"><h2>Controls</h2></th></tr>
+      <div id="GAT-editor">
+        <table id="GAT-console">
+          <thead>
+            <tr><th colspan="2"><h2>Console</h2></th></tr>
+          </thead>
+          <tbody>
+          <tr><td colspan="2">&nbsp;</td></tr>
+          </tbody>
+        </table>
+        <table id="GAT-controls">
+          <thead>
+            <tr><th colspan="7"><h2>Controls</h2></th></tr>
             <tr>
               <th colspan="5"><h3>Movement</h3></th>
               <th colspan="2"><h3>Pressure</h3></th>
             </tr>
+          </thead>
+          <tbody>
             <tr>
               <td></td>
               <td colspan="2">
@@ -65,7 +71,7 @@
               </td>
               <td>&nbsp;
                 <button onmousedown="changeDial( 0.1)"
-                        onmouseup="changeDial(0.0)"> &uarr; (spacebar)</button>
+                        onmouseup="changeDial(0.0)"> &uarr; (space)</button>
                 &nbsp;
               </td>
             </tr>
@@ -105,8 +111,8 @@
                 <span id="press-displayer"></span>
               </td>
             </tr>
-
-          </table>
+          </tbody>
+        </table>
       </div>
     </div>
   </div>
