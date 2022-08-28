@@ -12,6 +12,15 @@
 </head>
 
 <body onload="startGat()" style="text-align: center">
+<script>
+  // Initiate zoom effect:
+  // A $( document ).ready() block.
+    $( document ).ready(function() {
+        setUpPhotoZooming("origPhoto", "zoomedPhoto", "zoomingLens");
+        startGat()
+    });
+</script>
+
   <h1>GAT Simulation</h1>
   <div class="grid-container">
     <div id="#photo-area" style="justify-self: end;">
@@ -80,9 +89,5 @@
 
 </body>
 
-<script>
-  // Initiate zoom effect:
-  setUpPhotoZooming("origPhoto", "zoomedPhoto", "zoomingLens");
-</script>
 
 </html>

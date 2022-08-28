@@ -204,6 +204,7 @@ class ZoomingLensController extends Controller {
   }
 }
 
+
 let gatScreen = {
   canvas : document.createElement("canvas"),
   lens: new ZoomingLensController(),
@@ -228,36 +229,53 @@ let gatScreen = {
     }
   },
   start : function() {
-    this.canvas.width = canvasSz.wd;
-    this.canvas.height = canvasSz.ht;
-    this.context = this.canvas.getContext("2d");
-    document.getElementById("GAT-area").insertBefore(this.canvas, document.getElementById("GAT-controls"));
-    this.frameNo = 0;
-    // Despite what pycharm, the interval function is used
-    this.interval = setInterval(updateGatScreen, 20);
-    this.keyCode = false;
-    this.keyStr = false;
+      this.canvas.width = canvasSz.wd;
+      this.canvas.height = canvasSz.ht;
+      this.context = this.canvas.getContext("2d");
+      document.getElementById("GAT-area").insertBefore(this.canvas, document.getElementById("GAT-controls"));
+      this.frameNo = 0;
+      // Despite what pycharm, the interval function is used
+      this.interval = setInterval(updateGatScreen, 20);
+      this.keyCode = false;
+      this.keyStr = false;
 
-    window.addEventListener('keydown', function (event) {
-      const oldKeyCode = gatScreen.keyCode;
-      const oldKeyStr = gatScreen.keyStr;
-      gatScreen.keyCode = [event.keyCode];
-      gatScreen.keyStr = [event.key];
-      // Holding down the key eventually counts as multiple key presses
-      if ( !areArraysEqual(gatScreen.keyCode, oldKeyCode) ) {
-        assessKey(oldKeyCode, oldKeyStr, gatScreen.keyCode, gatScreen.keyStr, "keydown")
-      }
-    })
-    window.addEventListener('keyup', function (event) {
-      const oldKeyCode = gatScreen.keyCode;
-      const oldKeyStr = gatScreen.keyStr;
-      // Need to integrate event to only delete the specific key held up
-      gatScreen.keyCode = false;
-      gatScreen.keyStr = false;
-      if ( !areArraysEqual(gatScreen.keyCode, oldKeyCode) ) {
-        assessKey(oldKeyCode, oldKeyStr, gatScreen.keyCode, gatScreen.keyStr, "keyup")
-      }
-    })
+      window.addEventListener('keydown', function (event) {
+        const oldKeyCode = gatScreen.keyCode;
+        const oldKeyStr = gatScreen.keyStr;
+        gatScreen.keyCode = [event.keyCode];
+        gatScreen.keyStr = [event.key];
+        // Holding down the key eventually counts as multiple key presses
+        if ( !areArraysEqual(gatScreen.keyCode, oldKeyCode) ) {
+          assessKey(oldKeyCode, oldKeyStr, gatScreen.keyCode, gatScreen.keyStr, "keydown")
+        }
+      })
+      window.addEventListener('keyup', function (event) {
+        const oldKeyCode = gatScreen.keyCode;
+        const oldKeyStr = gatScreen.keyStr;
+        // Need to integrate event to only delete the specific key held up
+        gatScreen.keyCode = false;
+        gatScreen.keyStr = false;
+        if ( !areArraysEqual(gatScreen.keyCode, oldKeyCode) ) {
+          assessKey(oldKeyCode, oldKeyStr, gatScreen.keyCode, gatScreen.keyStr, "keyup")
+        }
+      })
+
+      $(".img-zoom-container").on('mousedown', function(event) {
+        let accelMire = {x:null, y:null};  // not used anymore. Mires do not move
+        let accelZoomingLens = {x:null, y:null, s:null};  // null indicates don't change current value
+        // 0 is left, 1 is middle, 2 is right
+        if (event.button==0) {
+          accelZoomingLens.s = +0.02;
+        } else if (event.button==2) {
+          accelZoomingLens.s = -0.02;
+        }
+        accelerateZoomingLens(accelZoomingLens);
+        accelerateMires(accelMire.x, accelMire.y);
+      });
+      $(".img-zoom-container").on("mouseup", function() {
+        stopMovementOfMires();
+        gatScreen.lens.stopMovement();
+      });
     },
   clear : function() {
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
