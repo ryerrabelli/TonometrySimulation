@@ -457,9 +457,11 @@ function updateGatScreen() {
     mireCircle.updateDrawing();
   }
   gatScreen.lens.updatePosition();
-  $("#xLocDisplayer").html(gatScreen.lens.loc.x.toFixed(2).padStart(7," ").replace(" ","&nbsp;"));
-  $("#yLocDisplayer").html(gatScreen.lens.loc.y.toFixed(2).padStart(7," ").replace(" ","&nbsp;"));
-  $("#sLocDisplayer").html(gatScreen.lens.loc.s.toFixed(1).padStart(3," ").replace(" ","&nbsp;"));
+  $("#x-loc-displayer").html(gatScreen.lens.loc.x.toFixed(1).padStart(5).replaceAll(" ","&nbsp;"));
+  $("#y-loc-displayer").html(gatScreen.lens.loc.y.toFixed(1).padStart(5).replaceAll(" ","&nbsp;"));
+  $("#s-loc-displayer").html(gatScreen.lens.loc.s.toFixed(1).padStart(3).replaceAll(" ","&nbsp;"));
+  $("#press-displayer").html(myDial.dial.toFixed(1).padStart(3).replaceAll(" ","&nbsp;")+"mmHg");
+
 }
 
 function everyInterval(n) {

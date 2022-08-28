@@ -48,7 +48,7 @@ canvas {
 #console p {
   border: 1px solid white;
 }
-#GAT-controls p, #GAT-controls h2 {
+#GAT-controls p, #GAT-controls h2, #GAT-controls h3 {
   margin: 0px;
 }
 
@@ -61,6 +61,11 @@ canvas {
   grid-template-columns: 1fr 1fr;
   grid-gap: 36px;
 }
-#xLocDisplayer, #yLocDisplayer {
-  font-family: "courier-new";
+#GAT-controls button {
+  font-size: 75%;
+  font-family: "courier";
+}
+.value-displayer td {
+  font-size: 75%;
+  font-family: "courier";
 }

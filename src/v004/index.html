@@ -44,39 +44,66 @@
           <p>Hello</p>
           <p>Hello</p>
         </div>
-        <h2>Controls</h2>
         <table>
-            <tr><th colspan="2"><h3>Movement</h3></th></tr>
+          <tr><th colspan="7"><h2>Controls</h2></th></tr>
             <tr>
-              <td>
-                <button onmousedown="accelerateWindow({y:-0.2})" onmouseup="gatScreen.lens.stopMovement()"> &uarr; </button>
-              </td>
-              <td>
-                <button onmousedown="accelerateWindow({s:+0.02})" onmouseup="gatScreen.lens.stopMovement()"> &#8613; (W)
+              <th colspan="5"><h3>Movement</h3></th>
+              <th colspan="2"><h3>Pressure</h3></th>
+            </tr>
+            <tr>
+              <td></td>
+              <td colspan="2">
+                <button onmousedown="accelerateWindow({y:-0.2})"
+                        onmouseup="gatScreen.lens.stopMovement()"> &uarr;
                 </button>
+              </td>
+              <td></td>
+              <td>&nbsp;
+                <button onmousedown="accelerateWindow({s:+0.02})"
+                        onmouseup="gatScreen.lens.stopMovement()"> &#8613; (W)</button>
+                &nbsp;
+              </td>
+              <td>&nbsp;
+                <button onmousedown="changeDial( 0.1)"
+                        onmouseup="changeDial(0.0)"> &uarr; (spacebar)</button>
+                &nbsp;
               </td>
             </tr>
             <tr>
               <!-- Unicode characters https://www.w3schools.com/charsets/ref_utf_arrows.asp -->
-              <td>
-                <button onmousedown="accelerateWindow({x:-0.2})" onmouseup="gatScreen.lens.stopMovement()"> &larr; </button>
-                <button onmousedown="accelerateWindow({y:+0.2})" onmouseup="gatScreen.lens.stopMovement()"> &darr; </button>
-                <button onmousedown="accelerateWindow({x:+0.2})" onmouseup="gatScreen.lens.stopMovement()"> &rarr; </button>
+              <td style="text-align: right">
+                <button onmousedown="accelerateWindow({x:-0.2})"
+                        onmouseup="gatScreen.lens.stopMovement()"> &larr; </button>
+              </td><td colspan="2">
+                <button onmousedown="accelerateWindow({y:+0.2})"
+                        onmouseup="gatScreen.lens.stopMovement()"> &darr; </button>
+              </td><td style="text-align: left">
+                <button onmousedown="accelerateWindow({x:+0.2})"
+                        onmouseup="gatScreen.lens.stopMovement()"> &rarr; </button>
+              </td>
+              <td>&nbsp;
+                <button onmousedown="accelerateWindow({s:-0.02})"
+                        onmouseup="gatScreen.lens.stopMovement()"> &#8615; (S)</button>
+                &nbsp;
               </td>
               <td>
-                <button onmousedown="accelerateWindow({s:-0.02})" onmouseup="gatScreen.lens.stopMovement()"> &#8615; (S)
-                </button>
+                <button onmousedown="changeDial(-0.1)"
+                        onmouseup="changeDial(0.0)"> &darr; (shift)</button>
               </td>
             </tr>
-            <tr><td>
-              left:<span id="xLocDisplayer"></span>,<br />
-              top:<span id="yLocDisplayer"></span>
-            </td><td>forward:<br /><span id="sLocDisplayer"></span></td>
-            </tr>
-            <tr><th colspan="2"><h3>Pressure Dial</h3></th></tr>
-            <tr>
-              <td><button onmousedown="changeDial(-0.1)" onmouseup="changeDial(0.0)"> &darr; (shift)</button></td>
-              <td><button onmousedown="changeDial( 0.1)" onmouseup="changeDial(0.0)"> &uarr; (spacebar)</button></td>
+            <tr class="value-displayer">
+              <td colspan="2">Left<br />
+                <span id="x-loc-displayer"></span>
+              </td>
+              <td colspan="2">Top<br />
+                <span id="y-loc-displayer"></span>
+              </td>
+              <td>Forward<br />
+                <span id="s-loc-displayer"></span>
+              </td>
+              <td>Pressure<br />
+                <span id="press-displayer"></span>
+              </td>
             </tr>
 
           </table>
