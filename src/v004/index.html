@@ -36,12 +36,17 @@
       </div>
     </div>
     <div id="GAT-area" style="justify-self: start">
+      <!-- Mire screen will be added here -->
+      <div id="GAT-view"></div>
       <div id="GAT-controls">
-        <!-- Unicode characters https://www.w3schools.com/charsets/ref_utf_arrows.asp -->
-        <div>
-
-          <table>
-            <tr><th colspan="2"><h2>Movement</h2></th></tr>
+        <h2>Console</h2>
+        <div id="console">
+          <p>Hello</p>
+          <p>Hello</p>
+        </div>
+        <h2>Controls</h2>
+        <table>
+            <tr><th colspan="2"><h3>Movement</h3></th></tr>
             <tr>
               <td>
                 <button onmousedown="accelerateWindow({y:-0.2})" onmouseup="gatScreen.lens.stopMovement()"> &uarr; </button>
@@ -52,6 +57,7 @@
               </td>
             </tr>
             <tr>
+              <!-- Unicode characters https://www.w3schools.com/charsets/ref_utf_arrows.asp -->
               <td>
                 <button onmousedown="accelerateWindow({x:-0.2})" onmouseup="gatScreen.lens.stopMovement()"> &larr; </button>
                 <button onmousedown="accelerateWindow({y:+0.2})" onmouseup="gatScreen.lens.stopMovement()"> &darr; </button>
@@ -67,20 +73,13 @@
               top:<span id="yLocDisplayer"></span>
             </td><td>forward:<br /><span id="sLocDisplayer"></span></td>
             </tr>
-            <tr><th colspan="2"><h2>Pressure Dial</h2></th></tr>
+            <tr><th colspan="2"><h3>Pressure Dial</h3></th></tr>
             <tr>
               <td><button onmousedown="changeDial(-0.1)" onmouseup="changeDial(0.0)"> &darr; (shift)</button></td>
               <td><button onmousedown="changeDial( 0.1)" onmouseup="changeDial(0.0)"> &uarr; (spacebar)</button></td>
             </tr>
 
           </table>
-
-
-        </div>
-        <div>
-
-        </div>
-
       </div>
     </div>
   </div>
