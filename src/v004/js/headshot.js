@@ -35,7 +35,8 @@ function setUpPhotoZooming(origPhotoID, zoomedPhotoID, zoomingLensID) {
   for (let i = 0; i < persons.length; i++) {
     $("#persons-selector").append($("<option>", {
       value: i,
-      text: persons[i].name
+      text: persons[i].name,
+      selected: i==personID,
     }));
   }
 

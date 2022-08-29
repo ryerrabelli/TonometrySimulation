@@ -101,10 +101,11 @@
                         onmouseup="changeDial(0.0)"> &darr; (shift)</button>
               </td>
             </tr>
+            <!--
             <tr>
               <td colspan="5">&nbsp;</td>
               <td colspan="2">&nbsp;</td>
-            </tr>
+            </tr> -->
             <tr>
               <th colspan="2">Left</th>
               <th colspan="2">Top</th>
@@ -130,9 +131,20 @@
       </div>
       <div>
         <form action="" method="get">
-          <label for="persons-selector">Choose photo:</label>
-          <select name="personID" id="persons-selector"></select>
-          <input type="submit" value="Submit">
+          <table>
+            <tr>
+              <th colspan="2">
+                <label for="persons-selector"><h2>Choose photo:</h2></label>
+              </th>
+            </tr><tr>
+              <td>
+                <select name="personID" id="persons-selector"></select>
+              </td>
+              <td><input type="submit" value="Submit"></td>
+            </tr>
+          </table>
+
+
         </form>
       </div>
 
