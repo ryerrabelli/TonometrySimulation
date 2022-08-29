@@ -13,6 +13,9 @@ class Person {
   get pathResHigh() {
     return this.pathToFolder + this.filenameBase + "-res-high" + "." + this.extension;
   }
+  get name() {
+    return this.filenameBase.split("-")[0]
+  }
 }
 
 
@@ -26,11 +29,20 @@ function setUpPhotoZooming(origPhotoID, zoomedPhotoID, zoomingLensID) {
     new Person("Ashkhan-Hojati-008-cropped-square"),
     new Person("Rahul-Yerrabelli-005-cropped-square"),
   ]
-  personID = 0;
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const personID = urlParams.has("personID") ? urlParams.get("personID") : 0;
+  for (let i = 0; i < persons.length; i++) {
+    $("#persons-selector").append($("<option>", {
+      value: i,
+      text: persons[i].name
+    }));
+  }
+
   origPhoto.src = persons[personID].pathResLow;
 
   /*set background properties for the zoomedPhoto DIV:*/
-  zoomedPhoto.style.backgroundImage = "url('" + persons[personID].pathResHigh; + "')";
+  zoomedPhoto.style.backgroundImage = `url("${persons[personID].pathResHigh}")`
   updateZoom()
 
   /*execute a function when someone moves the cursor over the image, or the zoomingLens:*/
