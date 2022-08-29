@@ -417,11 +417,14 @@ class MireCircle extends MovingComponent {
       if (!isNullOrUndef(offsetAngle)) {
         arcAngleInitial =    0    + offsetAngle;  // radians
         arcAngleFinal   = Math.PI - offsetAngle;  // radians
+        const isMireGreen = miresVisibility>0.9;
         const alpha = miresVisibility;
-        console.log(alpha);
-        // Draw outline
-        ctx.strokeStyle = "rgba(0,255,0," + (alpha*0.5) + ")";
-        ctx.fillStyle = "rgba(0,0,0,0)";
+
+
+        // Draw outline of Mire
+        if (isMireGreen) ctx.strokeStyle = `rgba(0,255,0,${alpha*0.5})`;
+        else ctx.strokeStyle = `rgba(0,0,255,${alpha*0.5})`;
+        ctx.fillStyle = `rgba(0,0,0,0)`;
         ctx.lineWidth = MIRE_LINE_WD * lens.loc.s * 0.5;  // half thickness of routline
         ctx.beginPath();
         ctx.arc(locFromLens.x + this.direction*myDial.dial*dialCoefficient, locFromLens.y,
@@ -430,9 +433,14 @@ class MireCircle extends MovingComponent {
         ctx.stroke();
         ctx.fill();
 
-        // Draw actual green circle
-        ctx.strokeStyle = "rgba(0,100,0," + (alpha*0.9) + ")";
-        ctx.fillStyle = "rgba(200,255,200," + (alpha*0.5) + ")";
+        // Draw actual green/blue Mire circle
+        if (isMireGreen) {
+          ctx.strokeStyle = `rgba(0,100,0,${alpha*0.9})`;
+          ctx.fillStyle = `rgba(200,255,200,${alpha*0.5})`;
+        } else {
+          ctx.strokeStyle = `rgba(0,0,100,${alpha*0.9})`;
+          ctx.fillStyle = `rgba(200,200,255,${alpha*0.5})`;
+        }
         ctx.lineWidth = MIRE_LINE_WD * lens.loc.s;
         ctx.beginPath();
         ctx.arc(locFromLens.x + this.direction*myDial.dial*dialCoefficient, locFromLens.y,
