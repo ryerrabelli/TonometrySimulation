@@ -419,13 +419,14 @@ class MireCircle extends MovingComponent {
         arcAngleFinal   = Math.PI - offsetAngle;  // radians
         const isMireGreen = miresVisibility>0.9;
         const alpha = miresVisibility;
+        const thickness = lens.loc.s/5;  // corresponds to increasing blurriness/thickness as you get closer
 
 
         // Draw outline of Mire
         if (isMireGreen) ctx.strokeStyle = `rgba(0,255,0,${alpha*0.5})`;
         else ctx.strokeStyle = `rgba(0,0,255,${alpha*0.5})`;
         ctx.fillStyle = `rgba(0,0,0,0)`;
-        ctx.lineWidth = MIRE_LINE_WD * lens.loc.s * 0.5;  // half thickness of routline
+        ctx.lineWidth = MIRE_LINE_WD * lens.loc.s * thickness * 0.5;  // half thickness of routine
         ctx.beginPath();
         ctx.arc(locFromLens.x + this.direction*myDial.dial*dialCoefficient, locFromLens.y,
           radiusScaled, arcAngleInitial, arcAngleFinal,
@@ -441,7 +442,7 @@ class MireCircle extends MovingComponent {
           ctx.strokeStyle = `rgba(0,0,100,${alpha*0.9})`;
           ctx.fillStyle = `rgba(200,200,255,${alpha*0.5})`;
         }
-        ctx.lineWidth = MIRE_LINE_WD * lens.loc.s;
+        ctx.lineWidth = MIRE_LINE_WD * lens.loc.s * thickness;
         ctx.beginPath();
         ctx.arc(locFromLens.x + this.direction*myDial.dial*dialCoefficient, locFromLens.y,
           radiusScaled*0.9, arcAngleInitial, arcAngleFinal, (this.direction>0) );
