@@ -444,6 +444,8 @@ class MireCircle extends MovingComponent {
   }
 }
 
+let creatingCornealAbrasion = false;
+
 function updateGatScreen() {
   gatScreen.clear();
   gatScreen.frameNo += 1;
@@ -456,7 +458,20 @@ function updateGatScreen() {
     mireCircle.updatePosition();
     mireCircle.updateDrawing();
   }
+
   gatScreen.lens.updatePosition();
+  if (gatScreen.lens.loc.s > 5 && (
+    Math.abs(gatScreen.lens.vel.x) > 1e-8 ||
+    Math.abs(gatScreen.lens.vel.y) > 1e-8)
+  ) {
+    if (!creatingCornealAbrasion) {  // Don't create a duplicate message for the same abrasion
+      creatingCornealAbrasion = true;
+      displayOnConsole("Corneal abrasion! Don't move while on the cornea.");
+    }
+
+  } else {
+    creatingCornealAbrasion = false;
+  }
   $("#x-loc-displayer").html(gatScreen.lens.loc.x.toFixed(1).padStart(5).replaceAll(" ","&nbsp;"));
   $("#y-loc-displayer").html(gatScreen.lens.loc.y.toFixed(1).padStart(5).replaceAll(" ","&nbsp;"));
   $("#s-loc-displayer").html(gatScreen.lens.loc.s.toFixed(1).padStart(3).replaceAll(" ","&nbsp;"));
