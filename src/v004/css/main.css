@@ -65,12 +65,15 @@ h1 {
 #GAT-editor p, #GAT-editor h2, #GAT-editor h3 {
   margin: 0px;
 }
-#GAT-editor table {
+#GAT-editor div {
   width: 95%;
   margin-top:    5.0%;
   margin-bottom: 5.0%;
   margin-left:   2.5%;
   margin-right:  2.5%;
+}
+#GAT-editor table {
+  width: 100%;
   border-collapse: collapse;   /* Combines adjacent borders into one line. If this is not done, then borders cannot be set on tr rows. */
   background-color: #444;
 }
@@ -90,6 +93,15 @@ h1 {
   vertical-align: top;
   white-space: nowrap;
 }
+.tableFixHead {
+  overflow-y: auto;
+  height: 25% ;
+}
+.tableFixHead thead th {
+  position: sticky;
+  top: 0;
+}
+
 
 #GAT-controls td, #GAT-controls th {
   border: 1px solid white;
