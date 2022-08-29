@@ -1,5 +1,5 @@
 let myDial;
-const dialCoefficient = 5;
+const dialCoefficient = 1;
 
 // coordinates from top left, units in pixels
 const canvasSz    = {wd:360, ht:360};
@@ -388,11 +388,22 @@ class MireCircle extends MovingComponent {
 
     // get coordinates but translated to be within the lens and scaled up (zoom)
     let locFromLens = {
-      x:(this.x-lens.loc.x)*lens.loc.s,
-      y:(this.y-lens.loc.y)*lens.loc.s
+      x: lens.loc.s*(this.x-lens.loc.x + this.direction*myDial.dial*dialCoefficient),
+      y: lens.loc.s*(this.y-lens.loc.y),
     };
     const radiusScaled = this.radius * lens.loc.s;
 
+
+      // Draw big blue circle around Mires
+    ctx.strokeStyle = `rgba(0,0,255,0.1)`;
+    ctx.fillStyle = `rgba(0,0,0,0.1)`;
+    ctx.lineWidth = MIRE_LINE_WD;  // half thickness of routine
+    ctx.beginPath();
+    ctx.arc(180, 180,
+      180, 0, 2*Math.PI,
+      (this.direction>0) );
+    ctx.stroke();
+    ctx.fill();
 
 
     const miresVisibility = gatScreen.getMiresVisibility();
@@ -423,24 +434,13 @@ class MireCircle extends MovingComponent {
         const alpha = miresVisibility;
         const thickness = 1;  //lens.loc.s/5;  // corresponds to increasing blurriness/thickness as you get closer
 
-        // Draw big blue circle around Mires
-        ctx.strokeStyle = `rgba(0,0,255,0.5)`;
-        ctx.fillStyle = `rgba(0,0,0,0.2)`;
-        ctx.lineWidth = MIRE_LINE_WD;  // half thickness of routine
-        ctx.beginPath();
-        ctx.arc(180, 180,
-          180, 0, 2*Math.PI,
-          (this.direction>0) );
-        ctx.stroke();
-        ctx.fill();
-
         // Draw outline of Mire
         if (isMireGreen) ctx.strokeStyle = `rgba(0,255,0,${alpha*0.5})`;
         else ctx.strokeStyle = `rgba(0,0,255,${alpha*0.5})`;
         ctx.fillStyle = `rgba(0,0,0,0)`;
         ctx.lineWidth = MIRE_LINE_WD * lens.loc.s * thickness * 0.5;  // half thickness of routine
         ctx.beginPath();
-        ctx.arc(locFromLens.x + this.direction*myDial.dial*dialCoefficient, locFromLens.y,
+        ctx.arc(locFromLens.x, locFromLens.y,
           radiusScaled, arcAngleInitial, arcAngleFinal,
           (this.direction>0) );
         ctx.stroke();
@@ -456,7 +456,7 @@ class MireCircle extends MovingComponent {
         }
         ctx.lineWidth = MIRE_LINE_WD * lens.loc.s * thickness;
         ctx.beginPath();
-        ctx.arc(locFromLens.x + this.direction*myDial.dial*dialCoefficient, locFromLens.y,
+        ctx.arc(locFromLens.x, locFromLens.y,
           radiusScaled*0.9, arcAngleInitial, arcAngleFinal, (this.direction>0) );
         ctx.stroke();
         ctx.fill();
@@ -479,6 +479,7 @@ function updateGatScreen() {
     mireCircle.updatePosition();
     mireCircle.updateDrawing();
   }
+
 
   gatScreen.lens.updatePosition();
   if (gatScreen.lens.loc.s > 5 && (
