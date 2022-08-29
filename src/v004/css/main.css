@@ -45,21 +45,38 @@ canvas {
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-gap: 36px;
-}
+  text-align: center;
 
+}
+.grid-container > div:nth-child(2n+1) { /* first column, aka every even div */
+  justify-self: end;
+}
+.grid-container > div:nth-child(2n+2) { /* second column, aka every odd div */
+  justify-self: start;
+}
+h1 {
+  text-align: center;
+}
 #GAT-editor {
   width: 360px;
   height: 360px;
+  background-color: #999;
 }
 #GAT-editor p, #GAT-editor h2, #GAT-editor h3 {
   margin: 0px;
 }
 #GAT-editor table {
-  width: 100%;
-  padding-bottom: 5%;
+  width: 95%;
+  margin-top:    5.0%;
+  margin-bottom: 5.0%;
+  margin-left:   2.5%;
+  margin-right:  2.5%;
   border-collapse: collapse;   /* Combines adjacent borders into one line. If this is not done, then borders cannot be set on tr rows. */
+  background-color: #444;
 }
-
+#GAT-editor table th {
+  background-color: #000;
+}
 #GAT-console tbody {
   text-align: left;
   padding: 10px;

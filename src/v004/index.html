@@ -11,109 +11,119 @@
   <title>GAT</title>
 </head>
 
-<body onload="startGat()" style="text-align: center">
-<script>
-  // Initiate zoom effect:
-  // A $( document ).ready() block.
+<body>
+  <script>
+    // Initiate zoom effect:
+    // A $( document ).ready() block.
     $( document ).ready(function() {
         setUpPhotoZooming("origPhoto", "zoomedPhoto", "zoomingLens");
         startGat()
     });
-</script>
+  </script>
 
-  <h1>GAT Simulation</h1>
+  <h1 >GAT Simulation</h1>
   <div class="grid-container">
-    <div id="#photo-area" style="justify-self: end;">
-      <!-- CIMED residency headshots are originally 6-7MB portrait photos of 3770px by 5655px (aspect ratio 1.5). I cropped them to b 3600px by 3600px. -->
-      <div id="zoomedPhoto" class="img-zoom-result">
-        <!-- Zoomed in version of high resolution photo will be here -->
-      </div>
-      <div class="img-zoom-container click-to-zoom">
-        <div id="zoomingLens">
-          <!-- the code will insert html to control the zoomingLens hovering over the low resolution headshot-->
-        </div>
-        <img id="origPhoto" src="" alt="headshot low resolution">
-      </div>
+    <!-- CIMED residency headshots are originally 6-7MB portrait photos of 3770px by 5655px (aspect ratio 1.5). I cropped them to b 3600px by 3600px. -->
+    <div id="zoomedPhoto" class="img-zoom-result photo-area">
+      <!-- Zoomed in version of high resolution photo will be here -->
     </div>
-    <div id="GAT-area" style="justify-self: start">
+
+    <div id="GAT-view">
       <!-- Mire screen will be added here -->
-      <div id="GAT-view"></div>
-      <div id="GAT-editor">
-        <table id="GAT-console">
-          <thead>
-            <tr><th colspan="2"><h2>Console</h2></th></tr>
-          </thead>
-          <tbody>
-          <tr><td colspan="2">&nbsp;</td></tr>
-          </tbody>
-        </table>
-        <table id="GAT-controls">
-          <thead>
-            <tr><th colspan="7"><h2>Controls</h2></th></tr>
-            <tr>
-              <th colspan="5"><h3>Movement</h3></th>
-              <th colspan="2"><h3>Pressure</h3></th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td></td>
-              <td colspan="2">
-                <button onmousedown="accelerateWindow({y:-0.2})"
-                        onmouseup="gatScreen.lens.stopMovement()"> &uarr;
-                </button>
-              </td>
-              <td></td>
-              <td>&nbsp;
-                <button onmousedown="accelerateWindow({s:+0.02})"
-                        onmouseup="gatScreen.lens.stopMovement()"> &#8613; (W)</button>
-                &nbsp;
-              </td>
-              <td>&nbsp;
-                <button onmousedown="changeDial( 0.1)"
-                        onmouseup="changeDial(0.0)"> &uarr; (space)</button>
-                &nbsp;
-              </td>
-            </tr>
-            <tr>
-              <!-- Unicode characters https://www.w3schools.com/charsets/ref_utf_arrows.asp -->
-              <td style="text-align: right">
-                <button onmousedown="accelerateWindow({x:-0.2})"
-                        onmouseup="gatScreen.lens.stopMovement()"> &larr; </button>
-              </td><td colspan="2">
-                <button onmousedown="accelerateWindow({y:+0.2})"
-                        onmouseup="gatScreen.lens.stopMovement()"> &darr; </button>
-              </td><td style="text-align: left">
-                <button onmousedown="accelerateWindow({x:+0.2})"
-                        onmouseup="gatScreen.lens.stopMovement()"> &rarr; </button>
-              </td>
-              <td>&nbsp;
-                <button onmousedown="accelerateWindow({s:-0.02})"
-                        onmouseup="gatScreen.lens.stopMovement()"> &#8615; (S)</button>
-                &nbsp;
-              </td>
-              <td>
-                <button onmousedown="changeDial(-0.1)"
-                        onmouseup="changeDial(0.0)"> &darr; (shift)</button>
-              </td>
-            </tr>
-            <tr class="value-displayer">
-              <td colspan="2">Left<br />
-                <span id="x-loc-displayer"></span>
-              </td>
-              <td colspan="2">Top<br />
-                <span id="y-loc-displayer"></span>
-              </td>
-              <td>Forward<br />
-                <span id="s-loc-displayer"></span>
-              </td>
-              <td>Pressure<br />
-                <span id="press-displayer"></span>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+    </div>
+
+    <div class="img-zoom-container click-to-zoom photo-area">
+      <div id="zoomingLens">
+        <!-- the code will insert html to control the zoomingLens hovering over the low resolution headshot-->
       </div>
+      <img id="origPhoto" src="" alt="headshot low resolution">
+    </div>
+
+    <div id="GAT-editor">
+      <table id="GAT-console">
+        <thead>
+          <tr><th colspan="2"><h2>Console</h2></th></tr>
+        </thead>
+        <tbody>
+        <tr><td>&nbsp;</td><td></td></tr>
+        </tbody>
+      </table>
+      <table id="GAT-controls">
+        <thead>
+          <tr><th colspan="7"><h2>Controls</h2></th></tr>
+          <tr>
+            <th colspan="5"><h3>Movement</h3></th>
+            <th colspan="2"><h3>Pressure</h3></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td></td>
+            <td colspan="2">
+              <button onmousedown="accelerateWindow({y:-0.2})"
+                      onmouseup="gatScreen.lens.stopMovement()"> &uarr;
+              </button>
+            </td>
+            <td></td>
+            <td>&nbsp;
+              <button onmousedown="accelerateWindow({s:+0.02})"
+                      onmouseup="gatScreen.lens.stopMovement()"> &#8613; (W)</button>
+              &nbsp;
+            </td>
+            <td>&nbsp;
+              <button onmousedown="changeDial( 0.1)"
+                      onmouseup="changeDial(0.0)"> &uarr; (space)</button>
+              &nbsp;
+            </td>
+          </tr>
+          <tr>
+            <!-- Unicode characters https://www.w3schools.com/charsets/ref_utf_arrows.asp -->
+            <td style="text-align: right">
+              <button onmousedown="accelerateWindow({x:-0.2})"
+                      onmouseup="gatScreen.lens.stopMovement()"> &larr; </button>
+            </td><td colspan="2">
+              <button onmousedown="accelerateWindow({y:+0.2})"
+                      onmouseup="gatScreen.lens.stopMovement()"> &darr; </button>
+            </td><td style="text-align: left">
+              <button onmousedown="accelerateWindow({x:+0.2})"
+                      onmouseup="gatScreen.lens.stopMovement()"> &rarr; </button>
+            </td>
+            <td>&nbsp;
+              <button onmousedown="accelerateWindow({s:-0.02})"
+                      onmouseup="gatScreen.lens.stopMovement()"> &#8615; (S)</button>
+              &nbsp;
+            </td>
+            <td>
+              <button onmousedown="changeDial(-0.1)"
+                      onmouseup="changeDial(0.0)"> &darr; (shift)</button>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="5">&nbsp;</td>
+            <td colspan="2">&nbsp;</td>
+          </tr>
+          <tr>
+            <th colspan="2">Left</th>
+            <th colspan="2">Top</th>
+            <th>Forward</th>
+            <th>Pressure</th>
+          </tr>
+          <tr class="value-displayer">
+            <td colspan="2">
+              <span id="x-loc-displayer"></span>
+            </td>
+            <td colspan="2">
+              <span id="y-loc-displayer"></span>
+            </td>
+            <td>
+              <span id="s-loc-displayer"></span>
+            </td>
+            <td>
+              <span id="press-displayer"></span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 
