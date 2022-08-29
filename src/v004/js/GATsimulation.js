@@ -419,7 +419,7 @@ class MireCircle extends MovingComponent {
         arcAngleFinal   = Math.PI - offsetAngle;  // radians
         const isMireGreen = miresVisibility>0.9;
         const alpha = miresVisibility;
-        const thickness = lens.loc.s/5;  // corresponds to increasing blurriness/thickness as you get closer
+        const thickness = 1;  //lens.loc.s/5;  // corresponds to increasing blurriness/thickness as you get closer
 
 
         // Draw outline of Mire
