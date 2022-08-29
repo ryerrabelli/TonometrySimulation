@@ -515,6 +515,7 @@ function updateGatScreen() {
   ) {
     if (!creatingCornealAbrasion) {  // Don't create a duplicate message for the same abrasion
       creatingCornealAbrasion = true;
+      displayOnConsole("Corneal abrasion! Don't move while on the cornea.");
     }
   } else {
     creatingCornealAbrasion = false;
