@@ -393,6 +393,8 @@ class MireCircle extends MovingComponent {
     };
     const radiusScaled = this.radius * lens.loc.s;
 
+
+
     const miresVisibility = gatScreen.getMiresVisibility();
     if (miresVisibility > 0.01) {
       let offsetAngle = null;  // indicates how much of the arc should NOT be drawn on ea (radians)
@@ -421,6 +423,16 @@ class MireCircle extends MovingComponent {
         const alpha = miresVisibility;
         const thickness = 1;  //lens.loc.s/5;  // corresponds to increasing blurriness/thickness as you get closer
 
+        // Draw big blue circle around Mires
+        ctx.strokeStyle = `rgba(0,0,255,0.5)`;
+        ctx.fillStyle = `rgba(0,0,0,0.2)`;
+        ctx.lineWidth = MIRE_LINE_WD;  // half thickness of routine
+        ctx.beginPath();
+        ctx.arc(180, 180,
+          180, 0, 2*Math.PI,
+          (this.direction>0) );
+        ctx.stroke();
+        ctx.fill();
 
         // Draw outline of Mire
         if (isMireGreen) ctx.strokeStyle = `rgba(0,255,0,${alpha*0.5})`;
