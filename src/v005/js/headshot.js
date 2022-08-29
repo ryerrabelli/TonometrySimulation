@@ -31,7 +31,9 @@ function setUpPhotoZooming(origPhotoID, zoomedPhotoID, zoomingLensID) {
   ]
 
   const urlParams = new URLSearchParams(window.location.search);
+  // Decide which photo to use based on the GET URL param (url ending with <url>/?personID=0)
   const personID = urlParams.has("personID") ? urlParams.get("personID") : 0;
+  // Added all the photo options
   for (let i = 0; i < persons.length; i++) {
     $("#persons-selector").append($("<option>", {
       value: i,

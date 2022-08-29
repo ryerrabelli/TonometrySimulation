@@ -207,6 +207,7 @@ class ZoomingLensController extends Controller {
 
 let gatScreen = {
   canvas : document.createElement("canvas"),
+  canvasController : document.createElement("canvas"),
   lens: new ZoomingLensController(),
   getMiresVisibility: function() {
     if (this.lens.loc.s<=1) {
@@ -234,10 +235,14 @@ let gatScreen = {
     this.context = this.canvas.getContext("2d");
     //document.getElementById("GAT-area").insertBefore(this.canvas, document.getElementById("GAT-editor"));
     $("#GAT-view").append(this.canvas);
+    this.canvasController.width = canvasSz.wd;
+    this.canvasController.height = canvasSz.ht;
+    this.contextController = this.canvasController.getContext("2d");
+    $("#GAT-controller-view").append(this.canvasController);
 
     this.frameNo = 0;
     // Despite what pycharm, the interval function is used
-    this.interval = setInterval(updateGatScreen, 20);
+    this.interval = setInterval(this.update, 20);
     this.keyCode = false;
     this.keyStr = false;
 
@@ -279,6 +284,56 @@ let gatScreen = {
     $(".click-to-zoom").on("contextmenu", function() {
       return false;
     });
+  },
+  creatingCornealAbrasion: false,
+  mireCircleAligned: false,
+  update: function() {
+    gatScreen.clear();
+    gatScreen.frameNo += 1;
+
+    myDial.text="Dial: " + myDial.dial.toFixed(1) + " mmHg";
+    myDial.updatePosition();
+    myDial.updateDrawing();
+    for (let i = 0; i < mireCircles.length; i += 1) {
+      let mireCircle = mireCircles[i]
+      mireCircle.updatePosition();
+      mireCircle.updateDrawing();
+
+      if (Math.abs(mireCircle.xDialAdjustment) > 0.9*mireCircle.radius &&
+        Math.abs(mireCircle.xDialAdjustment) < 1.0*mireCircle.radius
+      ) {
+        if (!this.mireCircleAligned) {
+          this.mireCircleAligned = true;
+          displayOnConsole("Mires aligned!");
+        }
+      } else {
+        if (this.mireCircleAligned) {
+          this.mireCircleAligned = false;
+          displayOnConsole("Mires no longer aligned.");
+        }
+      }
+
+    }
+
+    gatScreen.lens.updatePosition();
+
+    if (gatScreen.lens.loc.s > 5 && (
+      Math.abs(gatScreen.lens.vel.x) > 1e-8 ||
+      Math.abs(gatScreen.lens.vel.y) > 1e-8)
+    ) {
+      if (!this.creatingCornealAbrasion) {  // Don't create a duplicate message for the same abrasion
+        this.creatingCornealAbrasion = true;
+        displayOnConsole("Corneal abrasion! Don't move while on the cornea.");
+      }
+    } else {
+      this.creatingCornealAbrasion = false;
+    }
+
+    $("#x-loc-displayer").html(gatScreen.lens.loc.x.toFixed(1).padStart(5).replaceAll(" ","&nbsp;"));
+    $("#y-loc-displayer").html(gatScreen.lens.loc.y.toFixed(1).padStart(5).replaceAll(" ","&nbsp;"));
+    $("#s-loc-displayer").html(gatScreen.lens.loc.s.toFixed(1).padStart(3).replaceAll(" ","&nbsp;"));
+    $("#press-displayer").html(myDial.dial.toFixed(1).padStart(3).replaceAll(" ","&nbsp;")+" mmHg");
+
   },
   clear : function() {
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -475,62 +530,13 @@ class MireCircle extends MovingComponent {
   }
 }
 
-let creatingCornealAbrasion = false;
-let mireCircleAligned = false;
 
-function updateGatScreen() {
-  gatScreen.clear();
-  gatScreen.frameNo += 1;
-
-  myDial.text="Dial: " + myDial.dial.toFixed(1) + " mmHg";
-  myDial.updatePosition();
-  myDial.updateDrawing();
-  for (let i = 0; i < mireCircles.length; i += 1) {
-    let mireCircle = mireCircles[i]
-    mireCircle.updatePosition();
-    mireCircle.updateDrawing();
-
-    if (Math.abs(mireCircle.xDialAdjustment) > 0.9*mireCircle.radius &&
-      Math.abs(mireCircle.xDialAdjustment) < 1.0*mireCircle.radius
-    ) {
-      if (!mireCircleAligned) {
-        mireCircleAligned = true;
-        displayOnConsole("Mires aligned!");
-      }
-    } else {
-      if (mireCircleAligned) {
-        mireCircleAligned = false;
-        displayOnConsole("Mires no longer aligned.");
-      }
-    }
-
-  }
-
-
-  gatScreen.lens.updatePosition();
-
-  if (gatScreen.lens.loc.s > 5 && (
-    Math.abs(gatScreen.lens.vel.x) > 1e-8 ||
-    Math.abs(gatScreen.lens.vel.y) > 1e-8)
-  ) {
-    if (!creatingCornealAbrasion) {  // Don't create a duplicate message for the same abrasion
-      creatingCornealAbrasion = true;
-    }
-  } else {
-    creatingCornealAbrasion = false;
-  }
-
-  $("#x-loc-displayer").html(gatScreen.lens.loc.x.toFixed(1).padStart(5).replaceAll(" ","&nbsp;"));
-  $("#y-loc-displayer").html(gatScreen.lens.loc.y.toFixed(1).padStart(5).replaceAll(" ","&nbsp;"));
-  $("#s-loc-displayer").html(gatScreen.lens.loc.s.toFixed(1).padStart(3).replaceAll(" ","&nbsp;"));
-  $("#press-displayer").html(myDial.dial.toFixed(1).padStart(3).replaceAll(" ","&nbsp;")+" mmHg");
-
-}
 
 function displayOnConsole(message) {
   const time = (new Date()).toLocaleTimeString();
   const newElement = `<tr><td>${message}</td><td>${time}</td></tr>`;
   $("#GAT-console tbody").prepend(newElement);
+  console.log(message);
 }
 
 function everyInterval(n) {
