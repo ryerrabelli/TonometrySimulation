@@ -357,6 +357,7 @@ class Rectangle extends MovingComponent {
     ctx.fillRect(this.x-lens.loc.x, this.y-lens.loc.y, this.width, this.height);
   }
 }
+
 class MireCircle extends MovingComponent {
   /**
    * Create a Mire Circle.
@@ -374,6 +375,15 @@ class MireCircle extends MovingComponent {
     // -1 -> aka counterclockwise starting from rightmost point
     this.direction = direction;
   }
+  get xDialAdjustment() {
+    return this.direction*myDial.dial*dialCoefficient
+  }
+  get xDialAdjusted() {
+    return this.x + this.xDialAdjustment;
+  }
+  get yDialAdjusted() {
+    return this.y;
+  }
   updateDrawing() {  // overrides empty method in Component
     let ctx = gatScreen.context;
     let lens = gatScreen.lens
@@ -388,8 +398,8 @@ class MireCircle extends MovingComponent {
 
     // get coordinates but translated to be within the lens and scaled up (zoom)
     let locFromLens = {
-      x: lens.loc.s*(this.x-lens.loc.x + this.direction*myDial.dial*dialCoefficient),
-      y: lens.loc.s*(this.y-lens.loc.y),
+      x: lens.loc.s*(this.xDialAdjusted-lens.loc.x),
+      y: lens.loc.s*(this.yDialAdjusted-lens.loc.y),
     };
     const radiusScaled = this.radius * lens.loc.s;
 
@@ -466,6 +476,7 @@ class MireCircle extends MovingComponent {
 }
 
 let creatingCornealAbrasion = false;
+let mireCircleAligned = false;
 
 function updateGatScreen() {
   gatScreen.clear();
@@ -478,22 +489,37 @@ function updateGatScreen() {
     let mireCircle = mireCircles[i]
     mireCircle.updatePosition();
     mireCircle.updateDrawing();
+
+    if (Math.abs(mireCircle.xDialAdjustment) > 0.9*mireCircle.radius &&
+      Math.abs(mireCircle.xDialAdjustment) < 1.0*mireCircle.radius
+    ) {
+      if (!mireCircleAligned) {
+        mireCircleAligned = true;
+        displayOnConsole("Mires aligned!");
+      }
+    } else {
+      if (mireCircleAligned) {
+        mireCircleAligned = false;
+        displayOnConsole("Mires no longer aligned.");
+      }
+    }
+
   }
 
 
   gatScreen.lens.updatePosition();
+
   if (gatScreen.lens.loc.s > 5 && (
     Math.abs(gatScreen.lens.vel.x) > 1e-8 ||
     Math.abs(gatScreen.lens.vel.y) > 1e-8)
   ) {
     if (!creatingCornealAbrasion) {  // Don't create a duplicate message for the same abrasion
       creatingCornealAbrasion = true;
-      displayOnConsole("Corneal abrasion! Don't move while on the cornea.");
     }
-
   } else {
     creatingCornealAbrasion = false;
   }
+
   $("#x-loc-displayer").html(gatScreen.lens.loc.x.toFixed(1).padStart(5).replaceAll(" ","&nbsp;"));
   $("#y-loc-displayer").html(gatScreen.lens.loc.y.toFixed(1).padStart(5).replaceAll(" ","&nbsp;"));
   $("#s-loc-displayer").html(gatScreen.lens.loc.s.toFixed(1).padStart(3).replaceAll(" ","&nbsp;"));
