@@ -8,15 +8,15 @@ function setUpJoystick() {
   const Joy = new JoyStick("joyDiv", joyParam);
 
 
-  const joyIinputPosX = document.getElementById("joyPosizioneX");
-  const joyInputPosY = document.getElementById("joyPosizioneY");
-  const joyDirezione = document.getElementById("joyDirezione");
+  const joyInputPosX = document.getElementById("joyPositionX");
+  const joyInputPosY = document.getElementById("joyPositionY");
+  const joyDirection = document.getElementById("joyDirection");
   const joyX = document.getElementById("joyX");
   const joyY = document.getElementById("joyY");
 
-  setInterval(function(){ joyIinputPosX.value=Joy.GetPosX(); }, 50);
+  setInterval(function(){ joyInputPosX.value=Joy.GetPosX(); }, 50);
   setInterval(function(){ joyInputPosY.value=Joy.GetPosY(); }, 50);
-  setInterval(function(){ joyDirezione.value=Joy.GetDir(); }, 50);
+  setInterval(function(){ joyDirection.value=Joy.GetDir(); }, 50);
   setInterval(function(){ joyX.value=Joy.GetX(); }, 50);
   setInterval(function(){ joyY.value=Joy.GetY(); }, 50);
 
