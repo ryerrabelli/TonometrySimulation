@@ -146,7 +146,7 @@ class ZoomingLensController extends Controller {
       /* syntax is [min, max] */
       x:[0, canvasSz.wd - gatScreen.lens.getSzForSof(proposedLoc.s).wd],
       y:[0, canvasSz.ht - gatScreen.lens.getSzForSof(proposedLoc.s).ht],
-      s:[1, ZoomingLensController.rangeConstant.s[1]],
+      s:[ZoomingLensController.rangeConstant.s[0], ZoomingLensController.rangeConstant.s[1]],
     };
     return rangeSpecific;
   }
@@ -295,11 +295,12 @@ let gatScreen = {
 
     $(".click-to-zoom").on("mousedown", function(event) {
       let accelZoomingLens = {x:null, y:null, s:null};  // null indicates don't change current value
-      if (event.button==0) {  // 0 is left, 1 is middle, 2 is right
+      if (event.button==0) {  // 0 is left click, 1 is middle, 2 is right click
         accelZoomingLens.s = +0.002;
       } else if (event.button==2) {
-        accelZoomingLens.s = -0.002;
+        accelZoomingLens.s = -0.02;
       }
+      console.log(event.button);
       accelerateZoomingLens(accelZoomingLens);
     });
     $(".click-to-zoom").on("mouseup", function() {
@@ -367,25 +368,6 @@ let gatScreen = {
   }
 }
 
-function isNullOrUndef(myvar) {
-  return myvar === null || myvar === undefined;
-}
-
-function areArraysEqual(firstArr, seconArr) {
-  if (firstArr === seconArr) return true;  // <- what happens if both are false or many other same non-array values
-  if (isNullOrUndef(firstArr) || isNullOrUndef(seconArr)) return false;
-  if (firstArr.length !== seconArr.length) return false;
-
-  // If you don't care about the order of the elements inside
-  // the array, you should sort both arrays here.
-  // Please note that calling sort on an array will modify that array.
-  // you might want to clone your array first.
-
-  for (let i = 0; i < firstArr.length; ++i) {
-    if (firstArr[i] !== seconArr[i]) return false;
-  }
-  return true;
-}
 
 class Component {
   constructor(wd, ht, color, x, y) {
@@ -594,3 +576,7 @@ function changeDial(dialSpeed) {
   // could also test !isNaN(dialSpeed)
   if (!isNullOrUndef(dialSpeed)) { myDial.dialSpeed = dialSpeed; }
 }
+
+
+ZLC = ZoomingLensController;
+lens = gatScreen.lens;

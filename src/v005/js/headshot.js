@@ -59,14 +59,14 @@ function setUpPhotoZooming(origPhotoID, zoomedPhotoID, zoomingLensID) {
   origPhoto.style.height   = canvasSz.ht + "px";
   zoomedPhoto.style.width  = canvasSz.wd + "px";
   zoomedPhoto.style.height = canvasSz.ht + "px";
-  console.log( origPhoto.computedStyleMap().get("width").value )
 }
 
 function updateZoom() {  // update with the latest values of lens size and loc
   const normLoc = gatScreen.lens.getScaledToNorm(gatScreen.lens.loc);
-  console.log(gatScreen.lens.loc, normLoc)
-  Joy.SetNormY(normLoc.s);
-  Joy.SetNormX(normLoc.x);
+  if (!isNullOrUndef(Joy)) {
+    //console.log( "["+normLoc.x.toFixed(2) + "," + normLoc.y.toFixed(2) + "," + normLoc.s.toFixed(2) + "]")
+    Joy.SetNormLoc(normLoc.x, normLoc.s);
+  }
 
   /*set the sizing of the zoomingLens and */
   zoomingLens.style.width  = gatScreen.lens.sz.wd + "px";
@@ -78,7 +78,6 @@ function updateZoom() {  // update with the latest values of lens size and loc
   //console.log(gatScreen.lens.loc);
   /*display what the zoomingLens "sees":*/
   zoomedPhoto.style.backgroundPosition = "-" + (gatScreen.lens.loc.x * gatScreen.lens.loc.s) + "px -" + (gatScreen.lens.loc.y * gatScreen.lens.loc.s) + "px";
-
 
 }
 
