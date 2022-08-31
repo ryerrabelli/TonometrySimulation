@@ -63,6 +63,13 @@ function setUpPhotoZooming(origPhotoID, zoomedPhotoID, zoomingLensID) {
 }
 
 function updateZoom() {  // update with the latest values of lens size and loc
+
+
+  const normLoc = gatScreen.lens.getScaledToNorm(gatScreen.lens.loc);
+  console.log(gatScreen.lens.loc, normLoc)
+  Joy.SetNormY(normLoc.s);
+  Joy.SetNormX(normLoc.x);
+
   /*set the sizing of the zoomingLens and */
   zoomingLens.style.width  = gatScreen.lens.sz.wd + "px";
   zoomingLens.style.height = gatScreen.lens.sz.ht + "px";
@@ -105,12 +112,6 @@ function moveZoomingLensByHover(event) {
 }
 
 function moveZoomingLensByJoystick(joyNormHor, joyNormVer) {
-  const sRange = ZoomingLensController.rangeConstant.s;  // array of [min, max]
-  const s = joyNormVer * (sRange[1]-sRange[0]) + sRange[0];
-  const rangeSpecific = gatScreen.lens.getRangeSpecific({"s": s});
-  let selectedLoc = {
-    x: joyNormHor * (rangeSpecific.x[1]-rangeSpecific.x[0]) + rangeSpecific.x[0],
-    s: s,
-  }
-  let newLoc = gatScreen.lens.checkAndSetLoc(selectedLoc);
+  const scaledLoc = gatScreen.lens.getNormToScaled({"s":joyNormVer, "x":joyNormHor})
+  let newLoc = gatScreen.lens.checkAndSetLoc(scaledLoc);
 }

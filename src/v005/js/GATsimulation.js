@@ -149,7 +149,31 @@ class ZoomingLensController extends Controller {
     };
     return rangeSpecific;
   }
-
+  /* Must have s in input, but x and y are optional. Will not be in output if not in input. */
+  getNormToScaled(normLoc) {
+    const sRange = ZoomingLensController.rangeConstant.s;  // array of [min, max]
+    let scaledLoc = { s: normLoc.s * (sRange[1]-sRange[0]) + sRange[0] }
+    const rangeSpecific = gatScreen.lens.getRangeSpecific({"s": scaledLoc.s});
+    if ("x" in normLoc) {
+      scaledLoc["x"] = normLoc.x * (rangeSpecific.x[1]-rangeSpecific.x[0]) + rangeSpecific.x[0];
+    }
+    if ("y" in normLoc) {
+      scaledLoc["y"] = normLoc.y * (rangeSpecific.y[1]-rangeSpecific.y[0]) + rangeSpecific.y[0];
+    }
+    return scaledLoc
+  }
+  /* Must have s in input, but x and y are optional. Will not be in output if not in input. */
+  getScaledToNorm(scaledLoc) {
+    const rangeSpecific = gatScreen.lens.getRangeSpecific({"s": scaledLoc.s});
+    let normLoc = { s: (scaledLoc.s - rangeSpecific.s[0]) / (rangeSpecific.s[1]-rangeSpecific.s[0]) }
+    if ("x" in scaledLoc) {
+      normLoc["x"] = (scaledLoc.x - rangeSpecific.x[0]) / (rangeSpecific.x[1]-rangeSpecific.x[0]);
+    }
+    if ("y" in scaledLoc) {
+      normLoc["y"] = (scaledLoc.y - rangeSpecific.y[0]) / (rangeSpecific.y[1]-rangeSpecific.y[0]);
+    }
+    return normLoc
+  }
   // # indicates a private method
   /**
    * force proposedLoc to be between range
