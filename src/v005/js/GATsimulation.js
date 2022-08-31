@@ -1,4 +1,5 @@
-let myDial;
+let myDial = {"dial": 0};  // temp value
+let mireCircles = [];
 const dialCoefficient = 1;
 
 // coordinates from top left, units in pixels
@@ -138,7 +139,7 @@ class ZoomingLensController extends Controller {
     /* syntax is [min, max] */
     x:[0, canvasSz.wd],
     y:[0, canvasSz.ht],
-    s:[1, Math.sqrt(canvasSz.wd*canvasSz.ht)/8],
+    s:[4, Math.sqrt(canvasSz.wd*canvasSz.ht)/8],
   }
   getRangeSpecific(proposedLoc) {
     const rangeSpecific = {
@@ -320,10 +321,14 @@ let gatScreen = {
     myDial.updatePosition();
     myDial.updateDrawing();
     for (let i = 0; i < mireCircles.length; i += 1) {
-      let mireCircle = mireCircles[i]
+      let mireCircle = mireCircles[i];
       mireCircle.updatePosition();
       mireCircle.updateDrawing();
+    }
+    gatScreen.lens.updatePosition();
 
+    for (let i = 0; i < mireCircles.length; i += 1) {
+      let mireCircle = mireCircles[i];
       if (Math.abs(mireCircle.xDialAdjustment) > 0.9*mireCircle.radius &&
         Math.abs(mireCircle.xDialAdjustment) < 1.0*mireCircle.radius
       ) {
@@ -337,11 +342,7 @@ let gatScreen = {
           displayOnConsole("Mires no longer aligned.");
         }
       }
-
     }
-
-    gatScreen.lens.updatePosition();
-
     if (gatScreen.lens.loc.s > 5 && (
       Math.abs(gatScreen.lens.vel.x) > 1e-8 ||
       Math.abs(gatScreen.lens.vel.y) > 1e-8)
@@ -358,6 +359,7 @@ let gatScreen = {
     $("#y-loc-displayer").html(gatScreen.lens.loc.y.toFixed(1).padStart(5).replaceAll(" ","&nbsp;"));
     $("#s-loc-displayer").html(gatScreen.lens.loc.s.toFixed(1).padStart(3).replaceAll(" ","&nbsp;"));
     $("#press-displayer").html(myDial.dial.toFixed(1).padStart(3).replaceAll(" ","&nbsp;")+" mmHg");
+
 
   },
   clear : function() {

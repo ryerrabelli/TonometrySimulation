@@ -63,8 +63,6 @@ function setUpPhotoZooming(origPhotoID, zoomedPhotoID, zoomingLensID) {
 }
 
 function updateZoom() {  // update with the latest values of lens size and loc
-
-
   const normLoc = gatScreen.lens.getScaledToNorm(gatScreen.lens.loc);
   console.log(gatScreen.lens.loc, normLoc)
   Joy.SetNormY(normLoc.s);
@@ -80,6 +78,7 @@ function updateZoom() {  // update with the latest values of lens size and loc
   //console.log(gatScreen.lens.loc);
   /*display what the zoomingLens "sees":*/
   zoomedPhoto.style.backgroundPosition = "-" + (gatScreen.lens.loc.x * gatScreen.lens.loc.s) + "px -" + (gatScreen.lens.loc.y * gatScreen.lens.loc.s) + "px";
+
 
 }
 
