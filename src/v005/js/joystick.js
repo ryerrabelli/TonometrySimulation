@@ -9,7 +9,11 @@ function setUpJoystick() {
     "startNormX": 0.5,
     "startNormY": 0,
   };
-  Joy = new JoyStick("joyDiv", joyParam);
+  Joy = new JoyStick("joyDiv", joyParam, function(stickData) {
+    let joyNormHor = stickData.xNorm;
+    let joyNormVer = stickData.yNorm;
+    moveZoomingLensByJoystick(joyNormHor, joyNormVer);
+  });
 
 
   const joyInputPosHor = document.getElementById("joyPositionHor");
