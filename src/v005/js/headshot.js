@@ -103,3 +103,6 @@ function moveZoomingLensByHover(event) {
   newLoc = gatScreen.lens.checkAndSetLoc(selectedLoc);
   //console.log(selectedLoc, newLoc);
 }
+
+function moveZoomingLensByJoystick(event) {
+}

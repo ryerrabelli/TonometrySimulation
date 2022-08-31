@@ -8,18 +8,19 @@
   <!-- JQuery library -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
   <!-- Roberto D'Amico bobboteck JoyStick.js library -->
-  <script type="text/javascript" src="../lib/Joystick/joy.min.js"></script>
+  <script type="text/javascript" src="../lib/Joystick/joy.js"></script>
 
   <script type="text/javascript" src="js/headshot.js"></script>
   <script type="text/javascript" src="js/GATsimulation.js"></script>
   <script type="text/javascript" src="js/joystick.js"></script>
 
   <style>
-    #joystick {
+    #joystick { /* class added programmatically to joystick based on "title" argument */
       border: 0px;
     }
     #joyDiv  {
-      height:240px;
+      width:250px;
+      height:250px;
     }
   </style>
   <title>GAT</title>
@@ -173,13 +174,20 @@
       </div>
       <div>
         <table class="GAT-controls">
-          <tr><th colspan="5"><h2>Joystick</h2></th></tr>
           <tr>
-            <th> Pos X </th>
-            <th> Pos Y </th>
-            <th> Dir </th>
-            <th> X </th>
-            <th> Y </th>
+            <th colspan="5"><h2>Joystick</h2></th>
+          </tr>
+          <tr>
+            <th colspan="2">Raw Value</th>
+            <th rowspan="2">Direc tion</th>
+            <th colspan="2">Normalized</th>
+          </tr>
+          <tr>
+            <td> Hor </td>
+            <td> Vert </td>
+            <!-- Cell from above row is spanning two rows and thus counts as one cell here-->
+            <td> Hor </td>
+            <td> Vert </td>
           </tr>
           <tr>
             <td> <input id="joyPositionX" type="text" /> </td>
