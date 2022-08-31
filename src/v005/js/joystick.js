@@ -1,5 +1,5 @@
 
-function setUpJoystick(origPhotoID, zoomedPhotoID, zoomingLensID) {
+function setUpJoystick() {
   // Create JoyStick object into the DIV 'joy2Div'
   const joy2Param = {"title": "joystick2", "autoReturnToCenter": false};
   const Joy2 = new JoyStick('joy2Div', joy2Param);
