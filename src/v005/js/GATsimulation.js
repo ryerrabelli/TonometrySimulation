@@ -138,18 +138,19 @@ class ZoomingLensController extends Controller {
     /* syntax is [min, max] */
     x:[0, canvasSz.wd],
     y:[0, canvasSz.ht],
-    s:[1, canvasSz.ht],
+    s:[1, Math.sqrt(canvasSz.wd*canvasSz.ht)/8],
   }
-  // # indicates a private method
-  #getRangeSpecific(proposedLoc) {
+  getRangeSpecific(proposedLoc) {
     const rangeSpecific = {
       /* syntax is [min, max] */
       x:[0, canvasSz.wd - gatScreen.lens.getSzForSof(proposedLoc.s).wd],
       y:[0, canvasSz.ht - gatScreen.lens.getSzForSof(proposedLoc.s).ht],
-      s:[1, Math.sqrt(canvasSz.wd/2*canvasSz.ht/2)],
+      s:[1, ZoomingLensController.rangeConstant.s[1]],
     };
     return rangeSpecific;
   }
+
+  // # indicates a private method
   /**
    * force proposedLoc to be between range
    * @param{object} proposedLoc
@@ -188,7 +189,7 @@ class ZoomingLensController extends Controller {
     let range = ZoomingLensController.rangeConstant;
     let [proposedLocFilled1, changedCt1] = this.#boundWithinRange(proposedLocFilled0, range);
     // Then check if any of the proposed values are outside the range possible given the specific other proposed values
-    range = this.#getRangeSpecific(proposedLocFilled1);
+    range = this.getRangeSpecific(proposedLocFilled1);
     let [proposedLocFilled2, changedCt2] = this.#boundWithinRange(proposedLocFilled1, range);
 
     if (doReturnValue) {

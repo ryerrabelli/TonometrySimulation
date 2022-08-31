@@ -100,9 +100,17 @@ function moveZoomingLensByHover(event) {
     x: pos.x - (zoomingLens.offsetWidth / 2),
     y: pos.y - (zoomingLens.offsetHeight / 2),
   }
-  newLoc = gatScreen.lens.checkAndSetLoc(selectedLoc);
+  let newLoc = gatScreen.lens.checkAndSetLoc(selectedLoc);
   //console.log(selectedLoc, newLoc);
 }
 
-function moveZoomingLensByJoystick(event) {
+function moveZoomingLensByJoystick(joyNormHor, joyNormVer) {
+  const sRange = ZoomingLensController.rangeConstant.s;  // array of [min, max]
+  const s = joyNormVer * (sRange[1]-sRange[0]) + sRange[0];
+  const rangeSpecific = gatScreen.lens.getRangeSpecific({"s": s});
+  let selectedLoc = {
+    x: joyNormHor * (rangeSpecific.x[1]-rangeSpecific.x[0]) + rangeSpecific.x[0],
+    s: s,
+  }
+  let newLoc = gatScreen.lens.checkAndSetLoc(selectedLoc);
 }
