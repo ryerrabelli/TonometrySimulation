@@ -7,6 +7,7 @@ function setUpJoystick() {
   };
   const Joy = new JoyStick("joyDiv", joyParam);
 
+
   const joyIinputPosX = document.getElementById("joyPosizioneX");
   const joyInputPosY = document.getElementById("joyPosizioneY");
   const joyDirezione = document.getElementById("joyDirezione");
@@ -18,4 +19,5 @@ function setUpJoystick() {
   setInterval(function(){ joyDirezione.value=Joy.GetDir(); }, 50);
   setInterval(function(){ joyX.value=Joy.GetX(); }, 50);
   setInterval(function(){ joyY.value=Joy.GetY(); }, 50);
+
 }

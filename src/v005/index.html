@@ -15,9 +15,11 @@
   <script type="text/javascript" src="js/joystick.js"></script>
 
   <style>
+    #joystick {
+      border: 0px;
+    }
     #joyDiv  {
-      width:360px;
-      height:360px;
+      height:240px;
     }
   </style>
   <title>GAT</title>
@@ -52,11 +54,8 @@
       <img id="origPhoto" src="" alt="headshot low resolution">
     </div>
 
-    <div id="GAT-controller-view">
-      <!-- Mire screen will be added here -->
-    </div>
-    <div id="GAT-editor">
-      <div class="tableFixHead">
+    <div class="GAT-editor">
+      <div class="GAT-console-holder">
         <table id="GAT-console">
           <thead>
             <tr><th colspan="2"><h2>Console</h2></th></tr>
@@ -66,8 +65,35 @@
           </tbody>
         </table>
       </div>
+
       <div>
-        <table id="GAT-controls">
+        <div id="joyDiv"></div>
+      </div>
+    </div>
+
+    <div >
+      <!-- Mire screen will be added here -->
+    </div>
+
+    <div class="GAT-editor">
+      <div>
+        <form action="" method="get">
+          <table>
+            <tr>
+              <th colspan="2">
+                <label for="persons-selector"><h2>Choose photo:</h2></label>
+              </th>
+            </tr><tr>
+              <td>
+                <select name="personID" id="persons-selector"></select>
+              </td>
+              <td><input type="submit" value="Submit"></td>
+            </tr>
+          </table>
+        </form>
+      </div>
+      <div>
+        <table class="GAT-controls">
           <thead>
             <tr><th colspan="7"><h2>Controls</h2></th></tr>
             <tr>
@@ -146,34 +172,25 @@
         </table>
       </div>
       <div>
-        <form action="" method="get">
-          <table>
-            <tr>
-              <th colspan="2">
-                <label for="persons-selector"><h2>Choose photo:</h2></label>
-              </th>
-            </tr><tr>
-              <td>
-                <select name="personID" id="persons-selector"></select>
-              </td>
-              <td><input type="submit" value="Submit"></td>
-            </tr>
-          </table>
-
-
-        </form>
+        <table class="GAT-controls">
+          <tr><th colspan="5"><h2>Joystick</h2></th></tr>
+          <tr>
+            <td> Pos X </td>
+            <td> Pos Y </td>
+            <td> Dir </td>
+            <td> X </td>
+            <td> Y </td>
+          </tr>
+          <tr>
+            <td> <input id="joyPosizioneX" type="text" /> </td>
+            <td> <input id="joyPosizioneY" type="text" /> </td>
+            <td> <input id="joyDirezione" type="text" /> </td>
+            <td> <input id="joyX" type="text" /> </td>
+            <td> <input id="joyY" type="text" /> </td>
+          </tr>
+        </table>
       </div>
-
     </div>
-    <div>
-				<div id="joyDiv"></div>
-				Posizione X:<input id="joyPosizioneX" type="text" /></br>
-				Posizione Y:<input id="joyPosizioneY" type="text" /></br>
-				Direzione:<input id="joyDirezione" type="text" /></br>
-				X :<input id="joyX" type="text" /></br>
-				Y :<input id="joyY" type="text" />
-    </div>
-
 
   </div>
 

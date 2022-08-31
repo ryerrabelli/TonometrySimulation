@@ -26,7 +26,7 @@ h1 {
   background-size: 400% 400%;
   animation: gradient 15s ease infinite;
 }
-#zoomedPhoto, #origPhoto, canvas, #GAT-editor, #joystick {
+#zoomedPhoto, #origPhoto, canvas, .GAT-editor {
   border: 4px solid #d4d4d4;
   /*set the size of the result div:*/
   /*width: 360px; // programmatically set now
@@ -46,27 +46,27 @@ h1 {
 #GAT-controller-view canvas {
   background-color: #999;
 }
-#GAT-editor {
+.GAT-editor {
   width: 360px;
   height: 360px;
   background-color: #999;
 }
-#GAT-editor p, #GAT-editor h2, #GAT-editor h3 {
+.GAT-editor p, .GAT-editor h2, .GAT-editor h3 {
   margin: 0px;
 }
-#GAT-editor div {
+.GAT-editor div {
   width: 95%;
-  margin-top:    5.0%;
-  margin-bottom: 5.0%;
+  margin-top:    3.0%;
+  margin-bottom: 3.0%;
   margin-left:   2.5%;
   margin-right:  2.5%;
 }
-#GAT-editor table {
+.GAT-editor table {
   width: 100%;
   border-collapse: collapse;   /* Combines adjacent borders into one line. If this is not done, then borders cannot be set on tr rows. */
   background-color: #444;
 }
-#GAT-editor table th {
+.GAT-editor table th {
   background-color: #000;
 }
 #GAT-console tbody {
@@ -82,25 +82,29 @@ h1 {
   vertical-align: top;
   white-space: nowrap;
 }
-.tableFixHead {
+.GAT-console-holder {
   overflow-y: auto;
-  height: 25% ;
+  height: 25%;
+
 }
-.tableFixHead thead th {
+.GAT-console-holder thead th {
   position: sticky;
   top: 0;
 }
 
-#GAT-controls td, #GAT-controls th {
+.GAT-controls td, #GAT-controls th {
   border: 1px solid white;
 }
-#GAT-controls button {
+.GAT-controls button {
   font-size: 75%;
   font-family: "courier";
 }
-#GAT-controls .value-displayer td {
+.GAT-controls .value-displayer td {
   font-size: 75%;
   font-family: "courier";
+}
+.GAT-controls input {
+  width: 100%;
 }
 .grid-container {
   display: grid;
