@@ -13,6 +13,7 @@ function setUpJoystick() {
     height: 360,
     internalRadius: 50,
     radiiDifference: 45,
+    moveRelativeToInitialMouseDown: true,
   };
   if (useJoy) {
     Joy = new JoyStick("joyDiv", joyParam, function(stickData) {
