@@ -21,7 +21,7 @@ h1 {
     background-position: 0% 50%;
   }
 }
-#GAT-view canvas {
+#gatViewContainer canvas {
   background: linear-gradient(-45deg, #111122, #072083, #0f59f2, #0a30a3);
   background-size: 400% 400%;
   animation: gradient 15s ease infinite;
@@ -108,14 +108,33 @@ h1 {
 }
 .grid-container {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: max-content max-content max-content;
   grid-gap: 36px;
   text-align: center;
 
 }
-.grid-container > div:nth-child(2n+1) { /* first column, aka every even div */
+#zoomedPhotoContainer {
+  grid-column: 1;
+}
+#origPhotoContainer {
+  grid-column: 1;
+}
+#gatViewContainer {
+  grid-column: 2;
+}
+#joystickContainer {
+  grid-column: 2;
+}
+#keyboardContainer {
+  grid-column: 3;
+}
+
+.grid-container > div:nth-child(3n+1) { /* first column, then every third div */
   justify-self: end;
 }
-.grid-container > div:nth-child(2n+2) { /* second column, aka every odd div */
+.grid-container > div:nth-child(3n+2) { /* second column, then every third div */
+  justify-self: center;
+}
+.grid-container > div:nth-child(3n) { /* third column, then every third div */
   justify-self: start;
 }
