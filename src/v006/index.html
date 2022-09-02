@@ -20,15 +20,6 @@
   <script type="text/javascript" src="js/joystick.js"></script>
   <script type="text/javascript" src="js/helper.js"></script>
 
-  <style>
-    #joystick { /* class added programmatically to joystick based on "title" argument */
-
-    }
-    #joyDiv  {
-      width:200px;
-      height:200px;
-    }
-  </style>
   <title>GAT</title>
 </head>
 
@@ -43,17 +34,18 @@
     });
   </script>
 
-  <h1 >GAT Simulation</h1>
+
   <div class="grid-container">
+    <div id="titleContainer">
+      <h1 >GAT Simulation</h1>
+    </div>
     <!-- CIMED residency headshots are originally 6-7MB portrait photos of 3770px by 5655px (aspect ratio 1.5). I cropped them to b 3600px by 3600px. -->
     <div id="zoomedPhotoContainer" class="img-zoom-result photo-area">
       <div id="zoomedPhoto"></div>
       <!-- Zoomed in version of high resolution photo will be here -->
     </div>
 
-    <div id="gatViewContainer">
-      <!-- Mire screen will be added here -->
-    </div>
+
 
     <div id="origPhotoContainer" class="img-zoom-container click-to-zoom photo-area" style="grid-column: 1">
       <div id="zoomingLens">
@@ -62,26 +54,16 @@
       <img id="origPhoto" src="" alt="headshot low resolution">
     </div>
 
-    <div id="joystickContainer" class="GAT-editor">
-      <div class="GAT-console-holder">
-        <table id="GAT-console">
-          <thead>
-            <tr><th colspan="2"><h2>Console</h2></th></tr>
-          </thead>
-          <tbody>
-          <tr><td>&nbsp;</td><td></td></tr>
-          </tbody>
-        </table>
-      </div>
+    <div id="gatViewContainer">
+      <!-- Mire screen will be added here -->
+    </div>
 
+    <div id="joystickContainer">
       <div>
         <div id="joyDiv"></div>
       </div>
     </div>
 
-    <div >
-      <!-- Mire screen will be added here -->
-    </div>
 
     <div id="keyboardContainer" class="GAT-editor">
       <div>
@@ -203,6 +185,19 @@
             <td> <input id="joyHor" type="text" /> </td>
             <td> <input id="joyVer" type="text" /> </td>
           </tr>
+        </table>
+      </div>
+    </div>
+
+    <div id="gatConsoleContainer" class="GAT-editor">
+      <div class="GAT-console-holder">
+        <table id="GAT-console">
+          <thead>
+            <tr><th colspan="2"><h2>Console</h2></th></tr>
+          </thead>
+          <tbody>
+          <tr><td>&nbsp;</td><td></td></tr>
+          </tbody>
         </table>
       </div>
     </div>

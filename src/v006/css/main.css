@@ -113,28 +113,38 @@ h1 {
   text-align: center;
 
 }
+#titleContainer {
+  grid-column: 1 / 3;
+  grid-row: 1;
+}
 #zoomedPhotoContainer {
   grid-column: 1;
+  grid-row: 2;
 }
 #origPhotoContainer {
   grid-column: 1;
+  grid-row: 3;
 }
 #gatViewContainer {
   grid-column: 2;
+  grid-row: 2;
 }
 #joystickContainer {
   grid-column: 2;
+  grid-row: 3;
 }
 #keyboardContainer {
   grid-column: 3;
+  grid-row: 3;
 }
+#gatConsoleContainer {
+  grid-column: 3;
+  grid-row: 2;
+}
+#joystick { /* class added programmatically to joystick based on "title" argument */
 
-.grid-container > div:nth-child(3n+1) { /* first column, then every third div */
-  justify-self: end;
 }
-.grid-container > div:nth-child(3n+2) { /* second column, then every third div */
-  justify-self: center;
-}
-.grid-container > div:nth-child(3n) { /* third column, then every third div */
-  justify-self: start;
+#joyDiv  {
+  width:360px;
+  height:360px;
 }
