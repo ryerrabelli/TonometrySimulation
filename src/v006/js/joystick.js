@@ -9,6 +9,10 @@ function setUpJoystick() {
     "autoReturnToCenter": false,
     "startNormX": 0.5,
     "startNormY": 0,
+    width: 360,  // can also given as "#px" in the css for the container
+    height: 360,
+    internalRadius: 50,
+    radiiDifference: 45,
   };
   if (useJoy) {
     Joy = new JoyStick("joyDiv", joyParam, function(stickData) {
