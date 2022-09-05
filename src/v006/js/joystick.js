@@ -14,6 +14,7 @@ function setUpJoystick() {
     internalRadius: 50,
     radiiDifference: 45,
     moveRelativeToInitialMouseDown: true,
+    maxMoveStickBeyondInternalRadius: 40,
   };
   if (useJoy) {
     Joy = new JoyStick("joyDiv", joyParam, function(stickData) {
