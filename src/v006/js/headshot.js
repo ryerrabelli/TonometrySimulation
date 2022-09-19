@@ -49,11 +49,23 @@ function setUpPhotoZooming(origPhotoID, zoomedPhotoID, zoomingLensID) {
   updateZoom()
 
   /*execute a function when someone moves the cursor over the image, or the zoomingLens:*/
-  zoomingLens.addEventListener("mousemove", moveZoomingLensByHover);
-  origPhoto.addEventListener("mousemove", moveZoomingLensByHover);
-  /*and also for touch screens:*/
-  zoomingLens.addEventListener("touchmove", moveZoomingLensByHover);
-  origPhoto.addEventListener("touchmove", moveZoomingLensByHover);
+
+  // Check if the device support the touch or not
+  if ("ontouchstart" in document.documentElement) {
+    zoomingLens.addEventListener("touchstart", onZoomingLensTouchStart, false);
+    zoomingLens.addEventListener("touchmove", onZoomingLensTouchMove, false);
+    zoomingLens.addEventListener("touchend", onZoomingLensTouchEnd, false);
+    origPhoto.addEventListener("touchstart", onZoomingLensTouchStart, false);
+    origPhoto.addEventListener("touchmove", onZoomingLensTouchMove, false);
+    origPhoto.addEventListener("touchend", onZoomingLensTouchEnd, false);
+  } else {
+    zoomingLens.addEventListener("mousedown", onZoomingLensMouseDown, false);
+    zoomingLens.addEventListener("mousemove", onZoomingLensMouseMove, false);
+    zoomingLens.addEventListener("mouseup", onZoomingLensMouseUp, false);
+    origPhoto.addEventListener("mousedown", onZoomingLensMouseDown, false);
+    origPhoto.addEventListener("mousemove", onZoomingLensMouseMove, false);
+    origPhoto.addEventListener("mouseup", onZoomingLensMouseUp, false);
+  }
 
   origPhoto.style.width    = canvasSz.wd + "px";
   origPhoto.style.height   = canvasSz.ht + "px";
@@ -94,19 +106,45 @@ function getCursorPos(event) {
   return {x : x, y : y};
 }
 
+let zoomingLensMousePressed = 0;
+function onZoomingLensMouseDown(event, button=null) {
+  if (isNullOrUndef(button)) button = event.button;
+  if (button===0) {  // 0 is left click, 1 is middle, 2 is right click
+    zoomingLensMousePressed = 1;
+    moveZoomingLensByHover(event);
+  }
+}
+function onZoomingLensMouseUp(event) {
+  zoomingLensMousePressed = 0;
+}
 function moveZoomingLensByHover(event) {
-  let pos;
-  /*prevent any other actions that may occur when moving over the image:*/
-  event.preventDefault();
   /*get the cursor's x and y positions:*/
-  pos = getCursorPos(event);
+  let pos = getCursorPos(event);
   /*calculate the position of the zoomingLens:*/
   let selectedLoc = {
     x: pos.x - (zoomingLens.offsetWidth / 2),
     y: pos.y - (zoomingLens.offsetHeight / 2),
   }
-  let newLoc = gatScreen.lens.checkAndSetLoc(selectedLoc);
+  //let newLoc = gatScreen.lens.checkAndSetLoc(selectedLoc);
   //console.log(selectedLoc, newLoc);
+}
+function onZoomingLensMouseMove(event) {
+  if (zoomingLensMousePressed===1) {
+    /*prevent any other actions that may occur when moving over the image:*/
+    event.preventDefault();
+    moveZoomingLensByHover(event)
+  }
+}
+function onZoomingLensTouchStart(event) {
+  onZoomingLensMouseDown(event, 0);  // make button 0 to assume left click
+}
+function onZoomingLensTouchMove(event) {
+  if (event.targetTouches[0].target === gatScreen.canvas) {
+    onZoomingLensMouseMove(event);
+  }
+}
+function onZoomingLensTouchEnd(event) {
+  onZoomingLensMouseUp(event);
 }
 
 function moveZoomingLensByJoystick(joyNormHor, joyNormVer) {

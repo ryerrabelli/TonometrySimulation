@@ -293,11 +293,13 @@ let gatScreen = {
       }
     })
 
+    /*
     $(".click-to-zoom").on("mousedown", function(event) {
       let accelZoomingLens = {x:null, y:null, s:null};  // null indicates don't change current value
-      if (event.button==0) {  // 0 is left click, 1 is middle, 2 is right click
+      const button = event.button;
+      if (button==0) {  // 0 is left click, 1 is middle, 2 is right click
         accelZoomingLens.s = +0.002;
-      } else if (event.button==2) {
+      } else if (button==2) {
         accelZoomingLens.s = -0.02;
       }
       console.log(event.button);
@@ -311,6 +313,7 @@ let gatScreen = {
     $(".click-to-zoom").on("contextmenu", function() {
       return false;
     });
+    */
   },
   creatingCornealAbrasion: false,
   mireCircleAligned: false,
