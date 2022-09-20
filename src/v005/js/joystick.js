@@ -23,11 +23,11 @@ function setUpJoystick() {
     const joyNormHor = document.getElementById("joyHor");
     const joyNormVer = document.getElementById("joyVer");
 
-    setInterval(function(){ joyInputPosHor.value=Joy.GetPosX().toFixed(1);; }, 50);
-    setInterval(function(){ joyInputPosVer.value=Joy.GetPosY().toFixed(1);; }, 50);
-    setInterval(function(){ joyDirection.value=Joy.GetDir(); }, 50);
-    setInterval(function(){ joyNormHor.value=Joy.GetNormX().toFixed(4);; }, 50);
-    setInterval(function(){ joyNormVer.value=Joy.GetNormY().toFixed(4); }, 50);
+    setInterval(function(){ joyInputPosHor.value=Joy.GetRawLocX().toFixed(1);; }, 50);
+    setInterval(function(){ joyInputPosVer.value=Joy.GetRawLocY().toFixed(1);; }, 50);
+    setInterval(function(){ joyDirection.value=Joy.GetCardinalDirection(); }, 50);
+    setInterval(function(){ joyNormHor.value=Joy.GetNormLocX().toFixed(4);; }, 50);
+    setInterval(function(){ joyNormVer.value=Joy.GetNormLocY().toFixed(4); }, 50);
   }
 
 
