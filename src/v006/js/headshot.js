@@ -125,7 +125,7 @@ function moveZoomingLensByHover(event) {
     x: pos.x - (zoomingLens.offsetWidth / 2),
     y: pos.y - (zoomingLens.offsetHeight / 2),
   }
-  //let newLoc = gatScreen.lens.checkAndSetLoc(selectedLoc);
+  let newLoc = gatScreen.lens.checkAndSetLoc(selectedLoc);
   //console.log(selectedLoc, newLoc);
 }
 function onZoomingLensMouseMove(event) {

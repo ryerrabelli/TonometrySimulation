@@ -5,10 +5,10 @@ const useJoy = true;
 function setUpJoystick() {
   // Create JoyStick object into the DIV 'joyDiv'
   const joyParam = {
-    "title": "joystick",
-    "autoReturnToCenter": false,
-    "startNormX": 0,
-    "startNormY": 0,
+    title: "joystick",
+    autoReturnToCenter: false,
+    startNormX: 0,
+    startNormY: 0,
     width: 360,  // can also given as "#px" in the css for the container
     height: 360,
     internalRadius: 50,
@@ -24,11 +24,13 @@ function setUpJoystick() {
       const joyNormHorLev2 = stickStatus.xNormLev2;
       const joyNormVerLev2 = stickStatus.yNormLev2;
 
-      const relativeJoystickPower = 0.2;
-
       // create combined value, then divide by max possible value
+      const relativeJoystickPower = 0.2;
       let joyNormHorCombined = (joyNormHor + joyNormHorLev2*relativeJoystickPower) / (1+relativeJoystickPower);
       let joyNormVerCombined = (joyNormVer + joyNormVerLev2*relativeJoystickPower) / (1+relativeJoystickPower);
+      //const joyNormHorCombined = stickStatus.xNormLevCombined;
+      //const joyNormVerCombined = stickStatus.yNormLevCombined;
+
       moveZoomingLensByJoystick(joyNormHorCombined, joyNormVerCombined);
     });
 
