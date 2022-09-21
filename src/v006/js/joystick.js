@@ -7,7 +7,7 @@ function setUpJoystick() {
   const joyParam = {
     title: "joystick",
     autoReturnToCenter: false,
-    startNormLocX: 0,
+    startNormLocX: 0.5,
     startNormLocY: 0,
     width: 360,  // can also given as "#px" in the css for the container
     height: 360,
@@ -19,15 +19,15 @@ function setUpJoystick() {
   };
   if (useJoy) {
     Joy = new JoyStick("joyDiv", joyParam, function(stickStatus) {
-      const joyNormHor = stickStatus.xNorm;
-      const joyNormVer = stickStatus.yNorm;
-      const joyNormHorLev2 = stickStatus.xNormLev2;
-      const joyNormVerLev2 = stickStatus.yNormLev2;
+      const joyNormHorLev0 = stickStatus.xNormLev0;
+      const joyNormVerLev0 = stickStatus.yNormLev0;
+      const joyNormHorLev1 = stickStatus.xNormLev1;
+      const joyNormVerLev1 = stickStatus.yNormLev1;
 
       // create combined value, then divide by max possible value
       const relativeJoystickPower = 0.2;
-      let joyNormHorCombined = (joyNormHor + joyNormHorLev2*relativeJoystickPower) / (1+relativeJoystickPower);
-      let joyNormVerCombined = (joyNormVer + joyNormVerLev2*relativeJoystickPower) / (1+relativeJoystickPower);
+      let joyNormHorCombined = (joyNormHorLev0 + joyNormHorLev1*relativeJoystickPower) / (1+relativeJoystickPower);
+      let joyNormVerCombined = (joyNormVerLev0 + joyNormVerLev1*relativeJoystickPower) / (1+relativeJoystickPower);
       //const joyNormHorCombined = stickStatus.xNormLevCombined;
       //const joyNormVerCombined = stickStatus.yNormLevCombined;
 
