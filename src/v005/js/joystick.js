@@ -7,8 +7,8 @@ function setUpJoystick() {
   const joyParam = {
     "title": "joystick",
     "autoReturnToCenter": false,
-    "startNormX": 0.5,
-    "startNormY": 0,
+    "startNormLocX": 0.5,
+    "startNormLocY": 0,
   };
   if (useJoy) {
     Joy = new JoyStick("joyDiv", joyParam, function(stickData) {

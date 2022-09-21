@@ -7,8 +7,8 @@ function setUpJoystick() {
   const joyParam = {
     title: "joystick",
     autoReturnToCenter: false,
-    startNormX: 0,
-    startNormY: 0,
+    startNormLocX: 0,
+    startNormLocY: 0,
     width: 360,  // can also given as "#px" in the css for the container
     height: 360,
     internalRadius: 50,
