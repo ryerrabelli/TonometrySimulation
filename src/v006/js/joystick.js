@@ -1,3 +1,5 @@
+//import {JoyStick} from "../../lib/JoyStick/joyV2";
+
 
 let Joy;
 const useJoy = true;
@@ -11,7 +13,7 @@ function setUpJoystick() {
     startNormLocY: 0,
     width: 360,  // can also given as "#px" in the css for the container
     height: 360,
-    internalRadius: 50,
+    internalRadius: 30,
     radiiDifference: 45,
     moveRelativeToInitialMouseDown: true,
     maxMoveStickBeyondInternalRadius: 40,
