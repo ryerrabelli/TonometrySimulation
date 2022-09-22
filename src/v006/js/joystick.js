@@ -14,9 +14,9 @@ function setUpJoystick() {
     width: 360,  // can also given as "#px" in the css for the container
     height: 360,
     internalRadius: 30,
-    radiiDifference: 45,
+    radiiDifference: 100,
     moveRelativeToInitialMouseDown: true,
-    maxMoveStickBeyondInternalRadius: 40,
+    maxMoveStickBeyondInternalRadius: 75,
     joystickLevels: 2,
   };
   if (useJoy) {
