@@ -147,7 +147,8 @@ function onZoomingLensTouchEnd(event) {
   onZoomingLensMouseUp(event);
 }
 
-function moveZoomingLensByJoystick(joyNormHor, joyNormVer) {
-  const scaledLoc = gatScreen.lens.getNormToScaled({"s":joyNormVer, "x":joyNormHor})
+function moveZoomingLensByJoystick(joyNormHor, joyNormVer, joyNormDir) {
+  const scaledLoc = gatScreen.lens.getNormToScaled({"s":joyNormVer, "x":joyNormHor, "y": joyNormDir})
   let newLoc = gatScreen.lens.checkAndSetLoc(scaledLoc);
+  return newLoc;
 }

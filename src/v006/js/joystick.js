@@ -25,10 +25,11 @@ function setUpJoystick() {
   };
   if (useJoy) {
     Joy = new JoyStick("joyDiv", joyParam, function(stickStatus) {
-      const joyNormHorLev0 = stickStatus.xNormLev0;
-      const joyNormVerLev0 = stickStatus.yNormLev0;
-      const joyNormHorLev1 = stickStatus.xNormLev1;
-      const joyNormVerLev1 = stickStatus.yNormLev1;
+      const joyNormHorLev0 = stickStatus.normLocXLev0;
+      const joyNormVerLev0 = stickStatus.normLocYLev0;
+      const joyNormHorLev1 = stickStatus.normLocXLev1;
+      const joyNormVerLev1 = stickStatus.normLocYLev1;
+      const joyNormDir = 1-stickStatus.normLocDeg;   // apply 1- so that bottom of the screen becomes top
 
       // create combined value, then divide by max possible value
       const relativeJoystickPower = 0.2;
@@ -37,7 +38,7 @@ function setUpJoystick() {
       //const joyNormHorCombined = stickStatus.xNormLevCombined;
       //const joyNormVerCombined = stickStatus.yNormLevCombined;
 
-      moveZoomingLensByJoystick(joyNormHorCombined, joyNormVerCombined);
+      moveZoomingLensByJoystick(joyNormHorCombined, joyNormVerCombined, joyNormDir);
     });
 
     const joyInputPosHor = document.getElementById("joyPositionHor");
@@ -46,11 +47,13 @@ function setUpJoystick() {
     const joyNormHor = document.getElementById("joyHor");
     const joyNormVer = document.getElementById("joyVer");
 
-    setInterval(function(){ joyInputPosHor.value=Joy.GetRawLocX().toFixed(1);; }, 50);
-    setInterval(function(){ joyInputPosVer.value=Joy.GetRawLocY().toFixed(1);; }, 50);
-    setInterval(function(){ joyDirection.value=Joy.GetCardinalDirection(); }, 50);
-    setInterval(function(){ joyNormHor.value=Joy.GetNormLocX().toFixed(4);; }, 50);
-    setInterval(function(){ joyNormVer.value=Joy.GetNormLocY().toFixed(4); }, 50);
+    setInterval(function() {
+      joyInputPosHor.value=Joy.GetRawLocX().toFixed(1);
+      joyInputPosVer.value=Joy.GetRawLocY().toFixed(1);
+      joyNormHor.value=Joy.GetNormLocX().toFixed(4);
+      joyDirection.value=Joy.GetCardinalDirection();
+      joyNormVer.value=Joy.GetNormLocY().toFixed(4);
+    }, 50)
   }
 
 
