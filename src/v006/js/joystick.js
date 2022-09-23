@@ -18,7 +18,10 @@ function setUpJoystick() {
     moveRelativeToInitialMouseDown: true,
     maxMoveStickBeyondInternalRadius: 75,
     joystickLevels: 2,
-    hasArrows: true,
+    arrowCount: 1,
+    minArrowLocDegrees: 0,
+    maxArrowLocDegrees: 360*2,
+    startArrowLocDegrees: 0,
   };
   if (useJoy) {
     Joy = new JoyStick("joyDiv", joyParam, function(stickStatus) {
