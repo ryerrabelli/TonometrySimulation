@@ -1,5 +1,6 @@
 import {isNullOrUndef, areArraysEqual, numberDictToStr} from "./helper.js";
 import {setUpPhotoZooming, moveZoomingLensByJoystick, updateZoom} from "./headshot.js";
+import {Joy} from "./joystick.js";
 
 let myDial = {"dial": 0};  // temp value
 let mireCircles = [];
@@ -17,7 +18,7 @@ const centerLineY = canvasSz.ht/2;  // midpoint of screen where the distinction 
 const MIRE_RADIUS     = 3;  // will be multipled by s (scale)
 const MIRE_LINE_WD    = 0.5;   // will be multipled by s (scale)
 const MIRE_SEPARATION = MIRE_RADIUS*4;   // distance between mire circle centers when dial pressure is not set (or set at 0)
-const DEFAULT_ZOOMING_LENS_LOC = {x:0, y:0, s:5};
+//const DEFAULT_ZOOMING_LENS_LOC = {x:100, y:100, s:5};
 
 // https://www.w3schools.com/graphics/game_intro.asp
 // https://www.w3schools.com/howto/howto_js_image_zoom.asp
@@ -89,8 +90,10 @@ class Controller {
 class ZoomingLensController extends Controller {
   constructor() {
     super();
-    // Object.assign performs shallow copy
-    this.val   = Object.assign({}, DEFAULT_ZOOMING_LENS_LOC);
+    //this.val   = Object.assign({}, DEFAULT_ZOOMING_LENS_LOC); // Object.assign performs shallow copy
+    // x->x, Deg->y, y->s
+    //this.val   = {x: Joy.GetRawLocX({level:0}), y: Joy.GetRawLocDeg({level:0}), s: Joy.GetRawLocY({level:0})};
+    this.val   = {x:0, y:0, s:0};
     this.vel   = {x:0, y:0, s:0};
     this.accel = {x:0, y:0, s:0};
   }
@@ -133,9 +136,9 @@ class ZoomingLensController extends Controller {
     let ss = {x:zoomedPhoto.offsetWidth / zoomingLens.offsetWidth, y:zoomedPhoto.offsetHeight / zoomingLens.offsetHeight}
     return {x:x, y:y, s:ss.x};
   }
-  setLoc(newAmount) {
+  setLoc(newAmount, doUpdateZoom=true) {
     this.setValue(newAmount);
-    updateZoom();
+    if (doUpdateZoom) updateZoom();
   }
   // rangeConstant represents the range of values that they must NEVER go out of
   static rangeConstant = {

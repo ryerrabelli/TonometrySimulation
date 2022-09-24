@@ -1,11 +1,13 @@
 import {JoyStick} from "../../lib/JoyStick/joy.js";
 import {setUpPhotoZooming, moveZoomingLensByJoystick, updateZoom} from "./headshot.js";
+import {lens, ZLC, gatScreen, canvasSz} from "./GATsimulation.js";
+import {isNullOrUndef, areArraysEqual, numberDictToStr} from "./helper.js";
 
 
 export let Joy;
 const useJoy = true;
 
-//const DEG = "\u00B0";   // can't just console.log the ° symbol, have to use the unicode symbol to format correctly
+const DEG = "\u00B0";   // can't just console.log the ° symbol, have to use the unicode symbol to format correctly
 //const DEG = "°";
 
 export function setUpJoystick() {
@@ -26,6 +28,8 @@ export function setUpJoystick() {
     minArrowLocDegrees: 0,
     maxArrowLocDegrees: 360*2,
     startArrowLocDegrees: 0,
+    startNormLocXLev0: 0.4,
+    startNormLocYLev0: 0.4,
   };
   if (useJoy) {
     Joy = new JoyStick("joyDiv", joyParam, function(stickStatus) {
@@ -45,6 +49,10 @@ export function setUpJoystick() {
       moveZoomingLensByJoystick(joyNormHorCombined, joyNormVerCombined, joyNormDir);
     });
 
+    // x->x, Deg->y, y->s
+    let newLoc = {x:Joy.GetRawLocX(), y:Joy.GetRawLocDeg(), s:Joy.GetRawLocY()};
+    gatScreen.lens.setLoc(newLoc);
+
     const joyRawHors = [document.getElementById("joyRawHor0"), document.getElementById("joyRawHor1")];
     const joyRawVers = [document.getElementById("joyRawVer0"), document.getElementById("joyRawVer1")];
     const joyNormHors = [document.getElementById("joyNormHor0"), document.getElementById("joyNormHor1")];
@@ -60,9 +68,9 @@ export function setUpJoystick() {
         joyNormHors[level].value=Joy.GetNormLocX({level: level}).toFixed(4);
         joyNormVers[level].value=Joy.GetNormLocY({level: level}).toFixed(4);
       }
-
       joyCardinalDirection.value=Joy.GetCardinalDirection();
-      joyDeg.value=Joy.GetRawLocDeg().toFixed(1);
+      joyDeg.value=Joy.GetRawLocDeg().toFixed(1)+DEG;
+            console.log(gatScreen.lens.loc);
 
     }, 50)
   }

@@ -1,9 +1,8 @@
-
-let origPhoto, zoomingLens, zoomedPhoto;
-
 import {lens, ZLC, gatScreen, canvasSz} from "./GATsimulation.js";
 import {isNullOrUndef, areArraysEqual, numberDictToStr} from "./helper.js";
 import {Joy} from "./joystick.js";
+
+let origPhoto, zoomingLens, zoomedPhoto;
 
 class Person {
   constructor(filenameBase, extension="jpg", pathToFolder="data/") {
@@ -87,12 +86,12 @@ export function setUpPhotoZooming(origPhotoID, zoomedPhotoID, zoomingLensID) {
 
 
 export function updateZoom() {  // update with the latest values of lens size and loc
-  const normLoc = gatScreen.lens.getScaledToNorm(gatScreen.lens.loc);
   if (!isNullOrUndef(Joy)) {
     // negate the vertical variable so top of the screen is higher numbers
+    const normLoc = gatScreen.lens.getScaledToNorm(gatScreen.lens.loc);
     Joy.SetNormLoc(normLoc.x, normLoc.s, 1-normLoc.y);
   }
-
+  //console.log(gatScreen.lens.loc)
   /*set the sizing of the zoomingLens and */
   zoomingLens.style.width  = gatScreen.lens.sz.wd + "px";
   zoomingLens.style.height = gatScreen.lens.sz.ht + "px";
@@ -103,7 +102,6 @@ export function updateZoom() {  // update with the latest values of lens size an
   //console.log(gatScreen.lens.loc);
   /*display what the zoomingLens "sees":*/
   zoomedPhoto.style.backgroundPosition = "-" + (gatScreen.lens.loc.x * gatScreen.lens.loc.s) + "px -" + (gatScreen.lens.loc.y * gatScreen.lens.loc.s) + "px";
-
 }
 
 function getCursorPos(event) {
@@ -139,6 +137,7 @@ function moveZoomingLensByHover(event) {
     y: pos.y - (zoomingLens.offsetHeight / 2),
   }
   let newLoc = gatScreen.lens.checkAndSetLoc(selectedLoc);
+  return newLoc;
   //console.log(selectedLoc, newLoc);
 }
 function onZoomingLensMouseMove(event) {
