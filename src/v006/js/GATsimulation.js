@@ -1,4 +1,4 @@
-import {isNullOrUndef, areArraysEqual} from "./helper.js";
+import {isNullOrUndef, areArraysEqual, numberDictToStr} from "./helper.js";
 import {setUpPhotoZooming, moveZoomingLensByJoystick, updateZoom} from "./headshot.js";
 
 let myDial = {"dial": 0};  // temp value
@@ -112,9 +112,9 @@ class ZoomingLensController extends Controller {
       this.vel[key] += this.accel[key];
       newLoc[key] += this.vel[key];
     }
-    newLoc = this.checkAndSetLoc(newLoc);
-    //console.log( newLoc );
-    //console.log(this.loc)
+
+    const newLoc2 = this.checkAndSetLoc(newLoc);
+    //console.log( numberDictToStr(newLoc2) );
   }
   get loc() {
     return this.val;
@@ -227,9 +227,10 @@ class ZoomingLensController extends Controller {
     }
   }
   checkAndSetLoc(newLoc) {
-    newLoc = this.checkNewLoc(newLoc);
-    this.setLoc(newLoc);
-    return newLoc;
+    //console.log(newLoc);
+    const newLoc2 = this.checkNewLoc(newLoc);
+    this.setLoc(newLoc2);
+    return newLoc2;
   }
 }
 

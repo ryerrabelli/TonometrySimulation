@@ -2,7 +2,7 @@
 let origPhoto, zoomingLens, zoomedPhoto;
 
 import {lens, ZLC, gatScreen, canvasSz} from "./GATsimulation.js";
-import {isNullOrUndef} from "./helper.js";
+import {isNullOrUndef, areArraysEqual, numberDictToStr} from "./helper.js";
 import {Joy} from "./joystick.js";
 
 class Person {
@@ -24,8 +24,9 @@ class Person {
 
 
 export function moveZoomingLensByJoystick(joyNormHor, joyNormVer, joyNormDir) {
-  const scaledLoc = gatScreen.lens.getNormToScaled({"s":joyNormVer, "x":joyNormHor, "y": joyNormDir})
+  const scaledLoc = gatScreen.lens.getNormToScaled({"s":joyNormVer, "x":joyNormHor, "y": joyNormDir});
   let newLoc = gatScreen.lens.checkAndSetLoc(scaledLoc);
+  //console.log(numberDictToStr(scaledLoc), numberDictToStr(newLoc));
   return newLoc;
 }
 
@@ -88,8 +89,8 @@ export function setUpPhotoZooming(origPhotoID, zoomedPhotoID, zoomingLensID) {
 export function updateZoom() {  // update with the latest values of lens size and loc
   const normLoc = gatScreen.lens.getScaledToNorm(gatScreen.lens.loc);
   if (!isNullOrUndef(Joy)) {
-    //console.log( "["+normLoc.x.toFixed(2) + "," + normLoc.y.toFixed(2) + "," + normLoc.s.toFixed(2) + "]")
-    Joy.SetNormLoc(normLoc.x, normLoc.s);
+    // negate the vertical variable so top of the screen is higher numbers
+    Joy.SetNormLoc(normLoc.x, normLoc.s, 1-normLoc.y);
   }
 
   /*set the sizing of the zoomingLens and */
