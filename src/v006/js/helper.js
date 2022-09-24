@@ -1,8 +1,8 @@
-function isNullOrUndef(myVar) {
+export function isNullOrUndef(myVar) {
   return myVar === null || myVar === undefined;
 }
 
-function areArraysEqual(firstArr, seconArr) {
+export function areArraysEqual(firstArr, seconArr) {
   if (firstArr === seconArr) return true;  // <- what happens if both are false or many other same non-array values
   if (isNullOrUndef(firstArr) || isNullOrUndef(seconArr)) return false;
   if (firstArr.length !== seconArr.length) return false;

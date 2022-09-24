@@ -10,21 +10,25 @@
   <!-- Roberto D'Amico bobboteck JoyStick.js library after modifications-->
 
   <!--
-  <script type="text/javascript" src="../lib/Joystick/joy.js"></script>
-  -->
   <script type="text/javascript" src="https://ryerrabelli.github.io/JoyStick/joy.js"></script>
+  <script type="module" src="../lib/Joystick/joy.js"></script>
+  -->
 
 
-  <script type="text/javascript" src="js/headshot.js"></script>
-  <script type="text/javascript" src="js/GATsimulation.js"></script>
-  <script type="text/javascript" src="js/joystick.js"></script>
-  <script type="text/javascript" src="js/helper.js"></script>
+  <script type="module" src="js/headshot.js"></script>
+  <script type="module" src="js/GATsimulation.js"></script>
+  <script type="module" src="js/joystick.js"></script>
+  <script type="module" src="js/helper.js"></script>
 
   <title>GAT</title>
 </head>
 
 <body>
-  <script>
+  <script type="module">
+    import {setUpJoystick} from "./js/joystick.js";
+    import {setUpPhotoZooming, moveZoomingLensByJoystick} from "./js/headshot.js";
+    import {startGat, gatScreen, accelerateZoomingLens} from "./js/GATsimulation.js";
+
     // Initiate zoom effect:
     // A $( document ).ready() block.
     $( document ).ready(function() {
@@ -32,6 +36,9 @@
       setUpPhotoZooming("origPhoto", "zoomedPhoto", "zoomingLens");
       startGat();
     });
+  </script>
+  <script>
+
   </script>
 
 
@@ -92,45 +99,63 @@
             </tr>
           </thead>
           <tbody>
+          <script type="module">
+            import {startGat, gatScreen, accelerateZoomingLens, changeDial} from "./js/GATsimulation.js";
+
+            // Initiate zoom effect:
+            // A $( document ).ready() block.
+            $( document ).ready(function() {
+              $("#up-button").on("mousedown", function() { accelerateZoomingLens({y:-0.2}); });
+              $("#up-button").on("mouseup", function() { gatScreen.lens.stopMovement(); });
+              $("#w-button").on("mousedown", function() { accelerateZoomingLens({s:+0.02}); });
+              $("#w-button").on("mouseup", function() { gatScreen.lens.stopMovement(); });
+              $("#space-button").on("mousedown", function() { changeDial(0.1); });
+              $("#space-button").on("mouseup", function() { changeDial(0.0); });
+
+              $("#left-button").on("mousedown", function() { accelerateZoomingLens({x:-0.2}); });
+              $("#left-button").on("mouseup", function() { gatScreen.lens.stopMovement(); });
+              $("#down-button").on("mousedown", function() { accelerateZoomingLens({y:+0.2}); });
+              $("#down-button").on("mouseup", function() { gatScreen.lens.stopMovement(); });
+              $("#right-button").on("mousedown", function() { accelerateZoomingLens({x:+0.2}); });
+              $("#right-button").on("mouseup", function() { gatScreen.lens.stopMovement(); });
+              $("#s-button").on("mousedown", function() { accelerateZoomingLens({s:-0.02}); });
+              $("#s-button").on("mouseup", function() { gatScreen.lens.stopMovement(); });
+
+              $("#shift-button").on("mousedown", function() { changeDial(-0.1); });
+              $("#shift-button").on("mouseup", function() { changeDial(0.0); });
+            });
+          </script>
             <tr>
               <td></td>
               <td colspan="2">
-                <button onmousedown="accelerateZoomingLens({y:-0.2})"
-                        onmouseup="gatScreen.lens.stopMovement()"> &uarr;
+                <button id="up-button"> &uarr;
                 </button>
               </td>
               <td></td>
               <td>&nbsp;
-                <button onmousedown="accelerateZoomingLens({s:+0.02})"
-                        onmouseup="gatScreen.lens.stopMovement()"> &#8613; (W)</button>
+                <button id="w-button"> &#8613; (W)</button>
                 &nbsp;
               </td>
               <td>&nbsp;
-                <button onmousedown="changeDial( 0.1)"
-                        onmouseup="changeDial(0.0)"> &uarr; (space)</button>
+                <button id="space-button"> &uarr; (space)</button>
                 &nbsp;
               </td>
             </tr>
             <tr>
               <!-- Unicode characters https://www.w3schools.com/charsets/ref_utf_arrows.asp -->
               <td style="text-align: right">
-                <button onmousedown="accelerateZoomingLens({x:-0.2})"
-                        onmouseup="gatScreen.lens.stopMovement()"> &larr; </button>
+                <button id="left-button"> &larr; </button>
               </td><td colspan="2">
-                <button onmousedown="accelerateZoomingLens({y:+0.2})"
-                        onmouseup="gatScreen.lens.stopMovement()"> &darr; </button>
+                <button id="down-button"> &darr; </button>
               </td><td style="text-align: left">
-                <button onmousedown="accelerateZoomingLens({x:+0.2})"
-                        onmouseup="gatScreen.lens.stopMovement()"> &rarr; </button>
+                <button id="right-button"> &rarr; </button>
               </td>
               <td>&nbsp;
-                <button onmousedown="accelerateZoomingLens({s:-0.02})"
-                        onmouseup="gatScreen.lens.stopMovement()"> &#8615; (S)</button>
+                <button id="s-button"> &#8615; (S)</button>
                 &nbsp;
               </td>
               <td>
-                <button onmousedown="changeDial(-0.1)"
-                        onmouseup="changeDial(0.0)"> &darr; (shift)</button>
+                <button id="shift-button"> &darr; (shift)</button>
               </td>
             </tr>
             <!--
@@ -168,22 +193,36 @@
           </tr>
           <tr>
             <th colspan="2">Raw Value</th>
-            <th rowspan="2">Direc tion</th>
+            <th rowspan="2">Direc tion</th>  <!-- Space so it splits along two lines -->
             <th colspan="2">Normalized</th>
           </tr>
           <tr>
-            <td> Hor </td>
-            <td> Vert </td>
+            <td> Hor0 </td>
+            <td> Ver0 </td>
             <!-- Cell from above row is spanning two rows and thus counts as one cell here-->
-            <td> Hor </td>
-            <td> Vert </td>
+            <td> Hor0 </td>
+            <td> Ver0 </td>
           </tr>
           <tr>
-            <td> <input id="joyPositionHor" type="text" /> </td>
-            <td> <input id="joyPositionVer" type="text" /> </td>
-            <td> <input id="joyDirection" type="text" /> </td>
-            <td> <input id="joyHor" type="text" /> </td>
-            <td> <input id="joyVer" type="text" /> </td>
+            <td> <input id="joyRawHor0" type="text" /> </td>
+            <td> <input id="joyRawVer0" type="text" /> </td>
+            <td> <input id="joyCardinalDirection" type="text" /> </td>
+            <td> <input id="joyNormHor0" type="text" /> </td>
+            <td> <input id="joyNormVer0" type="text" /> </td>
+          </tr>
+          <tr>
+            <td> Hor1 </td>
+            <td> Ver1 </td>
+            <td> Ang </td>
+            <td> Hor1 </td>
+            <td> Ver1 </td>
+          </tr>
+          <tr>
+            <td> <input id="joyRawHor1" type="text" /> </td>
+            <td> <input id="joyRawVer1" type="text" /> </td>
+            <td> <input id="joyDeg" type="text" /> </td>
+            <td> <input id="joyNormHor1" type="text" /> </td>
+            <td> <input id="joyNormVer1" type="text" /> </td>
           </tr>
         </table>
       </div>

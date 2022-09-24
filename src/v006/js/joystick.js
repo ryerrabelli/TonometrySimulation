@@ -1,10 +1,14 @@
-//import {JoyStick} from "../../lib/JoyStick/joyV2";
+import {JoyStick} from "../../lib/JoyStick/joy.js";
+import {setUpPhotoZooming, moveZoomingLensByJoystick, updateZoom} from "./headshot.js";
 
 
-let Joy;
+export let Joy;
 const useJoy = true;
 
-function setUpJoystick() {
+//const DEG = "\u00B0";   // can't just console.log the ° symbol, have to use the unicode symbol to format correctly
+//const DEG = "°";
+
+export function setUpJoystick() {
   // Create JoyStick object into the DIV 'joyDiv'
   const joyParam = {
     title: "joystick",
@@ -41,18 +45,25 @@ function setUpJoystick() {
       moveZoomingLensByJoystick(joyNormHorCombined, joyNormVerCombined, joyNormDir);
     });
 
-    const joyInputPosHor = document.getElementById("joyPositionHor");
-    const joyInputPosVer = document.getElementById("joyPositionVer");
-    const joyDirection = document.getElementById("joyDirection");
-    const joyNormHor = document.getElementById("joyHor");
-    const joyNormVer = document.getElementById("joyVer");
+    const joyRawHors = [document.getElementById("joyRawHor0"), document.getElementById("joyRawHor1")];
+    const joyRawVers = [document.getElementById("joyRawVer0"), document.getElementById("joyRawVer1")];
+    const joyNormHors = [document.getElementById("joyNormHor0"), document.getElementById("joyNormHor1")];
+    const joyNormVers = [document.getElementById("joyNormVer0"), document.getElementById("joyNormVer1")];
+
+    const joyCardinalDirection = document.getElementById("joyCardinalDirection");
+    const joyDeg = document.getElementById("joyDeg");
 
     setInterval(function() {
-      joyInputPosHor.value=Joy.GetRawLocX().toFixed(1);
-      joyInputPosVer.value=Joy.GetRawLocY().toFixed(1);
-      joyNormHor.value=Joy.GetNormLocX().toFixed(4);
-      joyDirection.value=Joy.GetCardinalDirection();
-      joyNormVer.value=Joy.GetNormLocY().toFixed(4);
+      for (let level=0; level<=1; level++) {
+        joyRawHors[level].value=Joy.GetRawLocX({level: level}).toFixed(1);
+        joyRawVers[level].value=Joy.GetRawLocY({level: level}).toFixed(1);
+        joyNormHors[level].value=Joy.GetNormLocX({level: level}).toFixed(4);
+        joyNormVers[level].value=Joy.GetNormLocY({level: level}).toFixed(4);
+      }
+
+      joyCardinalDirection.value=Joy.GetCardinalDirection();
+      joyDeg.value=Joy.GetRawLocDeg().toFixed(1);
+
     }, 50)
   }
 

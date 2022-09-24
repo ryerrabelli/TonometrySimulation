@@ -1,6 +1,10 @@
 
 let origPhoto, zoomingLens, zoomedPhoto;
 
+import {lens, ZLC, gatScreen, canvasSz} from "./GATsimulation.js";
+import {isNullOrUndef} from "./helper.js";
+import {Joy} from "./joystick.js";
+
 class Person {
   constructor(filenameBase, extension="jpg", pathToFolder="data/") {
     this.filenameBase = filenameBase;
@@ -19,9 +23,15 @@ class Person {
 }
 
 
+export function moveZoomingLensByJoystick(joyNormHor, joyNormVer, joyNormDir) {
+  const scaledLoc = gatScreen.lens.getNormToScaled({"s":joyNormVer, "x":joyNormHor, "y": joyNormDir})
+  let newLoc = gatScreen.lens.checkAndSetLoc(scaledLoc);
+  return newLoc;
+}
+
 // https://www.w3schools.com/graphics/game_intro.asp
 // Original source: https://www.w3schools.com/howto/howto_js_image_zoom.asp
-function setUpPhotoZooming(origPhotoID, zoomedPhotoID, zoomingLensID) {
+export function setUpPhotoZooming(origPhotoID, zoomedPhotoID, zoomingLensID) {
   origPhoto = document.getElementById(origPhotoID);
   zoomedPhoto = document.getElementById(zoomedPhotoID);
   zoomingLens = document.getElementById(zoomingLensID);
@@ -73,7 +83,9 @@ function setUpPhotoZooming(origPhotoID, zoomedPhotoID, zoomingLensID) {
   zoomedPhoto.style.height = canvasSz.ht + "px";
 }
 
-function updateZoom() {  // update with the latest values of lens size and loc
+
+
+export function updateZoom() {  // update with the latest values of lens size and loc
   const normLoc = gatScreen.lens.getScaledToNorm(gatScreen.lens.loc);
   if (!isNullOrUndef(Joy)) {
     //console.log( "["+normLoc.x.toFixed(2) + "," + normLoc.y.toFixed(2) + "," + normLoc.s.toFixed(2) + "]")
@@ -147,8 +159,3 @@ function onZoomingLensTouchEnd(event) {
   onZoomingLensMouseUp(event);
 }
 
-function moveZoomingLensByJoystick(joyNormHor, joyNormVer, joyNormDir) {
-  const scaledLoc = gatScreen.lens.getNormToScaled({"s":joyNormVer, "x":joyNormHor, "y": joyNormDir})
-  let newLoc = gatScreen.lens.checkAndSetLoc(scaledLoc);
-  return newLoc;
-}

@@ -1,9 +1,12 @@
+import {isNullOrUndef, areArraysEqual} from "./helper.js";
+import {setUpPhotoZooming, moveZoomingLensByJoystick, updateZoom} from "./headshot.js";
+
 let myDial = {"dial": 0};  // temp value
 let mireCircles = [];
 const dialCoefficient = 1;
 
 // coordinates from top left, units in pixels
-const canvasSz    = {wd:360, ht:360};
+export const canvasSz = {wd:360, ht:360};
 const photoResSz = {wd:3600,ht:3600};  // resolution from original file
 const fileScale = {x:photoResSz.wd/canvasSz.wd, y:photoResSz.ht/canvasSz.ht };
 const rightPupilLoc = { x:1500/fileScale.x, y:1390/fileScale.y};  // found from visually looking at the image
@@ -18,7 +21,7 @@ const DEFAULT_ZOOMING_LENS_LOC = {x:0, y:0, s:5};
 
 // https://www.w3schools.com/graphics/game_intro.asp
 // https://www.w3schools.com/howto/howto_js_image_zoom.asp
-function startGat() {
+export function startGat() {
   // mireCircle = new component(30, 30, "rgba(0, 0, 255, 0.5)", 10, 120);
   let mireCircleRightEye1 = new MireCircle(MIRE_RADIUS*2, MIRE_RADIUS*2, 0, rightPupilLoc.x, rightPupilLoc.y, +1);
   let mireCircleRightEye2 = new MireCircle(MIRE_RADIUS*2, MIRE_RADIUS*2, 0, rightPupilLoc.x, rightPupilLoc.y, -1);
@@ -231,7 +234,7 @@ class ZoomingLensController extends Controller {
 }
 
 
-let gatScreen = {
+export let gatScreen = {
   canvas : document.createElement("canvas"),
   canvasController : document.createElement("canvas"),
   lens: new ZoomingLensController(),
@@ -555,7 +558,7 @@ function everyInterval(n) {
   return ((gatScreen.frameNo / n) % 1 === 0)
 }
 
-function accelerateZoomingLens(accelZoomingLens) {
+export function accelerateZoomingLens(accelZoomingLens) {
   gatScreen.lens.setAcceleration(accelZoomingLens);
 }
 function accelerateMires(x,y) {
@@ -575,11 +578,11 @@ function stopMovementOfMires() {
   accelerateMires(0,0);
 }
 
-function changeDial(dialSpeed) {
+export function changeDial(dialSpeed) {
   // could also test !isNaN(dialSpeed)
   if (!isNullOrUndef(dialSpeed)) { myDial.dialSpeed = dialSpeed; }
 }
 
 
-ZLC = ZoomingLensController;
-lens = gatScreen.lens;
+export let ZLC = ZoomingLensController;
+export let lens = gatScreen.lens;
