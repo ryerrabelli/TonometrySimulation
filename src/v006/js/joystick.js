@@ -71,7 +71,6 @@ export function setUpJoystick() {
       }
       joyCardinalDirection.value=Joy.GetCardinalDirection();
       joyDeg.value=Joy.GetRawLocDeg().toFixed(1)+DEG;
-            console.log(gatScreen.lens.loc);
 
     }, 50)
   }

@@ -4,7 +4,7 @@ import {Joy} from "./joystick.js";
 
 let myDial = {"dial": 0};  // temp value
 let mireCircles = [];
-const dialCoefficient = 1;
+const dialCoefficient = 0.3;
 
 // coordinates from top left, units in pixels
 export const canvasSz = {wd:360, ht:360};

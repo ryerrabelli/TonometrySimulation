@@ -56,15 +56,11 @@ h1 {
 }
 .GAT-editor div {
   width: 95%;
-  margin-top:    3.0%;
-  margin-bottom: 3.0%;
-  margin-left:   2.5%;
-  margin-right:  2.5%;
+  margin: 3.0% 2.5% 3.0% 2.5%;  /* Syntax: top right bottom left */
 }
 .GAT-editor table {
   width: 100%;
   border-collapse: collapse;   /* Combines adjacent borders into one line. If this is not done, then borders cannot be set on tr rows. */
-  background-color: #444;
 }
 .GAT-editor table th {
   background-color: #000;
@@ -75,6 +71,13 @@ h1 {
 }
 #GAT-console tr {
   border: 1px solid white;
+}
+/* Newer rows are on top. Therefore, will alternate colors starting from old to new. */
+#GAT-console tr:nth-last-child(odd) {
+  background-color: #444;
+}
+#GAT-console tr:nth-last-child(even) {
+  background-color: #aaa;
 }
 #GAT-console td:last-child {
   font-size: 25%;
