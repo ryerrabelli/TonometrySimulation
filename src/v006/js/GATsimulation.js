@@ -340,8 +340,8 @@ export let gatScreen = {
 
     for (let i = 0; i < mireCircles.length; i += 1) {
       let mireCircle = mireCircles[i];
-      if (Math.abs(mireCircle.xDialAdjustment) > 0.9*mireCircle.radius &&
-        Math.abs(mireCircle.xDialAdjustment) < 1.0*mireCircle.radius
+      if (Math.abs(mireCircle.xDialAdjustment) > 0.97*mireCircle.radius &&
+        Math.abs(mireCircle.xDialAdjustment) < 1.03*mireCircle.radius
       ) {
         if (!this.mireCircleAligned) {
           this.mireCircleAligned = true;
