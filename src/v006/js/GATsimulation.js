@@ -2,9 +2,9 @@ import {isNullOrUndef, areArraysEqual, numberDictToStr} from "./helper.js";
 import {setUpPhotoZooming, moveZoomingLensByJoystick, updateZoom} from "./headshot.js";
 import {Joy} from "./joystick.js";
 
-let myDial = {"dial": 0};  // temp value
-let mireCircles = [];
-const dialCoefficient = 0.3;
+let myDial = {"dialVal": 0};  // temp value
+const DIAL_COEFFICIENT = 0.3;
+const CORNEAL_ABRASION_SCALE_CUTOFF = 5;
 
 // coordinates from top left, units in pixels
 export const canvasSz = {wd:360, ht:360};
@@ -13,8 +13,8 @@ const fileScale = {x:photoResSz.wd/canvasSz.wd, y:photoResSz.ht/canvasSz.ht };
 const rightPupilLoc = { x:1500/fileScale.x, y:1390/fileScale.y};  // found from visually looking at the image
 const leftPupilLoc  = { x:2150/fileScale.x, y:1420/fileScale.y};  // found from visually looking at the image
 
-
 const centerLineY = canvasSz.ht/2;  // midpoint of screen where the distinction between top and bottom mire views is
+
 const MIRE_RADIUS     = 3;  // will be multipled by s (scale)
 const MIRE_LINE_WD    = 0.5;   // will be multipled by s (scale)
 const MIRE_SEPARATION = MIRE_RADIUS*4;   // distance between mire circle centers when dial pressure is not set (or set at 0)
@@ -28,7 +28,7 @@ export function startGat() {
   let mireCircleRightEye2 = new MireCircle(MIRE_RADIUS*2, MIRE_RADIUS*2, 0, rightPupilLoc.x, rightPupilLoc.y, -1);
   let mireCircleLeftEye1  = new MireCircle(MIRE_RADIUS*2, MIRE_RADIUS*2, 0,  leftPupilLoc.x,  leftPupilLoc.y, +1);
   let mireCircleLeftEye2  = new MireCircle(MIRE_RADIUS*2, MIRE_RADIUS*2, 0,  leftPupilLoc.x,  leftPupilLoc.y, -1);
-  mireCircles = [mireCircleRightEye1, mireCircleRightEye2, mireCircleLeftEye1, mireCircleLeftEye2];
+  gatScreen.mireCircles = [mireCircleRightEye1, mireCircleRightEye2, mireCircleLeftEye1, mireCircleLeftEye2];
   myDial = new Dial("30px", "Consolas", "rgba(255,255,255,0.5)", 10, 40, "text");
   gatScreen.start();
 }
@@ -242,6 +242,7 @@ export let gatScreen = {
   canvas : document.createElement("canvas"),
   canvasController : document.createElement("canvas"),
   lens: new ZoomingLensController(),
+  mireCircles: [],
   getMiresVisibility: function() {
     if (this.lens.loc.s<=1) {
       // ward off against invalid values
@@ -328,19 +329,21 @@ export let gatScreen = {
     gatScreen.clear();
     gatScreen.frameNo += 1;
 
-    myDial.text="Dial: " + myDial.dial.toFixed(1) + " mmHg";
+    myDial.text = "Dial: " + myDial.dialVal.toFixed(1) + " mmHg";
     myDial.updatePosition();
     myDial.updateDrawing();
-    for (let i = 0; i < mireCircles.length; i += 1) {
-      let mireCircle = mireCircles[i];
+    for (let i = 0; i < gatScreen.mireCircles.length; i += 1) {
+      const mireCircle = gatScreen.mireCircles[i];
       mireCircle.updatePosition();
       mireCircle.updateDrawing();
     }
     gatScreen.lens.updatePosition();
 
-    for (let i = 0; i < mireCircles.length; i += 1) {
-      let mireCircle = mireCircles[i];
-      if (Math.abs(mireCircle.xDialAdjustment) > 0.97*mireCircle.radius &&
+    // Check for Mire circle alignment
+    for (let i = 0; i < gatScreen.mireCircles.length; i += 1) {
+      const mireCircle = gatScreen.mireCircles[i];
+      if (
+        Math.abs(mireCircle.xDialAdjustment) > 0.97*mireCircle.radius &&
         Math.abs(mireCircle.xDialAdjustment) < 1.03*mireCircle.radius
       ) {
         if (!this.mireCircleAligned) {
@@ -354,10 +357,13 @@ export let gatScreen = {
         }
       }
     }
-    if (gatScreen.lens.loc.s > 5 && (
-      Math.abs(gatScreen.lens.vel.x) > 1e-8 ||
-      Math.abs(gatScreen.lens.vel.y) > 1e-8)
+    // Check for a corneal abrasion is being created
+    let hasMovedByKey = gatScreen.lens.vel.x**2 + gatScreen.lens.vel.y**2 > 1e-8;
+    if (gatScreen.lens.loc.s > CORNEAL_ABRASION_SCALE_CUTOFF &&
+        ( hasMovedByKey || gatScreen.hasMovedByJoystick || gatScreen.hasMovedByHover )
     ) {
+      gatScreen.hasMovedByJoystick = false;
+      gatScreen.hasMovedByHover = false;
       if (!this.creatingCornealAbrasion) {  // Don't create a duplicate message for the same abrasion
         this.creatingCornealAbrasion = true;
         displayOnConsole("Corneal abrasion! Don't move while on the cornea.");
@@ -369,7 +375,7 @@ export let gatScreen = {
     $("#x-loc-displayer").html(gatScreen.lens.loc.x.toFixed(1).padStart(5).replaceAll(" ","&nbsp;"));
     $("#y-loc-displayer").html(gatScreen.lens.loc.y.toFixed(1).padStart(5).replaceAll(" ","&nbsp;"));
     $("#s-loc-displayer").html(gatScreen.lens.loc.s.toFixed(1).padStart(3).replaceAll(" ","&nbsp;"));
-    $("#press-displayer").html(myDial.dial.toFixed(1).padStart(3).replaceAll(" ","&nbsp;")+" mmHg");
+    $("#press-displayer").html(myDial.dialVal.toFixed(1).padStart(3).replaceAll(" ","&nbsp;")+" mmHg");
 
 
   },
@@ -394,7 +400,7 @@ class Component {
 class Dial extends Component {
   constructor(wd, ht, color, x, y) {
     super(wd, ht, color, x, y);
-    this.dial = 0;
+    this.dialVal = 0;
     this.dialSpeed = 0;
   }
   updateDrawing() {
@@ -404,7 +410,7 @@ class Dial extends Component {
     ctx.fillText(this.text, this.x, this.y);
   }
   updatePosition() {  // overrides empty method in Component
-    this.dial += this.dialSpeed
+    this.dialVal += this.dialSpeed
   }
 }
 class MovingComponent extends Component {
@@ -450,7 +456,7 @@ class MireCircle extends MovingComponent {
     this.direction = direction;
   }
   get xDialAdjustment() {
-    return this.direction*myDial.dial*dialCoefficient
+    return this.direction*myDial.dialVal*DIAL_COEFFICIENT
   }
   get xDialAdjusted() {
     return this.x + this.xDialAdjustment;
@@ -566,16 +572,16 @@ export function accelerateZoomingLens(accelZoomingLens) {
   gatScreen.lens.setAcceleration(accelZoomingLens);
 }
 function accelerateMires(x,y) {
-  for (let i = 0; i < mireCircles.length; i += 1) {
-    const mireCircle = mireCircles[i]
+  for (let i = 0; i < gatScreen.mireCircles.length; i += 1) {
+    const mireCircle = gatScreen.mireCircles[i]
     // By allowing false check, you can change on either direction without the other
     if (!isNaN(x)) { mireCircle.lrAccel = x; }
     if (!isNaN(y)) { mireCircle.udAccel = y; }
   }
 }
 function stopMovementOfMires() {
-  for (let i = 0; i < mireCircles.length; i += 1) {
-    const mireCircle = mireCircles[i]
+  for (let i = 0; i < gatScreen.mireCircles.length; i += 1) {
+    const mireCircle = gatScreen.mireCircles[i]
     mireCircle.lrSpeed = 0.0;
     mireCircle.udSpeed = 0.0;
   }

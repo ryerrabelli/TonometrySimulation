@@ -25,7 +25,21 @@ class Person {
 export function moveZoomingLensByJoystick(joyNormHor, joyNormVer, joyNormDir) {
   const scaledLoc = gatScreen.lens.getNormToScaled({"s":joyNormVer, "x":joyNormHor, "y": joyNormDir});
   let newLoc = gatScreen.lens.checkAndSetLoc(scaledLoc);
-  //console.log(numberDictToStr(scaledLoc), numberDictToStr(newLoc));
+  //const hypotenuse = (scaledLoc.x-newLoc.x)**2 + (scaledLoc.y-newLoc.y)**2;
+  gatScreen.hasMovedByJoystick = true;
+  return newLoc;
+}
+function moveZoomingLensByHover(event) {
+  /*get the cursor's x and y positions:*/
+  let pos = getCursorPos(event);
+  /*calculate the position of the zoomingLens:*/
+  let selectedLoc = {
+    x: pos.x - (zoomingLens.offsetWidth / 2),
+    y: pos.y - (zoomingLens.offsetHeight / 2),
+  }
+  let newLoc = gatScreen.lens.checkAndSetLoc(selectedLoc);
+  //const hypotenuse = (selectedLoc.x-newLoc.x)**2 + (selectedLoc.y-newLoc.y)**2;
+  gatScreen.hasMovedByHover = true;
   return newLoc;
 }
 
@@ -127,18 +141,6 @@ function onZoomingLensMouseDown(event, button=null) {
 }
 function onZoomingLensMouseUp(event) {
   zoomingLensMousePressed = 0;
-}
-function moveZoomingLensByHover(event) {
-  /*get the cursor's x and y positions:*/
-  let pos = getCursorPos(event);
-  /*calculate the position of the zoomingLens:*/
-  let selectedLoc = {
-    x: pos.x - (zoomingLens.offsetWidth / 2),
-    y: pos.y - (zoomingLens.offsetHeight / 2),
-  }
-  let newLoc = gatScreen.lens.checkAndSetLoc(selectedLoc);
-  return newLoc;
-  //console.log(selectedLoc, newLoc);
 }
 function onZoomingLensMouseMove(event) {
   if (zoomingLensMousePressed===1) {
