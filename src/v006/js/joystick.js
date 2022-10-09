@@ -74,14 +74,12 @@ export function setUpJoystick() {
       startNormLocYLev1: 0.5,
     };
     Joy = new JoyStick("joyDiv", joyParam, onJoyStickUpdate);
-    console.log( Joy.GetNormLoc({level: 0}));
+
     // x->x, Deg->y, y->s
-    //let newLoc = {x:Joy.GetRawLocX(), y:Joy.GetRawLocDeg(), s:Joy.GetRawLocY()};
     let newLoc = {x:Joy.GetNormLocX(), y:Joy.GetNormLocDeg(), s:Joy.GetNormLocY()};
     const scaledLoc = gatScreen.lens.getNormToScaled(newLoc);  // convert to scaling of the UI
     gatScreen.lens.setLoc(scaledLoc);
 
-    console.log( Joy.GetNormLoc({level: 0}) );
 
     setInterval(onTimerUpdate, 50)
   }
