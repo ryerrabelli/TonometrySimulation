@@ -23,10 +23,12 @@ class Person {
 
 
 export function moveZoomingLensByJoystick(joyNormHor, joyNormVer, joyNormDir) {
+  const oldLoc = Object.assign({}, gatScreen.lens.loc);  // copy
+  // inputs are normalized [0,1] so need to convert them to canvas coordinates
   const scaledLoc = gatScreen.lens.getNormToScaled({"s":joyNormVer, "x":joyNormHor, "y": joyNormDir});
-  let newLoc = gatScreen.lens.checkAndSetLoc(scaledLoc);
-  //const hypotenuse = (scaledLoc.x-newLoc.x)**2 + (scaledLoc.y-newLoc.y)**2;
-  gatScreen.hasMovedByJoystick = true;
+  const newLoc = gatScreen.lens.checkAndSetLoc(scaledLoc);
+  const movedDistanceSq = (newLoc.x-oldLoc.x)**2 + (newLoc.y-oldLoc.y)**2;
+  if (movedDistanceSq > 1.44) gatScreen.hasMovedByJoystick = true;
   return newLoc;
 }
 function moveZoomingLensByHover(event) {
@@ -37,9 +39,10 @@ function moveZoomingLensByHover(event) {
     x: pos.x - (zoomingLens.offsetWidth / 2),
     y: pos.y - (zoomingLens.offsetHeight / 2),
   }
-  let newLoc = gatScreen.lens.checkAndSetLoc(selectedLoc);
-  //const hypotenuse = (selectedLoc.x-newLoc.x)**2 + (selectedLoc.y-newLoc.y)**2;
-  gatScreen.hasMovedByHover = true;
+  const oldLoc = Object.assign({}, gatScreen.lens.loc);  // copy
+  const newLoc = gatScreen.lens.checkAndSetLoc(selectedLoc);
+  const movedDistanceSq = (newLoc.x-oldLoc.x)**2 + (newLoc.y-oldLoc.y)**2;
+  if (movedDistanceSq > 1.44) gatScreen.hasMovedByHover = true;
   return newLoc;
 }
 
