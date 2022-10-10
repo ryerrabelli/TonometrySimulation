@@ -1,5 +1,5 @@
-import {JoyStick} from "../../lib/JoyStick/joy.js";
-//import {JoyStick} from "https://ryerrabelli.github.io/JoyStick/joy.js"
+//import {JoyStick} from "../../lib/JoyStick/joy.js";
+import {JoyStick} from "https://ryerrabelli.github.io/JoyStick/joy.js"
 import {setUpPhotoZooming, moveZoomingLensByJoystick, updateZoom} from "./headshot.js";
 import {lens, ZLC, gatScreen, canvasSz} from "./GATsimulation.js";
 import {isNullOrUndef, areArraysEqual, numberDictToStr} from "./helper.js";
