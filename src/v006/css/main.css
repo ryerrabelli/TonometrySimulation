@@ -114,6 +114,8 @@ h1 {
   grid-template-columns: max-content max-content max-content;
   grid-gap: 36px;
   text-align: center;
+  margin: auto;
+  width: max-content;
 }
 #titleContainer {
   grid-column: 1 / span 3;
