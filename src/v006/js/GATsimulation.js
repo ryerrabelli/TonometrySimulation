@@ -6,6 +6,8 @@ const DIAL_COEFFICIENT = 0.3;
 //const CORNEAL_ABRASION_SCALE_CUTOFF = 5;
 const CORNEAL_ABRASION_DISTANCE_SQ_CUTOFF = 900;
 const MIRE_VISIBILITY_TO_BE_GREEN = 0.9;  // between 0 and 1
+const MIN_S_VAL = 2;
+const MAX_S_VAL = 20;
 
 // coordinates from top left, units in pixels
 export const canvasSz = {wd:360, ht:360};
@@ -153,7 +155,7 @@ class ZoomingLensController extends Controller {
     /* syntax is [min, max] */
     x:[0, canvasSz.wd],
     y:[0, canvasSz.ht],
-    s:[4, Math.sqrt(canvasSz.wd*canvasSz.ht)/8],
+    s:[MIN_S_VAL, MAX_S_VAL],
   }
   getRangeSpecific(proposedLoc) {
     const rangeSpecific = {
