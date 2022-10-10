@@ -4,7 +4,7 @@ import {Joy} from "./joystick.js";
 
 const DIAL_COEFFICIENT = 0.3;
 //const CORNEAL_ABRASION_SCALE_CUTOFF = 5;
-const CORNEAL_ABRASION_DISTANCE_SQ_CUTOFF = 900;
+const CORNEAL_ABRASION_DISTANCE_SQ_CUTOFF = 23*23;
 const MIRE_VISIBILITY_TO_BE_GREEN = 0.9;  // between 0 and 1
 const MIN_S_VAL = 2;
 const MAX_S_VAL = 20;
