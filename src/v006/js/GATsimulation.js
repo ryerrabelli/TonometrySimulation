@@ -92,7 +92,7 @@ class ZoomingLensController extends Controller {
     super();
     //this.val   = Object.assign({}, DEFAULT_ZOOMING_LENS_LOC); // Object.assign performs shallow copy
     // x->x, Deg->y, y->s
-    //this.val   = {x: Joy.GetRawLocX({level:0}), y: Joy.GetRawLocDeg({level:0}), s: Joy.GetRawLocY({level:0})};
+    //this.val   = {x: Joy.getRawLocX({level:0}), y: Joy.getRawLocDeg({level:0}), s: Joy.getRawLocY({level:0})};
     this.val   = {x:0, y:0, s:0};
     this.vel   = {x:0, y:0, s:0};
     this.accel = {x:0, y:0, s:0};

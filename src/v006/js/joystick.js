@@ -1,5 +1,5 @@
-//import {JoyStick} from "../../lib/JoyStick/joy.js";
-import {JoyStick} from "https://ryerrabelli.github.io/JoyStick/joy.js"
+import {JoyStick} from "../../lib/JoyStick/joy.js";
+//import {JoyStick} from "https://ryerrabelli.github.io/JoyStick/joy.js"
 import {setUpPhotoZooming, moveZoomingLensByJoystick, updateZoom} from "./headshot.js";
 import {lens, ZLC, gatScreen, canvasSz} from "./GATsimulation.js";
 import {isNullOrUndef, areArraysEqual, numberDictToStr} from "./helper.js";
@@ -37,13 +37,13 @@ function onTimerUpdate() {
   const joyDeg = document.getElementById("joyDeg");
 
   for (let level=0; level<=1; level++) {
-    joyRawHors[level].value=Joy.GetRawLocX({level: level}).toFixed(1);
-    joyRawVers[level].value=Joy.GetRawLocY({level: level}).toFixed(1);
-    joyNormHors[level].value=Joy.GetNormLocX({level: level}).toFixed(4);
-    joyNormVers[level].value=Joy.GetNormLocY({level: level}).toFixed(4);
+    joyRawHors[level].value=Joy.getRawLocX({level: level}).toFixed(1);
+    joyRawVers[level].value=Joy.getRawLocY({level: level}).toFixed(1);
+    joyNormHors[level].value=Joy.getNormLocX({level: level}).toFixed(4);
+    joyNormVers[level].value=Joy.getNormLocY({level: level}).toFixed(4);
   }
-  joyCardinalDirection.value=Joy.GetCardinalDirection();
-  joyDeg.value=Joy.GetRawLocDeg().toFixed(1)+DEG;
+  joyCardinalDirection.value=Joy.getCardinalDirection();
+  joyDeg.value=Joy.getRawLocDeg().toFixed(1)+DEG;
 }
 
 export function setUpJoystick() {
@@ -76,7 +76,7 @@ export function setUpJoystick() {
     Joy = new JoyStick("joyDiv", joyParam, onJoyStickUpdate);
 
     // x->x, Deg->y, y->s
-    let newLoc = {x:Joy.GetNormLocX(), y:Joy.GetNormLocDeg(), s:Joy.GetNormLocY()};
+    let newLoc = {x:Joy.getNormLocX(), y:Joy.getNormLocDeg(), s:Joy.getNormLocY()};
     const scaledLoc = gatScreen.lens.getNormToScaled(newLoc);  // convert to scaling of the UI
     gatScreen.lens.setLoc(scaledLoc);
 
