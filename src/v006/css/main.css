@@ -21,7 +21,7 @@ h1 {
     background-position: 0% 50%;
   }
 }
-#gatViewContainer canvas {
+.gatViewContainer canvas {
   background: linear-gradient(-45deg, #111122, #072083, #0f59f2, #0a30a3);
   background-size: 400% 400%;
   animation: gradient 15s ease infinite;
@@ -43,7 +43,7 @@ h1 {
   border: 2px solid #d4d4d4;
   border-radius: 10%;
 }
-#GAT-controller-view canvas {
+.GAT-controller-view canvas {
   background-color: #999;
 }
 .GAT-editor {
@@ -65,21 +65,21 @@ h1 {
 .GAT-editor table th {
   background-color: #000;
 }
-#GAT-console tbody {
+.GAT-console tbody {
   text-align: left;
   padding: 10px;
 }
-#GAT-console tr {
+.GAT-console tr {
   border: 1px solid white;
 }
 /* Newer rows are on top. Therefore, will alternate colors starting from old to new. */
-#GAT-console tr:nth-last-child(odd) {
+.GAT-console tr:nth-last-child(odd) {
   background-color: #444;
 }
-#GAT-console tr:nth-last-child(even) {
+.GAT-console tr:nth-last-child(even) {
   background-color: #aaa;
 }
-#GAT-console td:last-child {
+.GAT-console td:last-child {
   font-size: 25%;
   text-align: right;
   vertical-align: top;
@@ -117,31 +117,31 @@ h1 {
   margin: auto;
   width: max-content;
 }
-#titleContainer {
+.titleContainer {
   grid-column: 1 / span 3;
   grid-row: 1;
 }
-#zoomedPhotoContainer {
+.zoomedPhotoContainer {
   grid-column: 1;
   grid-row: 2;
 }
-#origPhotoContainer {
+.origPhotoContainer {
   grid-column: 1;
   grid-row: 3;
 }
-#gatViewContainer {
+.gatViewContainer {
   grid-column: 2;
   grid-row: 2;
 }
-#joystickContainer {
+.joystickContainer {
   grid-column: 2;
   grid-row: 3;
 }
-#keyboardContainer {
+.keyboardContainer {
   grid-column: 3;
   grid-row: 3;
 }
-#gatConsoleContainer {
+.gatConsoleContainer {
   grid-column: 3;
   grid-row: 2;
 }

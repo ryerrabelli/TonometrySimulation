@@ -280,11 +280,11 @@ export let gatScreen = {
     this.canvas.height = canvasSz.ht;
     this.context = this.canvas.getContext("2d");
     //document.getElementById("GAT-area").insertBefore(this.canvas, document.getElementById("GAT-editor"));
-    $("#gatViewContainer").append(this.canvas);
+    $(".gatViewContainer").append(this.canvas);
     this.canvasController.width = canvasSz.wd;
     this.canvasController.height = canvasSz.ht;
     this.contextController = this.canvasController.getContext("2d");
-    $("#GAT-controller-view").append(this.canvasController);
+    $(".GAT-controller-view").append(this.canvasController);
 
     this.frameNo = 0;
     // Despite what pycharm, the interval function is used
@@ -577,7 +577,7 @@ class MireCircle extends MovingComponent {
 function displayOnConsole(message) {
   const time = (new Date()).toLocaleTimeString();
   const newElement = `<tr><td>${message}</td><td>${time}</td></tr>`;
-  $("#GAT-console tbody").prepend(newElement);
+  $(".GAT-console tbody").prepend(newElement);
   console.log(message);
 }
 
