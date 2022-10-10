@@ -2,21 +2,29 @@ import {isNullOrUndef, areArraysEqual, numberDictToStr} from "./helper.js";
 import {setUpPhotoZooming, moveZoomingLensByJoystick, updateZoom} from "./headshot.js";
 import {Joy} from "./joystick.js";
 
-let myDial = {"dialVal": 0};  // temp value
 const DIAL_COEFFICIENT = 0.3;
-const CORNEAL_ABRASION_SCALE_CUTOFF = 5;
+//const CORNEAL_ABRASION_SCALE_CUTOFF = 5;
+const CORNEAL_ABRASION_DISTANCE_SQ_CUTOFF = 900;
+const MIRE_VISIBILITY_TO_BE_GREEN = 0.9;  // between 0 and 1
 
 // coordinates from top left, units in pixels
 export const canvasSz = {wd:360, ht:360};
 const photoResSz = {wd:3600,ht:3600};  // resolution from original file
 const fileScale = {x:photoResSz.wd/canvasSz.wd, y:photoResSz.ht/canvasSz.ht };
-const rightPupilLoc = { x:1500/fileScale.x, y:1390/fileScale.y};  // found from visually looking at the image
-const leftPupilLoc  = { x:2150/fileScale.x, y:1420/fileScale.y};  // found from visually looking at the image
+
+let myDial = {"dialVal": 0};  // temp value
 
 const centerLineY = canvasSz.ht/2;  // midpoint of screen where the distinction between top and bottom mire views is
 
-const MIRE_RADIUS     = 3;  // will be multipled by s (scale)
-const MIRE_LINE_WD    = 0.5;   // will be multipled by s (scale)
+// Right vs left is the patient's left (so it is opposite from how it looks on the photo)
+const R_EYE = 0, L_EYE = 1; // with respect to pupils/eyes
+const pupilLocs =[
+  { x:1500/fileScale.x, y:1390/fileScale.y},  // found from visually looking at the image
+  { x:2150/fileScale.x, y:1420/fileScale.y},  // found from visually looking at the image
+]
+
+const MIRE_RADIUS     = 3;  // will be multiplied by s (scale)
+const MIRE_LINE_WD    = 0.5;   // will be multiplied by s (scale)
 const MIRE_SEPARATION = MIRE_RADIUS*4;   // distance between mire circle centers when dial pressure is not set (or set at 0)
 //const DEFAULT_ZOOMING_LENS_LOC = {x:100, y:100, s:5};
 
@@ -24,10 +32,10 @@ const MIRE_SEPARATION = MIRE_RADIUS*4;   // distance between mire circle centers
 // https://www.w3schools.com/howto/howto_js_image_zoom.asp
 export function startGat() {
   // mireCircle = new component(30, 30, "rgba(0, 0, 255, 0.5)", 10, 120);
-  let mireCircleRightEye1 = new MireCircle(MIRE_RADIUS*2, MIRE_RADIUS*2, 0, rightPupilLoc.x, rightPupilLoc.y, +1);
-  let mireCircleRightEye2 = new MireCircle(MIRE_RADIUS*2, MIRE_RADIUS*2, 0, rightPupilLoc.x, rightPupilLoc.y, -1);
-  let mireCircleLeftEye1  = new MireCircle(MIRE_RADIUS*2, MIRE_RADIUS*2, 0,  leftPupilLoc.x,  leftPupilLoc.y, +1);
-  let mireCircleLeftEye2  = new MireCircle(MIRE_RADIUS*2, MIRE_RADIUS*2, 0,  leftPupilLoc.x,  leftPupilLoc.y, -1);
+  let mireCircleRightEye1 = new MireCircle(MIRE_RADIUS*2, MIRE_RADIUS*2, 0, pupilLocs[R_EYE].x, pupilLocs[R_EYE].y, +1);
+  let mireCircleRightEye2 = new MireCircle(MIRE_RADIUS*2, MIRE_RADIUS*2, 0, pupilLocs[R_EYE].x, pupilLocs[R_EYE].y, -1);
+  let mireCircleLeftEye1  = new MireCircle(MIRE_RADIUS*2, MIRE_RADIUS*2, 0, pupilLocs[L_EYE].x, pupilLocs[L_EYE].y, +1);
+  let mireCircleLeftEye2  = new MireCircle(MIRE_RADIUS*2, MIRE_RADIUS*2, 0, pupilLocs[L_EYE].x, pupilLocs[L_EYE].y, -1);
   gatScreen.mireCircles = [mireCircleRightEye1, mireCircleRightEye2, mireCircleLeftEye1, mireCircleLeftEye2];
   myDial = new Dial("30px", "Consolas", "rgba(255,255,255,0.5)", 10, 40, "text");
   gatScreen.start();
@@ -119,14 +127,14 @@ class ZoomingLensController extends Controller {
     const newLoc2 = this.checkAndSetLoc(newLoc);
     //console.log( numberDictToStr(newLoc2) );
   }
-  get loc() {
+  get loc() {  // top left of zoomingLens
     return this.val;
   }
   get locCenter() {
     // This is the ratio of the origPhoto (or zoomedPhoto) to the zoomingLens
     return {
-      x: this.loc.x + sz().wd/2,
-      y: this.loc.y + sz().ht/2
+      x: this.loc.x + this.sz.wd/2,
+      y: this.loc.y + this.sz.ht/2
     }
   }
   get drawnLoc() {  // from top left corner
@@ -243,20 +251,22 @@ export let gatScreen = {
   canvasController : document.createElement("canvas"),
   lens: new ZoomingLensController(),
   mireCircles: [],
+  calcDistSqFromLoc: function(compareLoc) {
+    return (gatScreen.lens.locCenter.x-compareLoc.x)**2 + (gatScreen.lens.locCenter.y-compareLoc.y)**2;
+  },
   getMiresVisibility: function() {
+    const sigmoidCenter = 10.0;  // value at which mireVisibility will be 0.5
+    const k = 0.05;  // the greater the k, the more that the effect will be dampened (aka further from sigmoidCenter to get a value of 0.000 or 1.000)
     if (this.lens.loc.s<=1) {
       // ward off against invalid values
       return 0.0;
     } else if (this.lens.loc.s>40) {
-      // save calculations as the logistic function will aready give a value close to 1.0
+      // save calculations as the logistic function will already give a value close to 1.0
       return 1.0;
     } else {
-      //return 1/(1+(this.lens.loc.s-10))
 
       const x = this.lens.loc.s;
-      const sigmoidCenter = 10.0;  // valye at which mireVisibility will be 0.5
-      const k = 0.05;  // the greater the k, the more that the effect will be dampened (aka further from sigmoidCenter to get a value of 0.000 or 1.000)
-      // center x as a new variable to put into logistic (sigmoid) function
+      // z is center x as a new variable to put into a normalized logistic (sigmoid) function
       const z = -(Math.log10(x) - Math.log10(sigmoidCenter))/k;
       // logistic (sigmoid) function
       const mireVisibility = 1 / (1+ Math.exp( z ))
@@ -359,8 +369,12 @@ export let gatScreen = {
     }
     // Check for a corneal abrasion is being created
     let hasMovedByKey = gatScreen.lens.vel.x**2 + gatScreen.lens.vel.y**2 > 1e-8;
-    if (gatScreen.lens.loc.s > CORNEAL_ABRASION_SCALE_CUTOFF &&
-        ( hasMovedByKey || gatScreen.hasMovedByJoystick || gatScreen.hasMovedByHover )
+
+    if (
+      //gatScreen.lens.loc.s > CORNEAL_ABRASION_SCALE_CUTOFF &&
+      gatScreen.getMiresVisibility() > MIRE_VISIBILITY_TO_BE_GREEN &&  // corneal abrasion cutoff is the same as the Mire green cutoff
+      ( hasMovedByKey || gatScreen.hasMovedByJoystick || gatScreen.hasMovedByHover ) &&
+      pupilLocs.some( (pupilLoc) => gatScreen.calcDistSqFromLoc(pupilLoc) < CORNEAL_ABRASION_DISTANCE_SQ_CUTOFF )  // check if func calcDistFromPupil is true for any elements in pupilLocs
     ) {
       gatScreen.hasMovedByJoystick = false;
       gatScreen.hasMovedByHover = false;
@@ -438,6 +452,7 @@ class Rectangle extends MovingComponent {
   }
 }
 
+
 class MireCircle extends MovingComponent {
   /**
    * Create a Mire Circle.
@@ -484,7 +499,7 @@ class MireCircle extends MovingComponent {
     const radiusScaled = this.radius * lens.loc.s;
 
 
-      // Draw big blue circle around Mires
+    // Draw big blue circle around Mires
     ctx.strokeStyle = `rgba(0,0,255,0.1)`;
     ctx.fillStyle = `rgba(0,0,0,0.1)`;
     ctx.lineWidth = MIRE_LINE_WD;  // half thickness of routine
@@ -520,7 +535,7 @@ class MireCircle extends MovingComponent {
       if (!isNullOrUndef(offsetAngle)) {
         arcAngleInitial =    0    + offsetAngle;  // radians
         arcAngleFinal   = Math.PI - offsetAngle;  // radians
-        const isMireGreen = miresVisibility>0.9;
+        const isMireGreen = miresVisibility > MIRE_VISIBILITY_TO_BE_GREEN;
         const alpha = miresVisibility;
         const thickness = 1;  //lens.loc.s/5;  // corresponds to increasing blurriness/thickness as you get closer
 

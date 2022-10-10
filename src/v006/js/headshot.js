@@ -103,7 +103,7 @@ export function updateZoom() {  // update with the latest values of lens size an
   if (!isNullOrUndef(Joy)) {
     // negate the vertical variable so top of the screen is higher numbers
     const normLoc = gatScreen.lens.getScaledToNorm(gatScreen.lens.loc);
-    Joy.SetNormLoc(normLoc.x, normLoc.s, 1-normLoc.y);
+    Joy.setNormLoc(normLoc.x, normLoc.s, 1-normLoc.y);
   }
   //console.log(gatScreen.lens.loc)
   /*set the sizing of the zoomingLens and */
