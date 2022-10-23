@@ -109,7 +109,7 @@ h1 {
 .GAT-controls input {
   width: 100%;
 }
-.grid-container {
+.page-grid-container {
   display: grid;
   grid-template-columns: max-content max-content max-content;
   grid-gap: 36px;
@@ -117,33 +117,30 @@ h1 {
   margin: auto;
   width: max-content;
 }
-.titleContainer {
-  grid-column: 1 / span 3;
-  grid-row: 1;
-}
+
 .zoomedPhotoContainer {
   grid-column: 1;
-  grid-row: 2;
+  grid-row: 1;
 }
 .origPhotoContainer {
   grid-column: 1;
-  grid-row: 3;
+  grid-row: 2;
 }
 .gatViewContainer {
   grid-column: 2;
-  grid-row: 2;
+  grid-row: 1;
 }
 .joystickContainer {
   grid-column: 2;
-  grid-row: 3;
+  grid-row: 2;
 }
 .keyboardContainer {
   grid-column: 3;
-  grid-row: 3;
+  grid-row: 2;
 }
 .gatConsoleContainer {
   grid-column: 3;
-  grid-row: 2;
+  grid-row: 1;
 }
 #joystick { /* class added programmatically to joystick based on "title" argument */
 

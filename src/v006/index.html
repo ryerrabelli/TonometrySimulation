@@ -20,21 +20,43 @@
   <script type="module" src="js/helper.js"></script>
 
   <style>
-    .selected-page-link {
-      background-color:#f44336
-    }
-    .page-links-holder {
+    .titleContainer {
       grid-column: 1;
       grid-row: 1;
     }
-    .pages-holder {
+    .page-link {
+      width: 200px;
+      padding: 15px 32px;
+      margin: 30px 30px 60px 30px;
+      border-radius: 20px;
+      font-size: 24px;
+      text-align: center;
+      text-decoration: none;
+      color: #DDD;
+      background-color: #08B; /* Green */
+      border: 5px solid #08B;
+    }
+    .page-link:hover {
+      border: 5px solid #8BD;
+      box-shadow: 0 12px 16px 0 rgba(255,255,255,0.24), 0 17px 50px 0 rgba(255,255,255,0.19);
+    }
+    .page-link.selected-page-link {
+      text-decoration: underline;
+      color: #FFF !important;
+      border: 5px solid #FFF !important;
+    }
+    .page-links-holder {
       grid-column: 1;
       grid-row: 2;
     }
-    .grid-container1 {
+    .pages-holder {
+      grid-column: 1;
+      grid-row: 3;
+    }
+    .overall-grid-container {
       display: grid;
       grid-template-columns: max-content;
-      grid-gap: 36px;
+      grid-gap: 0px;
       text-align: center;
       margin: auto;
       width: max-content;
@@ -76,9 +98,11 @@
       $(`.page-link[data-target-page-name="${pageName}"]`).addClass("selected-page-link");
     }
   </script>
-  <div class="grid-container1">
+  <div class="overall-grid-container">
+    <div class="titleContainer">
+      <h1 >GAT Simulation</h1>
+    </div>
     <div class="page-links-holder">
-      <h2 class="">Menu</h2>
       <button class="page-link" data-target-page-name="instructions">Instructions</button>
       <button class="page-link" data-target-page-name="about">About</button>
       <button class="page-link" data-target-page-name="contact">Contact</button>
@@ -98,10 +122,8 @@
         Contact
       </div>
 
-      <div class="page grid-container" data-page-name="simulation" data-active-display-value="grid">
-        <div class="titleContainer">
-          <h1 >GAT Simulation</h1>
-        </div>
+      <div class="page page-grid-container" data-page-name="simulation" data-active-display-value="grid">
+
         <!-- CIMED residency headshots are originally 6-7MB portrait photos of 3770px by 5655px (aspect ratio 1.5). I cropped them to b 3600px by 3600px. -->
         <div class="zoomedPhotoContainer" class="img-zoom-result photo-area">
           <div id="zoomedPhoto"></div>
