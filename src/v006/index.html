@@ -19,6 +19,28 @@
   <script type="module" src="js/joystick.js"></script>
   <script type="module" src="js/helper.js"></script>
 
+  <style>
+    .selected-page-link {
+      background-color:#f44336
+    }
+    .page-links-holder {
+      grid-column: 1;
+      grid-row: 1;
+    }
+    .pages-holder {
+      grid-column: 1;
+      grid-row: 2;
+    }
+    .grid-container1 {
+      display: grid;
+      grid-template-columns: max-content;
+      grid-gap: 36px;
+      text-align: center;
+      margin: auto;
+      width: max-content;
+    }
+  </style>
+
   <title>GAT</title>
 </head>
 
@@ -54,228 +76,231 @@
       $(`.page-link[data-target-page-name="${pageName}"]`).addClass("selected-page-link");
     }
   </script>
+  <div class="grid-container1">
+    <div class="page-links-holder">
+      <h2 class="">Menu</h2>
+      <button class="page-link" data-target-page-name="instructions">Instructions</button>
+      <button class="page-link" data-target-page-name="about">About</button>
+      <button class="page-link" data-target-page-name="contact">Contact</button>
+      <button class="page-link" data-target-page-name="simulation">Simulation</button>
+    </div>
 
-  <div class="page-links-holder">
-    <h2 class="">Menu</h2>
-    <button class="page-link" data-target-page-name="instructions">Instructions</button>
-    <button class="page-link" data-target-page-name="about">About</button>
-    <button class="page-link" data-target-page-name="contact">Contact</button>
-    <button class="page-link" data-target-page-name="simulation">Simulation</button>
+    <div class="pages-holder">
+      <div class="page" data-page-name="instructions">
+        Instructions
+      </div>
+
+      <div class="page" data-page-name="about">
+        About
+      </div>
+
+      <div class="page" data-page-name="contact">
+        Contact
+      </div>
+
+      <div class="page grid-container" data-page-name="simulation" data-active-display-value="grid">
+        <div class="titleContainer">
+          <h1 >GAT Simulation</h1>
+        </div>
+        <!-- CIMED residency headshots are originally 6-7MB portrait photos of 3770px by 5655px (aspect ratio 1.5). I cropped them to b 3600px by 3600px. -->
+        <div class="zoomedPhotoContainer" class="img-zoom-result photo-area">
+          <div id="zoomedPhoto"></div>
+          <!-- Zoomed in version of high resolution photo will be here -->
+        </div>
+
+
+        <div class="origPhotoContainer img-zoom-container click-to-zoom photo-area" style="grid-column: 1">
+          <div id="zoomingLens">
+            <!-- the code will insert html to control the zoomingLens hovering over the low resolution headshot-->
+          </div>
+          <img id="origPhoto" src="" alt="headshot low resolution">
+        </div>
+
+        <div class="gatViewContainer">
+          <!-- Mire screen will be added here -->
+        </div>
+
+        <div class="joystickContainer">
+          <div>
+            <div id="joyDiv"></div>
+          </div>
+        </div>
+
+
+        <div class="GAT-editor keyboardContainer">
+          <div>
+            <form action="" method="get">
+              <table>
+                <tr>
+                  <th colspan="2">
+                    <label for="persons-selector"><h2>Choose photo:</h2></label>
+                  </th>
+                </tr><tr>
+                  <td>
+                    <select name="personID" id="persons-selector"></select>
+                  </td>
+                  <td><input type="submit" value="Submit"></td>
+                </tr>
+              </table>
+            </form>
+          </div>
+          <div>
+            <table class="GAT-controls">
+              <thead>
+                <tr><th colspan="7"><h2>Controls</h2></th></tr>
+                <tr>
+                  <th colspan="5"><h3>Movement</h3></th>
+                  <th colspan="2"><h3>Pressure</h3></th>
+                </tr>
+              </thead>
+              <tbody>
+              <script type="module">
+                import {startGat, gatScreen, accelerateZoomingLens, changeDial} from "./js/GATsimulation.js";
+
+                // Initiate zoom effect:
+                // A $( document ).ready() block.
+                $( document ).ready(function() {
+                  $("#up-button").on("mousedown", function() { accelerateZoomingLens({y:-0.2}); });
+                  $("#up-button").on("mouseup", function() { gatScreen.lens.stopMovement(); });
+                  $("#w-button").on("mousedown", function() { accelerateZoomingLens({s:+0.02}); });
+                  $("#w-button").on("mouseup", function() { gatScreen.lens.stopMovement(); });
+                  $("#space-button").on("mousedown", function() { changeDial(0.1); });
+                  $("#space-button").on("mouseup", function() { changeDial(0.0); });
+
+                  $("#left-button").on("mousedown", function() { accelerateZoomingLens({x:-0.2}); });
+                  $("#left-button").on("mouseup", function() { gatScreen.lens.stopMovement(); });
+                  $("#down-button").on("mousedown", function() { accelerateZoomingLens({y:+0.2}); });
+                  $("#down-button").on("mouseup", function() { gatScreen.lens.stopMovement(); });
+                  $("#right-button").on("mousedown", function() { accelerateZoomingLens({x:+0.2}); });
+                  $("#right-button").on("mouseup", function() { gatScreen.lens.stopMovement(); });
+                  $("#s-button").on("mousedown", function() { accelerateZoomingLens({s:-0.02}); });
+                  $("#s-button").on("mouseup", function() { gatScreen.lens.stopMovement(); });
+
+                  $("#shift-button").on("mousedown", function() { changeDial(-0.1); });
+                  $("#shift-button").on("mouseup", function() { changeDial(0.0); });
+                });
+              </script>
+                <tr>
+                  <td></td>
+                  <td colspan="2">
+                    <button id="up-button"> &uarr;
+                    </button>
+                  </td>
+                  <td></td>
+                  <td>&nbsp;
+                    <button id="w-button"> &#8613; (W)</button>
+                    &nbsp;
+                  </td>
+                  <td>&nbsp;
+                    <bumoveZoomingLensByJoysticktton id="space-button"> &uarr; (space)</bumoveZoomingLensByJoysticktton>
+                    &nbsp;
+                  </td>
+                </tr>
+                <tr>
+                  <!-- Unicode characters https://www.w3schools.com/charsets/ref_utf_arrows.asp -->
+                  <td style="text-align: right">
+                    <button id="left-button"> &larr; </button>
+                  </td><td colspan="2">
+                    <button id="down-button"> &darr; </button>
+                  </td><td style="text-align: left">
+                    <button id="right-button"> &rarr; </button>
+                  </td>
+                  <td>&nbsp;
+                    <button id="s-button"> &#8615; (S)</button>
+                    &nbsp;
+                  </td>
+                  <td>
+                    <button id="shift-button"> &darr; (shift)</button>
+                  </td>
+                </tr>
+                <!--
+                <tr>
+                  <td colspan="5">&nbsp;</td>
+                  <td colspan="2">&nbsp;</td>
+                </tr> -->
+                <tr>
+                  <th colspan="2">Left</th>
+                  <th colspan="2">Top</th>
+                  <th>Forward</th>
+                  <th>Pressure</th>
+                </tr>
+                <tr class="value-displayer">
+                  <td colspan="2">
+                    <span id="x-loc-displayer"></span>
+                  </td>
+                  <td colspan="2">
+                    <span id="y-loc-displayer"></span>
+                  </td>
+                  <td>
+                    <span id="s-loc-displayer"></span>
+                  </td>
+                  <td>
+                    <span id="press-displayer"></span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div>
+            <table class="GAT-controls">
+              <tr>
+                <th colspan="5"><h2>Joystick</h2></th>
+              </tr>
+              <tr>
+                <th colspan="2">Raw Value</th>
+                <th rowspan="2">Direc tion</th>  <!-- Space so it splits along two lines -->
+                <th colspan="2">Normalized</th>
+              </tr>
+              <tr>
+                <td> Hor0 </td>
+                <td> Ver0 </td>
+                <!-- Cell from above row is spanning two rows and thus counts as one cell here-->
+                <td> Hor0 </td>
+                <td> Ver0 </td>
+              </tr>
+              <tr>
+                <td> <input id="joyRawHor0" type="text" /> </td>
+                <td> <input id="joyRawVer0" type="text" /> </td>
+                <td> <input id="joyCardinalDirection" type="text" /> </td>
+                <td> <input id="joyNormHor0" type="text" /> </td>
+                <td> <input id="joyNormVer0" type="text" /> </td>
+              </tr>
+              <tr>
+                <td> Hor1 </td>
+                <td> Ver1 </td>
+                <td> Ang </td>
+                <td> Hor1 </td>
+                <td> Ver1 </td>
+              </tr>
+              <tr>
+                <td> <input id="joyRawHor1" type="text" /> </td>
+                <td> <input id="joyRawVer1" type="text" /> </td>
+                <td> <input id="joyDeg" type="text" /> </td>
+                <td> <input id="joyNormHor1" type="text" /> </td>
+                <td> <input id="joyNormVer1" type="text" /> </td>
+              </tr>
+            </table>
+          </div>
+        </div>
+
+        <div class="GAT-editor gatConsoleContainer">
+          <div class="GAT-console-holder">
+            <table class="GAT-console">
+              <thead>
+                <tr><th colspan="2"><h2>Console</h2></th></tr>
+              </thead>
+              <tbody>
+              <tr><td>&nbsp;</td><td></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
   </div>
 
-
-  <div class="page" data-page-name="instructions">
-    Instructions
-  </div>
-
-  <div class="page" data-page-name="about">
-    About
-  </div>
-
-  <div class="page" data-page-name="contact">
-    Contact
-  </div>
-
-
-  <div class="page grid-container" data-page-name="simulation" data-active-display-value="grid">
-    <div class="titleContainer">
-      <h1 >GAT Simulation</h1>
-    </div>
-    <!-- CIMED residency headshots are originally 6-7MB portrait photos of 3770px by 5655px (aspect ratio 1.5). I cropped them to b 3600px by 3600px. -->
-    <div class="zoomedPhotoContainer" class="img-zoom-result photo-area">
-      <div id="zoomedPhoto"></div>
-      <!-- Zoomed in version of high resolution photo will be here -->
-    </div>
-
-
-    <div class="origPhotoContainer img-zoom-container click-to-zoom photo-area" style="grid-column: 1">
-      <div id="zoomingLens">
-        <!-- the code will insert html to control the zoomingLens hovering over the low resolution headshot-->
-      </div>
-      <img id="origPhoto" src="" alt="headshot low resolution">
-    </div>
-
-    <div class="gatViewContainer">
-      <!-- Mire screen will be added here -->
-    </div>
-
-    <div class="joystickContainer">
-      <div>
-        <div id="joyDiv"></div>
-      </div>
-    </div>
-
-
-    <div class="GAT-editor keyboardContainer">
-      <div>
-        <form action="" method="get">
-          <table>
-            <tr>
-              <th colspan="2">
-                <label for="persons-selector"><h2>Choose photo:</h2></label>
-              </th>
-            </tr><tr>
-              <td>
-                <select name="personID" id="persons-selector"></select>
-              </td>
-              <td><input type="submit" value="Submit"></td>
-            </tr>
-          </table>
-        </form>
-      </div>
-      <div>
-        <table class="GAT-controls">
-          <thead>
-            <tr><th colspan="7"><h2>Controls</h2></th></tr>
-            <tr>
-              <th colspan="5"><h3>Movement</h3></th>
-              <th colspan="2"><h3>Pressure</h3></th>
-            </tr>
-          </thead>
-          <tbody>
-          <script type="module">
-            import {startGat, gatScreen, accelerateZoomingLens, changeDial} from "./js/GATsimulation.js";
-
-            // Initiate zoom effect:
-            // A $( document ).ready() block.
-            $( document ).ready(function() {
-              $("#up-button").on("mousedown", function() { accelerateZoomingLens({y:-0.2}); });
-              $("#up-button").on("mouseup", function() { gatScreen.lens.stopMovement(); });
-              $("#w-button").on("mousedown", function() { accelerateZoomingLens({s:+0.02}); });
-              $("#w-button").on("mouseup", function() { gatScreen.lens.stopMovement(); });
-              $("#space-button").on("mousedown", function() { changeDial(0.1); });
-              $("#space-button").on("mouseup", function() { changeDial(0.0); });
-
-              $("#left-button").on("mousedown", function() { accelerateZoomingLens({x:-0.2}); });
-              $("#left-button").on("mouseup", function() { gatScreen.lens.stopMovement(); });
-              $("#down-button").on("mousedown", function() { accelerateZoomingLens({y:+0.2}); });
-              $("#down-button").on("mouseup", function() { gatScreen.lens.stopMovement(); });
-              $("#right-button").on("mousedown", function() { accelerateZoomingLens({x:+0.2}); });
-              $("#right-button").on("mouseup", function() { gatScreen.lens.stopMovement(); });
-              $("#s-button").on("mousedown", function() { accelerateZoomingLens({s:-0.02}); });
-              $("#s-button").on("mouseup", function() { gatScreen.lens.stopMovement(); });
-
-              $("#shift-button").on("mousedown", function() { changeDial(-0.1); });
-              $("#shift-button").on("mouseup", function() { changeDial(0.0); });
-            });
-          </script>
-            <tr>
-              <td></td>
-              <td colspan="2">
-                <button id="up-button"> &uarr;
-                </button>
-              </td>
-              <td></td>
-              <td>&nbsp;
-                <button id="w-button"> &#8613; (W)</button>
-                &nbsp;
-              </td>
-              <td>&nbsp;
-                <bumoveZoomingLensByJoysticktton id="space-button"> &uarr; (space)</bumoveZoomingLensByJoysticktton>
-                &nbsp;
-              </td>
-            </tr>
-            <tr>
-              <!-- Unicode characters https://www.w3schools.com/charsets/ref_utf_arrows.asp -->
-              <td style="text-align: right">
-                <button id="left-button"> &larr; </button>
-              </td><td colspan="2">
-                <button id="down-button"> &darr; </button>
-              </td><td style="text-align: left">
-                <button id="right-button"> &rarr; </button>
-              </td>
-              <td>&nbsp;
-                <button id="s-button"> &#8615; (S)</button>
-                &nbsp;
-              </td>
-              <td>
-                <button id="shift-button"> &darr; (shift)</button>
-              </td>
-            </tr>
-            <!--
-            <tr>
-              <td colspan="5">&nbsp;</td>
-              <td colspan="2">&nbsp;</td>
-            </tr> -->
-            <tr>
-              <th colspan="2">Left</th>
-              <th colspan="2">Top</th>
-              <th>Forward</th>
-              <th>Pressure</th>
-            </tr>
-            <tr class="value-displayer">
-              <td colspan="2">
-                <span id="x-loc-displayer"></span>
-              </td>
-              <td colspan="2">
-                <span id="y-loc-displayer"></span>
-              </td>
-              <td>
-                <span id="s-loc-displayer"></span>
-              </td>
-              <td>
-                <span id="press-displayer"></span>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <div>
-        <table class="GAT-controls">
-          <tr>
-            <th colspan="5"><h2>Joystick</h2></th>
-          </tr>
-          <tr>
-            <th colspan="2">Raw Value</th>
-            <th rowspan="2">Direc tion</th>  <!-- Space so it splits along two lines -->
-            <th colspan="2">Normalized</th>
-          </tr>
-          <tr>
-            <td> Hor0 </td>
-            <td> Ver0 </td>
-            <!-- Cell from above row is spanning two rows and thus counts as one cell here-->
-            <td> Hor0 </td>
-            <td> Ver0 </td>
-          </tr>
-          <tr>
-            <td> <input id="joyRawHor0" type="text" /> </td>
-            <td> <input id="joyRawVer0" type="text" /> </td>
-            <td> <input id="joyCardinalDirection" type="text" /> </td>
-            <td> <input id="joyNormHor0" type="text" /> </td>
-            <td> <input id="joyNormVer0" type="text" /> </td>
-          </tr>
-          <tr>
-            <td> Hor1 </td>
-            <td> Ver1 </td>
-            <td> Ang </td>
-            <td> Hor1 </td>
-            <td> Ver1 </td>
-          </tr>
-          <tr>
-            <td> <input id="joyRawHor1" type="text" /> </td>
-            <td> <input id="joyRawVer1" type="text" /> </td>
-            <td> <input id="joyDeg" type="text" /> </td>
-            <td> <input id="joyNormHor1" type="text" /> </td>
-            <td> <input id="joyNormVer1" type="text" /> </td>
-          </tr>
-        </table>
-      </div>
-    </div>
-
-    <div class="GAT-editor gatConsoleContainer">
-      <div class="GAT-console-holder">
-        <table class="GAT-console">
-          <thead>
-            <tr><th colspan="2"><h2>Console</h2></th></tr>
-          </thead>
-          <tbody>
-          <tr><td>&nbsp;</td><td></td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-  </div>
 
 </body>
 
