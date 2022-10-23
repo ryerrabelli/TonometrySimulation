@@ -8,7 +8,6 @@
   <!-- JQuery library -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
   <!-- Roberto D'Amico bobboteck JoyStick.js library after modifications-->
-
   <!--
   <script type="text/javascript" src="https://ryerrabelli.github.io/JoyStick/joy.js"></script>
   <script type="module" src="../lib/Joystick/joy.js"></script>
@@ -35,11 +34,50 @@
       setUpPhotoZooming("origPhoto", "zoomedPhoto", "zoomingLens");
       setUpJoystick();
       startGat();
+      setUpPages();
     });
+
+    function setUpPages() {
+      $(".page-link").on("click", function() {
+        openPage( $(this).data("target-page-name") );
+      });
+      openPage("simulation");
+    }
+    function openPage(pageName) {
+      /*$(`.page`).css("display", "none");
+      $(`.page[data-page-name="${pageName}").each(function(index) {
+        $(this).css("display", $(this).data("active-display-value") || "block");
+      }); */
+      $(`.page`).hide();
+      $(`.page[data-page-name="${pageName}"]`).show();
+      $(`.page-link`).removeClass("selected-page-link");
+      $(`.page-link[data-target-page-name="${pageName}"]`).addClass("selected-page-link");
+    }
   </script>
 
+  <div class="page-links-holder">
+    <h2 class="">Menu</h2>
+    <button class="page-link" data-target-page-name="instructions">Instructions</button>
+    <button class="page-link" data-target-page-name="about">About</button>
+    <button class="page-link" data-target-page-name="contact">Contact</button>
+    <button class="page-link" data-target-page-name="simulation">Simulation</button>
+  </div>
 
-  <div class="grid-container">
+
+  <div class="page" data-page-name="instructions">
+    Instructions
+  </div>
+
+  <div class="page" data-page-name="about">
+    About
+  </div>
+
+  <div class="page" data-page-name="contact">
+    Contact
+  </div>
+
+
+  <div class="page grid-container" data-page-name="simulation" data-active-display-value="grid">
     <div class="titleContainer">
       <h1 >GAT Simulation</h1>
     </div>
@@ -48,7 +86,6 @@
       <div id="zoomedPhoto"></div>
       <!-- Zoomed in version of high resolution photo will be here -->
     </div>
-
 
 
     <div class="origPhotoContainer img-zoom-container click-to-zoom photo-area" style="grid-column: 1">
