@@ -75,7 +75,7 @@
     // Initiate zoom effect:
     // A $( document ).ready() block.
     $( document ).ready(function() {
-      setUpPhotoZooming("origPhoto", "zoomedPhoto", "zoomingLens");
+      setUpPhotoZooming("origPhoto", "zoomingLens");
       setUpJoystick();
       startGat();
       setUpPages();
@@ -142,12 +142,6 @@
       <div class="page page-grid-container" data-page-name="simulation" data-active-display-value="grid">
 
         <!-- CIMED residency headshots are originally 6-7MB portrait photos of 3770px by 5655px (aspect ratio 1.5). I cropped them to b 3600px by 3600px. -->
-        <div class="zoomedPhotoContainer" class="img-zoom-result photo-area">
-          <div id="zoomedPhoto"></div>
-          <!-- Zoomed in version of high resolution photo will be here -->
-        </div>
-
-
         <div class="origPhotoContainer img-zoom-container click-to-zoom photo-area" style="grid-column: 1">
           <div id="zoomingLens">
             <!-- the code will insert html to control the zoomingLens hovering over the low resolution headshot-->

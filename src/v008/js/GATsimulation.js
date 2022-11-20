@@ -1,5 +1,5 @@
 import {isNullOrUndef, areArraysEqual, numberDictToStr} from "./helper.js";
-import {setUpPhotoZooming, moveZoomingLensByJoystick, updateZoom, origPhoto, zoomingLens, zoomedPhoto} from "./headshot.js";
+import {setUpPhotoZooming, moveZoomingLensByJoystick, updateZoom, origPhoto, zoomingLens} from "./headshot.js";
 import {Joy} from "./joystick.js";
 
 const DIAL_COEFFICIENT = 0.3;
@@ -143,7 +143,7 @@ class ZoomingLensController extends Controller {
     let x = zoomingLens.computedStyleMap().get("left").value;
     let y = zoomingLens.computedStyleMap().get("top").value;
     // ss = plural of s (aka scale)
-    let ss = {x:zoomedPhoto.offsetWidth / zoomingLens.offsetWidth, y:zoomedPhoto.offsetHeight / zoomingLens.offsetHeight}
+    let ss = {x:origPhoto.offsetWidth / zoomingLens.offsetWidth, y:origPhoto.offsetHeight / zoomingLens.offsetHeight}
     return {x:x, y:y, s:ss.x};
   }
   setLoc(newAmount, doUpdateZoom=true) {
