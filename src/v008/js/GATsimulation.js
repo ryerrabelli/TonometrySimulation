@@ -1,5 +1,5 @@
 import {isNullOrUndef, areArraysEqual, numberDictToStr} from "./helper.js";
-import {setUpPhotoZooming, moveZoomingLensByJoystick, updateZoom} from "./headshot.js";
+import {setUpPhotoZooming, moveZoomingLensByJoystick, updateZoom, origPhoto, zoomingLens, zoomedPhoto} from "./headshot.js";
 import {Joy} from "./joystick.js";
 
 const DIAL_COEFFICIENT = 0.3;
@@ -341,6 +341,13 @@ export let gatScreen = {
     gatScreen.clear();
     gatScreen.frameNo += 1;
 
+    // Arguments:  (image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight)
+    // (sx, sy, sWidth, sHeight) selects the image to show
+    // dx, dy, dWidth, dHeight indicates where on the canvas to draw
+    gatScreen.context.drawImage(origPhoto,
+      gatScreen.lens.loc.x, gatScreen.lens.loc.y, gatScreen.lens.sz.wd, gatScreen.lens.sz.ht,
+      0, 0, 360, 360)
+
     myDial.text = "Dial: " + myDial.dialVal.toFixed(1) + " mmHg";
     myDial.updatePosition();
     myDial.updateDrawing();
@@ -488,8 +495,8 @@ class MireCircle extends MovingComponent {
     // the angle starts from rightmost point (0) to bottom (pi/2) to leftmost (pi) backup through the top
     // arc inputs: x center, y center, radius, start angle (radians), end angle (radians), counterclockwise (optional)
 
-    let arcAngleInitial = 0;           // radians
-    let arcAngleFinal   = 1 * Math.PI;   // radians, aka 180 degrees
+    let arcAngleInitial = 0;           // in radians
+    let arcAngleFinal   = 1 * Math.PI;   // in radians, aka 180 degrees
 
     // locFromLens means the coordinates are moved to be in the plane of the screen
 
@@ -502,8 +509,8 @@ class MireCircle extends MovingComponent {
 
 
     // Draw big blue circle around Mires
-    ctx.strokeStyle = `rgba(0,0,255,0.1)`;
-    ctx.fillStyle = `rgba(0,0,0,0.1)`;
+    ctx.strokeStyle = `rgba(0,0,0,0.5)`;
+    ctx.fillStyle = `rgba(0,0,255,0.5)`;
     ctx.lineWidth = MIRE_LINE_WD;  // half thickness of routine
     ctx.beginPath();
     ctx.arc(180, 180,

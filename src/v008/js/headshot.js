@@ -2,7 +2,7 @@ import {lens, ZLC, gatScreen, canvasSz} from "./GATsimulation.js";
 import {isNullOrUndef, areArraysEqual, numberDictToStr} from "./helper.js";
 import {Joy} from "./joystick.js";
 
-let origPhoto, zoomingLens, zoomedPhoto;
+export let origPhoto, zoomingLens, zoomedPhoto;
 
 class Person {
   constructor(filenameBase, extension="jpg", pathToFolder="data/") {
