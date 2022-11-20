@@ -50,7 +50,7 @@ export function setUpJoystick() {
   if (useJoy) {
 
 
-    // Create JoyStick object into the DIV 'joyDiv'
+    // Create JoyStick object into the DIV 'joystick-div'
     const joyParam = {
       title: "joystick",
       autoReturnToCenter: false,
@@ -73,7 +73,7 @@ export function setUpJoystick() {
       startNormLocXLev1: 0.5,
       startNormLocYLev1: 0.5,
     };
-    Joy = new JoyStick("joyDiv", joyParam, onJoyStickUpdate);
+    Joy = new JoyStick("joystick-div", joyParam, onJoyStickUpdate);
 
     // x->x, Deg->y, y->s
     let newLoc = {x:Joy.getNormLocX(), y:Joy.getNormLocDeg(), s:Joy.getNormLocY()};

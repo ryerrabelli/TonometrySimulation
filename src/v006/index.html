@@ -20,9 +20,25 @@
   <script type="module" src="js/helper.js"></script>
 
   <style>
-    .titleContainer {
+    .overall-grid-container {
+      display: grid;
+      grid-template-columns: max-content;
+      grid-gap: 0px;
+      text-align: center;
+      margin: auto;
+      width: max-content;
+    }
+    .title-container {
       grid-column: 1;
       grid-row: 1;
+    }
+    .page-links-holder {
+      grid-column: 1;
+      grid-row: 2;
+    }
+    .pages-holder {
+      grid-column: 1;
+      grid-row: 3;
     }
     .page-link {
       width: 200px;
@@ -44,22 +60,6 @@
       text-decoration: underline;
       color: #FFF !important;
       border: 5px solid #FFF !important;
-    }
-    .page-links-holder {
-      grid-column: 1;
-      grid-row: 2;
-    }
-    .pages-holder {
-      grid-column: 1;
-      grid-row: 3;
-    }
-    .overall-grid-container {
-      display: grid;
-      grid-template-columns: max-content;
-      grid-gap: 0px;
-      text-align: center;
-      margin: auto;
-      width: max-content;
     }
   </style>
 
@@ -85,7 +85,7 @@
       $(".page-link").on("click", function() {
         openPage( $(this).data("target-page-name") );
       });
-      openPage("simulation");
+      openPage("sim");
     }
     function openPage(pageName) {
       /*$(`.page`).css("display", "none");
@@ -99,14 +99,14 @@
     }
   </script>
   <div class="overall-grid-container">
-    <div class="titleContainer">
+    <div class="title-container">
       <h1 >GAT Simulation</h1>
     </div>
     <div class="page-links-holder">
       <button class="page-link" data-target-page-name="instructions">Instructions</button>
       <button class="page-link" data-target-page-name="about">About</button>
       <button class="page-link" data-target-page-name="contact">Contact</button>
-      <button class="page-link" data-target-page-name="simulation">Simulation</button>
+      <button class="page-link" data-target-page-name="sim">Simulation</button>
     </div>
 
     <div class="pages-holder">
@@ -122,34 +122,34 @@
         Contact
       </div>
 
-      <div class="page page-grid-container" data-page-name="simulation" data-active-display-value="grid">
+      <div class="page sim-grid-container-grid-container" data-page-name="sim" data-active-display-value="grid">
 
         <!-- CIMED residency headshots are originally 6-7MB portrait photos of 3770px by 5655px (aspect ratio 1.5). I cropped them to b 3600px by 3600px. -->
-        <div class="zoomedPhotoContainer" class="img-zoom-result photo-area">
+        <div class="zoomed-photo-block img-zoom-result photo-area">
           <div id="zoomedPhoto"></div>
           <!-- Zoomed in version of high resolution photo will be here -->
         </div>
 
 
-        <div class="origPhotoContainer img-zoom-container click-to-zoom photo-area" style="grid-column: 1">
+        <div class="orig-photo-block img-zoom-container click-to-zoom photo-area" style="grid-column: 1">
           <div id="zoomingLens">
             <!-- the code will insert html to control the zoomingLens hovering over the low resolution headshot-->
           </div>
           <img id="origPhoto" src="" alt="headshot low resolution">
         </div>
 
-        <div class="gatViewContainer">
+        <div class="gat-view-block">
           <!-- Mire screen will be added here -->
         </div>
 
-        <div class="joystickContainer">
+        <div class="joystick-block">
           <div>
-            <div id="joyDiv"></div>
+            <div id="joystick-div"></div>
           </div>
         </div>
 
 
-        <div class="GAT-editor keyboardContainer">
+        <div class="GAT-editor keyboard-block">
           <div>
             <form action="" method="get">
               <table>
@@ -305,7 +305,7 @@
           </div>
         </div>
 
-        <div class="GAT-editor gatConsoleContainer">
+        <div class="GAT-editor gat-console-block">
           <div class="GAT-console-holder">
             <table class="GAT-console">
               <thead>
