@@ -54,12 +54,12 @@ export function setUpJoystick() {
     const joyParam = {
       title: "joystick",
       autoReturnToCenter: false,
-      width: 360,  // can also given as "#px" in the css for the container
-      height: 360,
-      internalRadius: 30,
-      radiiDifference: 100,
+      width: 720,  // can also given as "#px" in the css for the container
+      height: 720,
+      internalRadius: 70,
+      radiiDifference: 225,
       moveRelativeToInitialMouseDown: true,
-      maxMoveStickBeyondInternalRadius: 75,
+      maxMoveStickBeyondInternalRadius: 175,
       joystickLevels: 2,
       arrowCount: 1,
       minArrowLocDegrees: 0,

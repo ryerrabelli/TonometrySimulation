@@ -111,7 +111,7 @@ h1 {
 }
 .page-grid-container {
   display: grid;
-  grid-template-columns: max-content max-content max-content;
+  grid-template-columns: max-content max-content max-content max-content max-content;
   grid-gap: 36px;
   text-align: center;
   margin: auto;
@@ -127,19 +127,19 @@ h1 {
   grid-row: 2;
 }
 .gatViewContainer {
-  grid-column: 2;
+  grid-column: 5;
   grid-row: 1;
 }
 .joystickContainer {
-  grid-column: 2;
-  grid-row: 2;
+  grid-column: 2 / span 2;
+  grid-row: 1 / span 2;
 }
 .keyboardContainer {
-  grid-column: 3;
+  grid-column: 4;
   grid-row: 2;
 }
 .gatConsoleContainer {
-  grid-column: 3;
+  grid-column: 4;
   grid-row: 1;
 }
 #joystick { /* class added programmatically to joystick based on "title" argument */
