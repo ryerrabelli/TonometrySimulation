@@ -280,7 +280,7 @@ export let gatScreen = {
     this.canvas.height = canvasSz.ht;
     this.context = this.canvas.getContext("2d");
     //document.getElementById("GAT-area").insertBefore(this.canvas, document.getElementById("GAT-editor"));
-    $(".gatViewContainer").append(this.canvas);
+    $(".gat-view-block").append(this.canvas);
     this.canvasController.width = canvasSz.wd;
     this.canvasController.height = canvasSz.ht;
     this.contextController = this.canvasController.getContext("2d");

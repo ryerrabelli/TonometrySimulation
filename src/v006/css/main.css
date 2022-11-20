@@ -6,6 +6,7 @@ body {
   color: #f1f1f1;
 }
 * {box-sizing: border-box;}
+
 h1 {
   text-align: center;
 }
@@ -21,7 +22,7 @@ h1 {
     background-position: 0% 50%;
   }
 }
-.gatViewContainer canvas {
+.gat-view-block canvas {
   background: linear-gradient(-45deg, #111122, #072083, #0f59f2, #0a30a3);
   background-size: 400% 400%;
   animation: gradient 15s ease infinite;
@@ -109,7 +110,7 @@ h1 {
 .GAT-controls input {
   width: 100%;
 }
-.page-grid-container {
+.sim-grid-container {
   display: grid;
   grid-template-columns: max-content max-content max-content;
   grid-gap: 36px;
@@ -118,32 +119,32 @@ h1 {
   width: max-content;
 }
 
-.zoomedPhotoContainer {
+.zoomed-photo-block {
   grid-column: 1;
   grid-row: 1;
 }
-.origPhotoContainer {
+.orig-photo-block {
   grid-column: 1;
   grid-row: 2;
 }
-.gatViewContainer {
+.gat-view-block {
   grid-column: 2;
   grid-row: 1;
 }
-.joystickContainer {
+.joystick-block {
   grid-column: 2;
   grid-row: 2;
 }
-.keyboardContainer {
+.keyboard-block {
   grid-column: 3;
   grid-row: 2;
 }
-.gatConsoleContainer {
+.gat-console-block {
   grid-column: 3;
   grid-row: 1;
 }
 #joystick { /* class added programmatically to joystick based on "title" argument */
 
 }
-#joyDiv  {
+#joystick-div  {
 }
