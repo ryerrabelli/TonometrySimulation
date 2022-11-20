@@ -56,10 +56,12 @@ export function setUpJoystick() {
       autoReturnToCenter: false,
       width: 720,  // can also given as "#px" in the css for the container
       height: 720,
-      internalRadius: 70,
+
+      internalRadius: 70/2,
       radiiDifference: 225,
+      maxMoveStickBeyondInternalRadius: 225,
+
       moveRelativeToInitialMouseDown: true,
-      maxMoveStickBeyondInternalRadius: 175,
       joystickLevels: 2,
       arrowCount: 1,
       minArrowLocDegrees: 0,
