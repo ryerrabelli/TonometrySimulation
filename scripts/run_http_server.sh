@@ -1,5 +1,7 @@
 #!/bin/sh
 #
+# First, cd to the correct folder i.e.
+# cd Desktop/TonometrySimulation
 # To change the permissions of this file so it can be run in terminal, do
 # chmod 755 <filename>.sh
 # chmod 755 src/run_http_server.sh
