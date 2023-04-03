@@ -36,10 +36,10 @@ const MIRE_SEPARATION = MIRE_RADIUS*4;   // distance between mire circle centers
 // https://www.w3schools.com/howto/howto_js_image_zoom.asp
 export function startGat() {
   // mireCircle = new component(30, 30, "rgba(0, 0, 255, 0.5)", 10, 120);
-  let mireCircleRightEye1 = new MireCircle(MIRE_RADIUS*2, MIRE_RADIUS*2, 0, pupilLocs[R_EYE].x, pupilLocs[R_EYE].y, +1);
-  let mireCircleRightEye2 = new MireCircle(MIRE_RADIUS*2, MIRE_RADIUS*2, 0, pupilLocs[R_EYE].x, pupilLocs[R_EYE].y, -1);
-  let mireCircleLeftEye1  = new MireCircle(MIRE_RADIUS*2, MIRE_RADIUS*2, 0, pupilLocs[L_EYE].x, pupilLocs[L_EYE].y, +1);
-  let mireCircleLeftEye2  = new MireCircle(MIRE_RADIUS*2, MIRE_RADIUS*2, 0, pupilLocs[L_EYE].x, pupilLocs[L_EYE].y, -1);
+  let mireCircleRightEye1 = new MireCircle(MIRE_RADIUS*2, MIRE_RADIUS*2, 0, pupilLocs[R_EYE].x, pupilLocs[R_EYE].y, +1, "R");
+  let mireCircleRightEye2 = new MireCircle(MIRE_RADIUS*2, MIRE_RADIUS*2, 0, pupilLocs[R_EYE].x, pupilLocs[R_EYE].y, -1, "R");
+  let mireCircleLeftEye1  = new MireCircle(MIRE_RADIUS*2, MIRE_RADIUS*2, 0, pupilLocs[L_EYE].x, pupilLocs[L_EYE].y, +1, "L");
+  let mireCircleLeftEye2  = new MireCircle(MIRE_RADIUS*2, MIRE_RADIUS*2, 0, pupilLocs[L_EYE].x, pupilLocs[L_EYE].y, -1, "L");
   gatScreen.mireCircles = [mireCircleRightEye1, mireCircleRightEye2, mireCircleLeftEye1, mireCircleLeftEye2];
   myDial = new Dial("30px", "Consolas", "rgba(255,255,255,0.5)", 10, 40, "text");
   gatScreen.start();
@@ -478,13 +478,15 @@ class MireCircle extends MovingComponent {
    * @param {number} x - x component of location relative to the entire screen
    * @param {number} y - x component of location relative to the entire screen
    * @param {(number|boolean)} direction - indicates the portion of the circle on the top of the canvas will be drawn. Positive/true -> top, negative/false -> bottom
+   * @param {(string)} face_side -  "L" for left or "R" for right
    */
-  constructor(wd, ht, color, x, y, direction) {
+  constructor(wd, ht, color, x, y, direction, face_side) {
     super(wd, ht, color, x-direction*MIRE_SEPARATION/2, y);
     this.radius = this.height/2;
     // +1 -> above aka clockwise starting from rightmost point
     // -1 -> aka counterclockwise starting from rightmost point
     this.direction = direction;
+    this.face_side = face_side;
   }
   get xDialAdjustment() {
     return this.direction*myDial.dialVal*DIAL_COEFFICIENT
@@ -515,16 +517,17 @@ class MireCircle extends MovingComponent {
     const radiusScaled = this.radius * lens.loc.s;
 
 
-    // Draw big blue circle around Mires
-    ctx.strokeStyle = `rgba(0,0,0,0.5)`;
-    ctx.fillStyle = `rgba(0,0,255,0.5)`;
-    ctx.lineWidth = MIRE_LINE_WD*10;  // 10x thickness of regular since much bigger
-    ctx.beginPath();
-    ctx.arc(180, 180,
-      180, 0, 2*Math.PI,
-      (this.direction>0) );
-    ctx.stroke();
-    ctx.fill();
+   if (this.direction>0 && this.face_side=="R") {
+      ctx.strokeStyle = `rgba(0,0,0,0.5)`;
+      ctx.fillStyle = `rgba(0,0,255,0.5)`;
+      ctx.lineWidth = MIRE_LINE_WD*10;  // 10x thickness of regular since much bigger
+      ctx.beginPath();
+      ctx.arc(180, 180,
+        180, 0, 2*Math.PI,
+        (this.direction>0) );
+      ctx.stroke();
+      ctx.fill();
+    }
 
 
     const miresVisibility = gatScreen.getMiresVisibility();
