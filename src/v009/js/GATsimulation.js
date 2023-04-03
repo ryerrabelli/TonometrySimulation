@@ -1,5 +1,5 @@
 import {isNullOrUndef, areArraysEqual, numberDictToStr} from "./helper.js";
-import {setUpPhotoZooming, moveZoomingLensByJoystick, updateZoom, origPhoto, zoomingLens} from "./headshot.js";
+import {personModification, personModificationOptions, setUpPhotoZooming, moveZoomingLensByJoystick, updateZoom, origPhoto, zoomingLens} from "./headshot.js";
 import {Joy} from "./joystick.js";
 
 const DIAL_COEFFICIENT = 0.3;
@@ -26,7 +26,9 @@ const pupilLocs =[
 ]
 
 const MIRE_RADIUS     = 3;  // will be multiplied by s (scale)
-const MIRE_LINE_WD    = 0.5;   // will be multiplied by s (scale)
+let MIRE_LINE_WD    = 0.5;   // will be multiplied by s (scale)
+
+
 const MIRE_SEPARATION = MIRE_RADIUS*4;   // distance between mire circle centers when dial pressure is not set (or set at 0)
 //const DEFAULT_ZOOMING_LENS_LOC = {x:100, y:100, s:5};
 
@@ -341,6 +343,9 @@ export let gatScreen = {
     gatScreen.clear();
     gatScreen.frameNo += 1;
 
+    if (personModification == "Low Fluoroscein") MIRE_LINE_WD = 0.1
+    if (personModification == "High Fluoroscein") MIRE_LINE_WD = 0.8
+    
     // Arguments:  (image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight)
     // (sx, sy, sWidth, sHeight) selects the image to show
     // dx, dy, dWidth, dHeight indicates where on the canvas to draw

@@ -46,6 +46,11 @@ function moveZoomingLensByHover(event) {
   return newLoc;
 }
 
+export const personModificationOptions = [
+  "Normal", "Low Fluoroscein", "High Fluoroscein",
+]
+export let personModification;
+
 // https://www.w3schools.com/graphics/game_intro.asp
 // Original source: https://www.w3schools.com/howto/howto_js_image_zoom.asp
 export function setUpPhotoZooming(origPhotoID, zoomingLensID) {
@@ -55,14 +60,12 @@ export function setUpPhotoZooming(origPhotoID, zoomingLensID) {
     new Person("Ashkhan-Hojati-008-cropped-square"),
     new Person("Rahul-Yerrabelli-005-cropped-square"),
   ]
-  const personModifications = [
-    "Normal",
-  ]
 
   const urlParams = new URLSearchParams(window.location.search);
   // Decide which photo to use based on the GET URL param (url ending with <url>/?personID=0)
   const personID = urlParams.has("personID") ? urlParams.get("personID") : 0;
   const personModificationID = urlParams.has("personModificationID") ? urlParams.get("personModificationID") : 0;
+  personModification = personModificationOptions[personModificationID]
   // Added all the photo options
   for (let i = 0; i < persons.length; i++) {
     $("#persons-selector").append($("<option>", {
@@ -72,11 +75,11 @@ export function setUpPhotoZooming(origPhotoID, zoomingLensID) {
     }));
   }
 
-  for (let i = 0; i < personModifications.length; i++) {
+  for (let i = 0; i < personModificationOptions.length; i++) {
     $("#person-modifications-selector").append($("<option>", {
       value: i,
-      text: personModifications[i],
-      selected: i==personModificationID,
+      text: personModificationOptions[i],
+      selected: i==personModification,
     }))
   }
 

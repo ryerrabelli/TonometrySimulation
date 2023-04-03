@@ -16,7 +16,7 @@
 # **************
 # cd Desktop/GatSim/Code/TonometrySimulation
 # ./scripts/run_http_server.sh
-# http://localhost/src/v009
+# Go to http://localhost:8000/src/v009
 # **************
 
 # PORT can be passed in; otherwise, default value will be used
