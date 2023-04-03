@@ -2,9 +2,9 @@
 #
 # To change the permissions of this file so it can be run in terminal, do
 # chmod 755 <filename>.sh
-# chmod 755 src/scripts/save_email_images.sh
+# chmod 755 src/save_email_images.sh
 # to run
-# ./src/scripts/save_email_images.sh
+# ./src/save_email_images.sh
 #
 # This file allows you to include email address in a GitHub repo, publically
 # available to everyone, while still preventing it from easily being accessed
