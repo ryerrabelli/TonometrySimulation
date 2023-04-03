@@ -58,6 +58,7 @@ export function setUpPhotoZooming(origPhotoID, zoomingLensID) {
   zoomingLens = document.getElementById(zoomingLensID);
   const persons = [
     new Person("Ashkhan-Hojati-008-cropped-square"),
+    new Person("Krishin-Shivdasani-004-cropped-square"),
     new Person("Rahul-Yerrabelli-005-cropped-square"),
   ]
 
