@@ -348,14 +348,16 @@ export let gatScreen = {
       gatScreen.lens.loc.x, gatScreen.lens.loc.y, gatScreen.lens.sz.wd, gatScreen.lens.sz.ht,
       0, 0, 360, 360)
 
-    myDial.text = "Dial: " + myDial.dialVal.toFixed(1) + " mmHg";
-    myDial.updatePosition();
-    myDial.updateDrawing();
+
     for (let i = 0; i < gatScreen.mireCircles.length; i += 1) {
       const mireCircle = gatScreen.mireCircles[i];
       mireCircle.updatePosition();
       mireCircle.updateDrawing();
     }
+
+    myDial.text = "Dial: " + myDial.dialVal.toFixed(1) + " mmHg";
+    myDial.updatePosition();    myDial.updateDrawing();
+
     gatScreen.lens.updatePosition();
 
     // Check for Mire circle alignment
@@ -511,7 +513,7 @@ class MireCircle extends MovingComponent {
     // Draw big blue circle around Mires
     ctx.strokeStyle = `rgba(0,0,0,0.5)`;
     ctx.fillStyle = `rgba(0,0,255,0.5)`;
-    ctx.lineWidth = MIRE_LINE_WD;  // half thickness of routine
+    ctx.lineWidth = MIRE_LINE_WD*10;  // 10x thickness of regular since much bigger
     ctx.beginPath();
     ctx.arc(180, 180,
       180, 0, 2*Math.PI,
