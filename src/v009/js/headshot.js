@@ -55,10 +55,14 @@ export function setUpPhotoZooming(origPhotoID, zoomingLensID) {
     new Person("Ashkhan-Hojati-008-cropped-square"),
     new Person("Rahul-Yerrabelli-005-cropped-square"),
   ]
+  const personModifications = [
+    "Normal",
+  ]
 
   const urlParams = new URLSearchParams(window.location.search);
   // Decide which photo to use based on the GET URL param (url ending with <url>/?personID=0)
   const personID = urlParams.has("personID") ? urlParams.get("personID") : 0;
+  const personModificationID = urlParams.has("personModificationID") ? urlParams.get("personModificationID") : 0;
   // Added all the photo options
   for (let i = 0; i < persons.length; i++) {
     $("#persons-selector").append($("<option>", {
@@ -67,6 +71,15 @@ export function setUpPhotoZooming(origPhotoID, zoomingLensID) {
       selected: i==personID,
     }));
   }
+
+  for (let i = 0; i < personModifications.length; i++) {
+    $("#person-modifications-selector").append($("<option>", {
+      value: i,
+      text: personModifications[i],
+      selected: i==personModificationID,
+    }))
+  }
+
 
   origPhoto.src = persons[personID].pathResLow;
 
@@ -154,4 +167,3 @@ function onZoomingLensTouchMove(event) {
 function onZoomingLensTouchEnd(event) {
   onZoomingLensMouseUp(event);
 }
-
